@@ -10,8 +10,17 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.Playlistmaker"
+        android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar"
         tools:targetApi="31">
+        <activity
+            android:name=".ActivityMedia"
+            />
+        <activity
+            android:name=".ActivitySearch"
+            />
+        <activity
+            android:name=".ActivitySettings"
+            />
         <activity
             android:name=".MainActivity"
             android:exported="true">

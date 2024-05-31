@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="padding_standard">16dp</dimen>
+    <dimen name="margin_standard">8dp</dimen>
+    <dimen name="header_text_size">26sp</dimen>
+    <dimen name="header_text_size2">22sp</dimen>
+    <dimen name="text_size">16sp</dimen>
+    <dimen name="icon_padding">8dp</dimen>
+    <dimen name="corner_radius">8dp</dimen>
+    <dimen name="margin_top">24dp</dimen>
+    <dimen name="layout_width_50dp">50dp</dimen>
+
+</resources>
