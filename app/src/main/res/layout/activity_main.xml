@@ -1,19 +1,98 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<GridLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
+    tools:context=".MainActivity"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    android:columnCount="1"
+    android:padding="@dimen/padding_standard"
+    android:background="@color/blue_sky">
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hello World!"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:text="@string/app_name"
+        android:textSize="@dimen/header_text_size"
+        android:textColor="@color/white"
+        android:layout_gravity="start"
+        android:layout_marginBottom="@dimen/padding_standard"/>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_rowWeight="1"
+        android:background="@drawable/button_background"
+        android:layout_margin="@dimen/margin_standard"
+        android:layout_gravity="start">
+
+        <Button
+            android:id="@+id/button_search"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/transparent"
+            android:text="@string/search_text"
+            android:textColor="@color/black"
+            android:textSize="@dimen/header_text_size"
+            android:layout_gravity="center"
+            app:icon="@drawable/search"
+            app:iconGravity="textStart"
+            app:iconPadding="@dimen/icon_padding"
+            app:iconTint="@color/black"
+            app:cornerRadius="@dimen/corner_radius"
+            android:textAllCaps="false"
+            tools:ignore="VisualLintButtonSize" />
+    </FrameLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_rowWeight="1"
+        android:background="@drawable/button_background"
+        android:layout_margin="@dimen/margin_standard"
+        android:layout_gravity="start">
+
+        <Button
+            android:id="@+id/button_library"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/transparent"
+            android:text="@string/library_text"
+            android:textColor="@color/black"
+            android:textSize="@dimen/header_text_size"
+            android:layout_gravity="center"
+            app:icon="@drawable/media_library"
+            app:iconGravity="textStart"
+            app:iconPadding="@dimen/icon_padding"
+            app:iconTint="@color/black"
+            app:cornerRadius="@dimen/corner_radius"
+            android:textAllCaps="false"
+            tools:ignore="VisualLintButtonSize" />
+    </FrameLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_rowWeight="1"
+        android:background="@drawable/button_background"
+        android:layout_margin="@dimen/margin_standard"
+        android:layout_gravity="start">
+
+        <Button
+            android:id="@+id/button_settings"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/transparent"
+            android:text="@string/settings_text"
+            android:textColor="@color/black"
+            android:textSize="@dimen/header_text_size"
+            android:layout_gravity="center"
+            app:icon="@drawable/settings"
+            app:iconGravity="textStart"
+            app:iconPadding="@dimen/icon_padding"
+            app:iconTint="@color/black"
+            app:cornerRadius="@dimen/corner_radius"
+            android:textAllCaps="false"
+            tools:ignore="VisualLintButtonSize" />
+    </FrameLayout>
+
+</GridLayout>
