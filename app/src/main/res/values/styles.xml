@@ -14,7 +14,6 @@
     </style>
 
     <style name="FrameLayoutStyle">
-
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_rowWeight">1</item>
         <item name="android:background">@drawable/button_background</item>
@@ -23,7 +22,6 @@
     </style>
 
     <style name="ButtonStyle">
-
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">match_parent</item>
         <item name="android:background">@color/transparent</item>
@@ -38,7 +36,6 @@
     </style>
 
     <style name="SettingsTextViewStyle">
-
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textColor">@color/black</item>
@@ -48,7 +45,6 @@
     </style>
 
     <style name="SettingsImageViewStyle">
-
         <item name="android:layout_width">@dimen/layout_width_50dp</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_gravity">end</item>
@@ -60,7 +56,18 @@
         <item name="android:orientation">horizontal</item>
         <item name="android:gravity">center_vertical</item>
         <item name="android:layout_marginTop">@dimen/margin_top</item>
-
     </style>
+
+    <style name="search">
+        <item name="tint">@color/search_text</item>
+        <item name="android:textColorHint">@color/search_text</item>
+        <item name="android:backgroundTint">@color/white</item>
+        <item name="android:textColor">@color/search_text</item>
+        <item name="android:drawableTint">@color/search_text</item>
+        <item name="android:textSize">@dimen/text_size</item>
+        <item name="android:fontFamily">@font/ys_display_regular</item>
+    </style>
+
+
 
 </resources>

@@ -19,7 +19,7 @@ class ActivitySettings : AppCompatActivity() {
             finish()
         }
 
-        // Обработчик для кнопки "Поделиться приложением"
+        //обработчик кнопки "Поделиться приложением"
         val shareAppButton = findViewById<TextView>(R.id.tvShareApp)
         shareAppButton.setOnClickListener {
             val shareIntent = Intent(Intent.ACTION_SEND)
@@ -28,7 +28,7 @@ class ActivitySettings : AppCompatActivity() {
             startActivity(Intent.createChooser(shareIntent, getString(R.string.share_app)))
         }
 
-        // Обработчик для кнопки "Написать в поддержку"
+        //обработчик кнопки "Написать в поддержку"
         val supportButton = findViewById<TextView>(R.id.tvSupport)
         supportButton.setOnClickListener {
             val emailIntent = Intent(Intent.ACTION_SENDTO).apply {
@@ -40,7 +40,7 @@ class ActivitySettings : AppCompatActivity() {
             startActivity(emailIntent)
         }
 
-        // Обработчик для кнопки "Пользовательское соглашение"
+        //обработчик кнопки "Пользовательское соглашение"
         val userAgreementButton = findViewById<TextView>(R.id.tvUserAgreement)
         userAgreementButton.setOnClickListener {
             val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse("https://yandex.ru/legal/practicum_offer/"))
