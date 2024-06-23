@@ -9,7 +9,7 @@
     android:layout_height="match_parent"
     android:columnCount="1"
     android:padding="@dimen/padding_standard"
-    android:background="@color/blue_sky">
+    style="@style/GridStyle">
 
     <TextView
         android:layout_width="wrap_content"
