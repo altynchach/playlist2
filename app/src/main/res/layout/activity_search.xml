@@ -54,7 +54,7 @@
                 android:hint="@string/search"
                 android:background="@drawable/search_background"
                 android:drawableStart="@drawable/search"
-                android:textColor="?android:attr/textColorPrimary"
+                android:textColor="@color/search_text"
                 android:textColorHint="@color/icon_search"
                 tools:ignore="InefficientWeight,LabelFor,SpeakableTextPresentCheck,TouchTargetSizeCheck,VisualLintTextFieldSize" />
 

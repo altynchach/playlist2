@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.MotionEvent
+import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
@@ -36,12 +37,12 @@ class ActivitySearch : AppCompatActivity() {
 
         updateClearButtonVisibility()
 
-        inputText.setOnTouchListener { _, event ->
+        inputText.setOnTouchListener { v, event ->
             if (event.action == MotionEvent.ACTION_UP) {
                 val drawableEnd = 2 // Index of the drawableEnd
                 if (inputText.compoundDrawables[drawableEnd] != null && event.rawX >= (inputText.right - inputText.compoundDrawables[drawableEnd].bounds.width())) {
                     inputText.text.clear()
-                    hideKeyboard()
+                    hideKeyboard(v)
                     updateClearButtonVisibility()
                     return@setOnTouchListener true
                 }
@@ -66,9 +67,9 @@ class ActivitySearch : AppCompatActivity() {
         imm.showSoftInput(inputText, InputMethodManager.SHOW_IMPLICIT)
     }
 
-    private fun hideKeyboard() {
+    private fun hideKeyboard(view: View) {
         val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
-        imm.hideSoftInputFromWindow(inputText.windowToken, 0)
+        imm.hideSoftInputFromWindow(view.windowToken, 0)
     }
 
     private fun updateClearButtonVisibility() {
