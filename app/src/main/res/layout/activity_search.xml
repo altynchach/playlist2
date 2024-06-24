@@ -44,7 +44,7 @@
 
 
             <EditText
-                android:id="@+id/searchEditText"
+                android:id="@+id/inputEditText"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginTop="16dp"
@@ -54,7 +54,7 @@
                 android:inputType="text"
                 android:maxLines="1"
                 android:padding="8dp"
-
+                android:hint="@string/search"
                 android:background="@drawable/search_background"
                 android:drawableStart="@drawable/search"
                 app:layout_constraintEnd_toStartOf="@+id/clearButton"
@@ -64,7 +64,7 @@
 
 
             <ImageView
-                android:id="@+id/clearButton"
+                android:id="@+id/clearIcon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/clear"
