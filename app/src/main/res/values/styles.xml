@@ -68,6 +68,13 @@
         <item name="android:fontFamily">@font/ys_display_regular</item>
     </style>
 
-
+    <style name="header_page">
+        <item name="android:textColor">@color/search_text</item>
+        <item name="android:textSize">@dimen/header_text_size2</item>
+        <item name="android:fontFamily">@font/ys_text_medium</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
 
 </resources>

@@ -6,9 +6,6 @@
     android:layout_height="match_parent"
     tools:context=".ActivitySearch">
 
-
-
-
     <GridLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -16,9 +13,6 @@
         android:padding="@dimen/padding_standard"
         tools:layout_editor_absoluteX="0dp"
         tools:layout_editor_absoluteY="0dp">
-
-
-
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -31,21 +25,11 @@
             tools:ignore="UselessParent">
 
 
-
-
             <TextView
                 android:id="@+id/action_bar_search"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/margin_standard"
                 android:text="@string/search"
-                android:fontFamily="@font/ys_text_medium"
-                android:textColor="@color/black"
-                android:textSize="@dimen/header_text_size2"
-                android:textStyle="bold" />
+                style="@style/header_page" />
         </LinearLayout>
-
-
 
 
         <LinearLayout
@@ -59,31 +43,24 @@
             tools:ignore="ExtraText,UselessParent">
 
 
-
-
             <EditText
                 android:id="@+id/searchEditText"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-
-
-                android:layout_marginStart="@dimen/margin_standard"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="9dp"
                 android:layout_weight="1"
-                android:autofillHints=""
-                android:background="@drawable/search_background"
-                android:drawableStart="@drawable/search"
                 android:drawablePadding="8dp"
                 android:inputType="text"
                 android:maxLines="1"
                 android:padding="8dp"
+
+                android:background="@drawable/search_background"
+                android:drawableStart="@drawable/search"
                 app:layout_constraintEnd_toStartOf="@+id/clearButton"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                tools:ignore="LabelFor,TouchTargetSizeCheck,VisualLintTextFieldSize,SpeakableTextPresentCheck" />
-
-
+                tools:ignore="InefficientWeight,LabelFor,SpeakableTextPresentCheck,TouchTargetSizeCheck,VisualLintTextFieldSize" />
 
 
             <ImageView
