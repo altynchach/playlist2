@@ -1,5 +1,6 @@
 package com.example.playlistmaker
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -13,7 +14,9 @@ import androidx.core.content.ContextCompat
 class ActivitySearch : AppCompatActivity() {
 
     private lateinit var inputText: EditText
+    private var searchText: String = ""
 
+    @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_search)
@@ -22,6 +25,7 @@ class ActivitySearch : AppCompatActivity() {
 
         inputText.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
+                searchText = s.toString()
                 updateClearButtonVisibility()
             }
 
@@ -51,14 +55,14 @@ class ActivitySearch : AppCompatActivity() {
         }
 
         if (savedInstanceState != null) {
-            val restoredText = savedInstanceState.getString("SEARCH_QUERY", "")
-            inputText.setText(restoredText)
+            searchText = savedInstanceState.getString("SEARCH_QUERY", "")
+            inputText.setText(searchText)
         }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putString("SEARCH_QUERY", inputText.text.toString())
+        outState.putString("SEARCH_QUERY", searchText)
     }
 
     private fun showKeyboard() {
