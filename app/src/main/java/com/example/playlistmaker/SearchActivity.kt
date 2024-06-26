@@ -42,7 +42,6 @@ class SearchActivity : AppCompatActivity() {
             searchText = savedInstanceState.getString(SEARCH_QUERY_KEY, "")
         }
 
-        // Set click listener for back_button2 to navigate to MainActivity
         val backButton2 = findViewById<ImageView>(R.id.back_button2)
         backButton2.setOnClickListener {
             val intent = Intent(this, MainActivity::class.java)

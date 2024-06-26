@@ -18,7 +18,6 @@ class SettingsActivity : AppCompatActivity() {
             finish()
         }
 
-        // Share App Button
         val shareAppButton = findViewById<TextView>(R.id.tvShareApp)
         val shareAppImage = findViewById<ImageView>(R.id.iv_share_app)
         val shareAppClickListener = {
@@ -30,7 +29,6 @@ class SettingsActivity : AppCompatActivity() {
         shareAppButton.setOnClickListener { shareAppClickListener.invoke() }
         shareAppImage.setOnClickListener { shareAppClickListener.invoke() }
 
-        // Write to Support Button
         val supportButton = findViewById<TextView>(R.id.tvSupport)
         val supportImage = findViewById<ImageView>(R.id.ivSupport)
         val supportClickListener = {
@@ -45,7 +43,7 @@ class SettingsActivity : AppCompatActivity() {
         supportButton.setOnClickListener { supportClickListener.invoke() }
         supportImage.setOnClickListener { supportClickListener.invoke() }
 
-        // User Agreement Button
+
         val userAgreementButton = findViewById<TextView>(R.id.tvUserAgreement)
         val userAgreementImage = findViewById<ImageView>(R.id.ivUserAgreement)
         val userAgreementClickListener = {
