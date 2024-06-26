@@ -1,15 +1,6 @@
 *.iml
+.gradle
 /local.properties
-.gradle/
-build/
-*/build/
-.idea/*
-!.idea/codeStyles
-!.idea/runConfigurations
-!.idea/vcs.xml
-*.iws
-*.hprof
-*.orig
 /.idea/caches
 /.idea/libraries
 /.idea/modules.xml

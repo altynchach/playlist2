@@ -29,11 +29,14 @@
         android:layout_gravity="start"
         style="@style/FrameLayoutStyle">
 
-        <Button android:id="@+id/button_search"
+        <Button
+            android:id="@+id/button_search"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             style="@style/ButtonStyle"
             android:text="@string/search_text"
             app:icon="@drawable/search"
-            app:iconGravity="textStart"/>
+            app:iconGravity="textStart" />
 
     </FrameLayout>
 
@@ -43,7 +46,10 @@
         android:layout_gravity="start"
         style="@style/FrameLayoutStyle">
 
-        <Button android:id="@+id/button_library"
+        <Button
+            android:id="@+id/button_library"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             style="@style/ButtonStyle"
             android:text="@string/library_text"
             app:icon="@drawable/media_library"
@@ -58,11 +64,14 @@
         android:layout_gravity="start"
         style="@style/FrameLayoutStyle">
 
-        <Button android:id="@+id/button_settings"
+        <Button
+            android:id="@+id/button_settings"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             style="@style/ButtonStyle"
             android:text="@string/settings_text"
             app:icon="@drawable/settings"
-            app:iconGravity="textStart"/>
+            app:iconGravity="textStart" />
 
     </FrameLayout>
 

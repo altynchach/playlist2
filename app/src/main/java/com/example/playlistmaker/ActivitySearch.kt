@@ -11,7 +11,7 @@ import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 
-class ActivitySearch : AppCompatActivity() {
+class SearchActivity : AppCompatActivity() {
 
     private lateinit var inputText: EditText
     private var searchText: String = ""

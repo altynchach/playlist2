@@ -17,19 +17,19 @@ class MainActivity : AppCompatActivity() {
 
         val buttonSearch = findViewById<Button>(R.id.button_search)
         buttonSearch.setOnClickListener {
-            val intent = Intent(this@MainActivity, ActivitySearch::class.java)
+            val intent = Intent(this@MainActivity, SearchActivity::class.java)
             startActivity(intent)
         }
 
         val buttonLibrary = findViewById<Button>(R.id.button_library)
         buttonLibrary.setOnClickListener {
-            val intent = Intent(this@MainActivity, ActivityMedia::class.java)
+            val intent = Intent(this@MainActivity, MediaActivity::class.java)
             startActivity(intent)
         }
 
         val buttonSettings = findViewById<Button>(R.id.button_settings)
         buttonSettings.setOnClickListener {
-            val intent = Intent(this@MainActivity, ActivitySettings::class.java)
+            val intent = Intent(this@MainActivity, SettingsActivity::class.java)
             startActivity(intent)
         }
 
