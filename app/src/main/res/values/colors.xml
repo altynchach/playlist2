@@ -16,6 +16,7 @@
     <color name="gray_back">#E5E5E5</color>
 
     <color name="search_text">#1A1B22</color>
-    <color name="color_back">#1A1B22</color>
+    <color name="color_back">#3772E7</color>
+    <color name="color_bback">#1A1B22</color>
 </resources>
 

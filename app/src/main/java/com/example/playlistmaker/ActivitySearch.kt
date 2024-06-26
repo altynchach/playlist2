@@ -16,10 +16,21 @@ class ActivitySearch : AppCompatActivity() {
     private lateinit var inputText: EditText
     private var searchText: String = ""
 
-    @SuppressLint("ClickableViewAccessibility")
+    @SuppressLint("ClickableViewAccessibility", "CutPasteId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_search)
+
+        val editText = findViewById<EditText>(R.id.inputEditText)
+
+        editText.onFocusChangeListener = View.OnFocusChangeListener { _, hasFocus ->
+            if (hasFocus) {
+                editText.hint = ""
+            } else {
+                editText.hint = getString(R.string.search)
+            }
+        }
+
 
         inputText = findViewById(R.id.inputEditText)
 
@@ -43,7 +54,7 @@ class ActivitySearch : AppCompatActivity() {
 
         inputText.setOnTouchListener { v, event ->
             if (event.action == MotionEvent.ACTION_UP) {
-                val drawableEnd = 2 // Index of the drawableEnd
+                val drawableEnd = 2
                 if (inputText.compoundDrawables[drawableEnd] != null && event.rawX >= (inputText.right - inputText.compoundDrawables[drawableEnd].bounds.width())) {
                     inputText.text.clear()
                     hideKeyboard(v)

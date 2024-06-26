@@ -19,9 +19,15 @@
         android:textColor="@color/white"
         android:fontFamily="@font/ys_display_medium"
         android:layout_gravity="start"
-        android:layout_marginBottom="@dimen/padding_standard"/>
+        android:layout_marginBottom="@dimen/padding_standard"
+        android:layout_marginLeft="@dimen/margin_standard"
+        tools:ignore="RtlHardcoded" />
 
-    <FrameLayout style="@style/FrameLayoutStyle">
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="start"
+        style="@style/FrameLayoutStyle">
 
         <Button android:id="@+id/button_search"
             style="@style/ButtonStyle"
@@ -31,17 +37,26 @@
 
     </FrameLayout>
 
-    <FrameLayout style="@style/FrameLayoutStyle">
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="start"
+        style="@style/FrameLayoutStyle">
 
         <Button android:id="@+id/button_library"
             style="@style/ButtonStyle"
             android:text="@string/library_text"
             app:icon="@drawable/media_library"
-            app:iconGravity="textStart"/>
+            app:iconGravity="textStart"
+            tools:ignore="VisualLintButtonSize" />
 
     </FrameLayout>
 
-    <FrameLayout style="@style/FrameLayoutStyle">
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="start"
+        style="@style/FrameLayoutStyle">
 
         <Button android:id="@+id/button_settings"
             style="@style/ButtonStyle"

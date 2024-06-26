@@ -32,7 +32,7 @@ class ActivitySettings : AppCompatActivity() {
         supportButton.setOnClickListener {
             val emailIntent = Intent(Intent.ACTION_SENDTO).apply {
                 data = Uri.parse("mailto:")
-                putExtra(Intent.EXTRA_EMAIL, arrayOf("your_email@example.com"))
+                putExtra(Intent.EXTRA_EMAIL, arrayOf(getString(R.string.support_email)))
                 putExtra(Intent.EXTRA_SUBJECT, getString(R.string.support_email_subject))
                 putExtra(Intent.EXTRA_TEXT, getString(R.string.support_email_body))
             }
@@ -42,7 +42,7 @@ class ActivitySettings : AppCompatActivity() {
         //обработчик кнопки "Пользовательское соглашение"
         val userAgreementButton = findViewById<TextView>(R.id.tvUserAgreement)
         userAgreementButton.setOnClickListener {
-            val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse("https://yandex.ru/legal/practicum_offer/"))
+            val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.practicum_offer_url)))
             startActivity(browserIntent)
         }
     }
