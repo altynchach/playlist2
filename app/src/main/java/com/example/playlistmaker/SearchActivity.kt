@@ -1,9 +1,11 @@
 package com.example.playlistmaker
 
+import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.widget.EditText
+import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 
@@ -38,6 +40,13 @@ class SearchActivity : AppCompatActivity() {
 
         if (savedInstanceState != null) {
             searchText = savedInstanceState.getString(SEARCH_QUERY_KEY, "")
+        }
+
+        // Set click listener for back_button2 to navigate to MainActivity
+        val backButton2 = findViewById<ImageView>(R.id.back_button2)
+        backButton2.setOnClickListener {
+            val intent = Intent(this, MainActivity::class.java)
+            startActivity(intent)
         }
     }
 
