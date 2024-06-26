@@ -55,6 +55,7 @@
                 android:padding="8dp"
                 android:background="@drawable/search_background"
                 android:drawableStart="@drawable/search"
+                android:hint="@string/search"
                 android:textColorHint="@color/icon_search"
                 tools:ignore="InefficientWeight,LabelFor,SpeakableTextPresentCheck,TouchTargetSizeCheck,VisualLintTextFieldSize" />
 

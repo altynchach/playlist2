@@ -18,18 +18,22 @@ class SettingsActivity : AppCompatActivity() {
             finish()
         }
 
-        //обработчик кнопки "Поделиться приложением"
+        // Share App Button
         val shareAppButton = findViewById<TextView>(R.id.tvShareApp)
-        shareAppButton.setOnClickListener {
+        val shareAppImage = findViewById<ImageView>(R.id.iv_share_app)
+        val shareAppClickListener = {
             val shareIntent = Intent(Intent.ACTION_SEND)
             shareIntent.type = "text/plain"
             shareIntent.putExtra(Intent.EXTRA_TEXT, getString(R.string.share_message))
             startActivity(Intent.createChooser(shareIntent, getString(R.string.share_app)))
         }
+        shareAppButton.setOnClickListener { shareAppClickListener.invoke() }
+        shareAppImage.setOnClickListener { shareAppClickListener.invoke() }
 
-        //обработчик кнопки "Написать в поддержку"
+        // Write to Support Button
         val supportButton = findViewById<TextView>(R.id.tvSupport)
-        supportButton.setOnClickListener {
+        val supportImage = findViewById<ImageView>(R.id.ivSupport)
+        val supportClickListener = {
             val emailIntent = Intent(Intent.ACTION_SENDTO).apply {
                 data = Uri.parse("mailto:")
                 putExtra(Intent.EXTRA_EMAIL, arrayOf(getString(R.string.support_email)))
@@ -38,12 +42,17 @@ class SettingsActivity : AppCompatActivity() {
             }
             startActivity(emailIntent)
         }
+        supportButton.setOnClickListener { supportClickListener.invoke() }
+        supportImage.setOnClickListener { supportClickListener.invoke() }
 
-        //обработчик кнопки "Пользовательское соглашение"
+        // User Agreement Button
         val userAgreementButton = findViewById<TextView>(R.id.tvUserAgreement)
-        userAgreementButton.setOnClickListener {
+        val userAgreementImage = findViewById<ImageView>(R.id.ivUserAgreement)
+        val userAgreementClickListener = {
             val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.practicum_offer_url)))
             startActivity(browserIntent)
         }
+        userAgreementButton.setOnClickListener { userAgreementClickListener.invoke() }
+        userAgreementImage.setOnClickListener { userAgreementClickListener.invoke() }
     }
 }

@@ -79,7 +79,7 @@
                     android:id="@+id/tvShareApp"
                     style="@style/SettingsTextViewStyle"
                     android:text="@string/share_app"
- />
+                    />
 
                 <ImageView
                     android:id="@+id/iv_share_app"
