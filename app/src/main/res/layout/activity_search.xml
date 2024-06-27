@@ -70,5 +70,6 @@
                 tools:ignore="InefficientWeight,LabelFor,SpeakableTextPresentCheck,TouchTargetSizeCheck,VisualLintTextFieldSize" />
 
         </LinearLayout>
+
     </GridLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
