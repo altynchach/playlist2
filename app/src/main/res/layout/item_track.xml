@@ -59,11 +59,8 @@
                     android:layout_height="wrap_content"
                     tools:text=""
                     android:textSize="@dimen/track_size_13" />
-
             </LinearLayout>
-
         </LinearLayout>
-
     </LinearLayout>
 
     <ImageView
@@ -73,5 +70,4 @@
         android:layout_gravity="center|end"
         android:layout_marginEnd="@dimen/icon_padding"
         android:src="@drawable/list_arrow"/>
-
 </FrameLayout>
