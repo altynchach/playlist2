@@ -5,9 +5,15 @@
     <dimen name="header_text_size">26sp</dimen>
     <dimen name="header_text_size2">22sp</dimen>
     <dimen name="text_size">16sp</dimen>
+    <dimen name="track_height">61dp</dimen>
     <dimen name="icon_padding">8dp</dimen>
+    <dimen name="track_padding">13dp</dimen>
     <dimen name="corner_radius">8dp</dimen>
     <dimen name="margin_top">24dp</dimen>
+    <dimen name="track_size_45">45dp</dimen>
+    <dimen name="track_size_40">40dp</dimen>
     <dimen name="layout_width_50dp">50dp</dimen>
+    <dimen name="track_size_13">13sp</dimen>
+    <dimen name="track_size_16">16sp</dimen>
 
 </resources>
