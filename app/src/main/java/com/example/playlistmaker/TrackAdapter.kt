@@ -1,6 +1,9 @@
 package com.example.playlistmaker
 
 import android.annotation.SuppressLint
+import android.content.Context
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -41,12 +44,25 @@ class TrackAdapter(private var tracks: MutableList<Track>) : RecyclerView.Adapte
             artistNameTextView.text = track.artistName
             trackTimeTextView.text = track.trackTime
 
-            val roundedCorners = RoundedCorners(Utils.dpToPx(8f, itemView.context))  // Set to 8dp for more noticeable rounding
+            val roundedCorners = RoundedCorners(Utils.dpToPx(8f, itemView.context))
+            val imageUrl = track.artworkUrl100
 
-            Glide.with(itemView)
-                .load(track.artworkUrl100)
-                .transform(roundedCorners)
-                .into(artworkImageView)
+            if (isInternetAvailable(itemView.context)) {
+                Glide.with(itemView)
+                    .load(imageUrl)
+                    .transform(roundedCorners)
+                    .placeholder(R.drawable.placeholder)
+                    .into(artworkImageView)
+            } else {
+                artworkImageView.setImageResource(R.drawable.placeholder)
+            }
+        }
+
+        private fun isInternetAvailable(context: Context): Boolean {
+            val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+            val network = connectivityManager.activeNetwork ?: return false
+            val networkCapabilities = connectivityManager.getNetworkCapabilities(network) ?: return false
+            return networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
         }
     }
 }
