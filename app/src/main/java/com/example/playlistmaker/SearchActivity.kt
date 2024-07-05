@@ -67,7 +67,7 @@ class SearchActivity : AppCompatActivity() {
 
         inputText.setOnTouchListener { v, event ->
             if (event.action == MotionEvent.ACTION_UP) {
-                val drawableEnd = 2 // Index of the drawableEnd
+                val drawableEnd = 2
                 if (inputText.compoundDrawables[drawableEnd] != null && event.rawX >= (inputText.right - inputText.compoundDrawables[drawableEnd].bounds.width())) {
                     inputText.text.clear()
                     hideKeyboard(v)
