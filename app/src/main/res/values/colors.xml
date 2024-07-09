@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="blue_sky">#3772E7</color>
     <color name="gray_switch1">#AEAFB4</color>
@@ -6,17 +5,29 @@
     <color name="gray_switch2">#E6E8EB</color>
     <color name="color_bg">#E6E8EB</color>
     <color name="gray_switch_track">#F0F0F0</color>
-
     <color name="blue_switch1">#3772E7</color>
     <color name="blue_switch2">#9FBBF3</color>
-
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="transparent">#00000000</color>
     <color name="gray_back">#E5E5E5</color>
-
     <color name="search_text">#1A1B22</color>
     <color name="color_back">#3772E7</color>
     <color name="color_bback">#1A1B22</color>
-</resources>
+    <color name="color_name_time">#AEAFB4</color>
 
+
+    <color name="blue_sky_dark">#3056A6</color>
+    <color name="gray_switch1_dark">#8A8A8F</color>
+    <color name="icon_search_dark">#8A8A8F</color>
+    <color name="gray_switch2_dark">#3C3C3F</color>
+    <color name="color_bg_dark">#3C3C3F</color>
+    <color name="gray_switch_track_dark">#3C3C3F</color>
+    <color name="black_dark">#FFFFFFFF</color>
+    <color name="white_dark">#000000</color>
+    <color name="gray_back_dark">#2C2C2F</color>
+    <color name="search_text_dark">#EAEAEA</color>
+    <color name="color_back_dark">#3056A6</color>
+    <color name="color_bback_dark">#EAEAEA</color>
+    <color name="placeholder_dark">#555555</color>
+</resources>

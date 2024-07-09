@@ -3,6 +3,7 @@
     <color name="black">#FF000000</color>
     <color name="night_bg">#1A1B22</color>
     <color name="icon_search">#1A1B22</color>
+    <color name="color_name_time">#FFFFFF</color>
     <color name="white">#FFFFFFFF</color>
     <color name="color_bg">#FFFFFFFF</color>
     <color name="blue">#3772E7</color>
