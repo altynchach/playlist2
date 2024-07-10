@@ -15,6 +15,7 @@ class TrackViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     private val trackArtist: TextView = itemView.findViewById(R.id.track_artist)
     private val trackTime: TextView = itemView.findViewById(R.id.track_time)
     private val trackImage: ImageView = itemView.findViewById(R.id.track_image)
+
     fun bind(model: Track) {
         trackName.text = model.trackName
         trackArtist.text = model.artistName
@@ -25,4 +26,5 @@ class TrackViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
             .transform(RoundedCorners(2))
             .placeholder(R.drawable.placeholder)
             .into(trackImage)
-    }	    }
+    }
+}
