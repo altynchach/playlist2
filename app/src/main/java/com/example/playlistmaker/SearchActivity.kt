@@ -8,15 +8,15 @@ import android.text.TextWatcher
 import android.view.MotionEvent
 import android.view.View
 import android.view.inputmethod.InputMethodManager
+import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
+import android.widget.LinearLayout
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.playlistmaker.R
-import com.example.playlistmaker.recyclerView.Track
-import com.example.playlistmaker.recyclerView.TrackAdapter
 import com.example.playlistmaker.retrofit.ITunesApi
 import com.example.playlistmaker.retrofit.TracksResponse
 import retrofit2.Call
@@ -34,8 +34,10 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var inputText: EditText
     private lateinit var recyclerView: RecyclerView
     private lateinit var trackAdapter: TrackAdapter
+    private lateinit var nothingFound: LinearLayout
+    private lateinit var connectionProblem: LinearLayout
+    private lateinit var reloadButton: Button
     private var searchText: String = ""
-
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -44,9 +46,12 @@ class SearchActivity : AppCompatActivity() {
 
         inputText = findViewById(R.id.inputEditText)
         recyclerView = findViewById(R.id.recyclerView)
+        nothingFound = findViewById(R.id.nothingFound)
+        connectionProblem = findViewById(R.id.connectionProblem)
+        reloadButton = findViewById(R.id.reload_button)
 
         recyclerView.layoutManager = LinearLayoutManager(this)
-        trackAdapter = TrackAdapter(tracks.toMutableList(), this)
+        trackAdapter = TrackAdapter(arrayListOf())
         recyclerView.adapter = trackAdapter
 
         inputText.addTextChangedListener(object : TextWatcher {
@@ -92,6 +97,10 @@ class SearchActivity : AppCompatActivity() {
             val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)
         }
+
+        reloadButton.setOnClickListener {
+            filterTracks(searchText)
+        }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -125,23 +134,32 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun filterTracks(query: String) {
-        val filteredTracks = if (query.isEmpty()) {
-            tracks
-        } else {
-            tracks.filter {
-                it.trackName.contains(query, ignoreCase = true) ||
-                        it.artistName.contains(query, ignoreCase = true)
+        val retrofit = Retrofit.Builder()
+            .baseUrl("https://itunes.apple.com/")
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+
+        val api = retrofit.create(ITunesApi::class.java)
+        api.search(query).enqueue(object : Callback<TracksResponse> {
+            override fun onResponse(call: Call<TracksResponse>, response: Response<TracksResponse>) {
+                if (response.isSuccessful && response.body()?.results?.isNotEmpty() == true) {
+                    val tracks = response.body()!!.results
+                    trackAdapter.updateTracks(tracks)
+                    recyclerView.visibility = View.VISIBLE
+                    nothingFound.visibility = View.GONE
+                    connectionProblem.visibility = View.GONE
+                } else {
+                    recyclerView.visibility = View.GONE
+                    nothingFound.visibility = View.VISIBLE
+                    connectionProblem.visibility = View.GONE
+                }
             }
-        }
 
-        if (filteredTracks.isEmpty()) {
-            nothingFound.visibility = View.VISIBLE
-            recyclerView.visibility = View.GONE
-        } else {
-            nothingFound.visibility = View.GONE
-            recyclerView.visibility = View.VISIBLE
-        }
-
-        trackAdapter.updateTracks(filteredTracks)
+            override fun onFailure(call: Call<TracksResponse>, t: Throwable) {
+                recyclerView.visibility = View.GONE
+                nothingFound.visibility = View.GONE
+                connectionProblem.visibility = View.VISIBLE
+            }
+        })
     }
-
+}
