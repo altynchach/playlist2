@@ -15,7 +15,7 @@
     <color name="color_back">#3772E7</color>
     <color name="color_bback">#1A1B22</color>
     <color name="color_name_time">#AEAFB4</color>
-
+    <color name="colorError">#FF000000</color>
 
     <color name="blue_sky_dark">#3056A6</color>
     <color name="gray_switch1_dark">#8A8A8F</color>
