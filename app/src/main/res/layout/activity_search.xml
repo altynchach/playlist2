@@ -87,9 +87,7 @@
                 tools:visibility="gone">
 
                 <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:paddingTop="102dp"
+                    style="@style/search_image_view"
                     android:contentDescription="@string/nothing_found"
                     android:src="@drawable/img_nothing_found_light" />
 
@@ -113,9 +111,7 @@
                 tools:visibility="visible">
 
                 <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:paddingTop="102dp"
+                    style="@style/search_image_view"
                     android:contentDescription="@string/nothing_found"
                     android:src="@drawable/img_connection_problem" />
 
