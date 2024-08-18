@@ -80,7 +80,8 @@ class SearchActivity : AppCompatActivity() {
                     inputText.text.clear()
                     hideKeyboard(v)
                     updateClearButtonVisibility()
-                    filterTracks("")
+                    recyclerView.visibility = View.GONE
+                    nothingFound.visibility = View.GONE
                     return@setOnTouchListener true
                 }
             }
@@ -134,6 +135,13 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun filterTracks(query: String) {
+        if (query.isEmpty()) {
+            recyclerView.visibility = View.GONE
+            nothingFound.visibility = View.GONE
+            connectionProblem.visibility = View.GONE
+            return
+        }
+
         val retrofit = Retrofit.Builder()
             .baseUrl("https://itunes.apple.com/")
             .addConverterFactory(GsonConverterFactory.create())
@@ -162,5 +170,5 @@ class SearchActivity : AppCompatActivity() {
             }
         })
     }
-
 }
+

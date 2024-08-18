@@ -28,6 +28,7 @@
             <ImageView
                 android:id="@+id/back_button2"
                 style="@style/BackButtonStyle"
+                android:layout_marginStart="16dp"
                 android:adjustViewBounds="true"
                 android:src="@drawable/settings_back"
                 tools:ignore="ContentDescription" />
@@ -45,6 +46,7 @@
             android:layout_columnSpan="2"
             android:layout_gravity="center_horizontal"
             android:layout_margin="0dp"
+            android:layout_marginStart="16dp"
             android:orientation="horizontal"
             android:padding="0dp"
             tools:ignore="ExtraText,UselessParent">
