@@ -74,6 +74,44 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/latestSearchList"
+            android:visibility="gone"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_columnSpan="2"
+            android:paddingBottom="@dimen/padding_16"
+            android:orientation="vertical"
+            android:layout_marginTop="16dp"
+            app:layout_constraintTop_toBottomOf="@id/inputEditText">
+
+            <TextView
+                android:id="@+id/latestSearchHeading"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:text="@string/search_title"
+                android:gravity="center"
+                style="@style/MediumTextStyle" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvLatestTrackSearch"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                tools:listitem="@layout/item_track"
+                tools:itemCount="1" />
+
+            <Button
+                android:id="@+id/clearSearchHistory"
+                android:layout_width="wrap_content"
+                android:layout_height="36dp"
+                android:layout_marginTop="@dimen/margin_24"
+                android:layout_gravity="center"
+                android:text="@string/clear_btn"
+                style="@style/PlaceholderButtonStyles" />
+        </LinearLayout>
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical"
@@ -131,25 +169,20 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="24dp"
                     android:text="@string/reload" />
-
             </LinearLayout>
 
         </LinearLayout>
 
-
-
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerView"
-            android:layout_width="383dp"
-            android:layout_height="603dp"
-            android:layout_columnSpan="2"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
             android:layout_marginTop="16dp"
             android:layout_marginBottom="16dp"
+            android:layout_columnSpan="2"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/inputEditText" />
-
+            app:layout_constraintTop_toBottomOf="@id/latestSearchList" />
     </GridLayout>
-
 </androidx.constraintlayout.widget.ConstraintLayout>

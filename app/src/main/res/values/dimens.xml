@@ -15,5 +15,7 @@
     <dimen name="layout_width_50dp">50dp</dimen>
     <dimen name="track_size_13">13sp</dimen>
     <dimen name="track_size_16">16sp</dimen>
+    <dimen name="text_size_19">19sp</dimen>
+    <dimen name="padding_16">16dp</dimen>
 
 </resources>

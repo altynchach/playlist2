@@ -1,5 +1,10 @@
 package com.example.playlistmaker
 
+import android.content.Context
+import android.content.SharedPreferences
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+import androidx.appcompat.app.AppCompatDelegate
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
@@ -37,7 +42,10 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var nothingFound: LinearLayout
     private lateinit var connectionProblem: LinearLayout
     private lateinit var reloadButton: Button
+    private lateinit var clearHistoryButton: Button
     private var searchText: String = ""
+    private lateinit var sharedPreferences: SharedPreferences
+    private lateinit var searchHistory: SearchHistory
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -49,10 +57,14 @@ class SearchActivity : AppCompatActivity() {
         nothingFound = findViewById(R.id.nothingFound)
         connectionProblem = findViewById(R.id.connectionProblem)
         reloadButton = findViewById(R.id.reload_button)
+        clearHistoryButton = findViewById(R.id.clearSearchHistory)
 
         recyclerView.layoutManager = LinearLayoutManager(this)
         trackAdapter = TrackAdapter(arrayListOf())
         recyclerView.adapter = trackAdapter
+
+        sharedPreferences = getSharedPreferences("playlist_maker_prefs", Context.MODE_PRIVATE)
+        searchHistory = SearchHistory(sharedPreferences)
 
         inputText.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
@@ -66,8 +78,8 @@ class SearchActivity : AppCompatActivity() {
         })
 
         inputText.setOnFocusChangeListener { _, hasFocus ->
-            if (hasFocus) {
-                showKeyboard()
+            if (hasFocus && inputText.text.isEmpty()) {
+                displaySearchHistory()
             }
         }
 
@@ -102,6 +114,12 @@ class SearchActivity : AppCompatActivity() {
         reloadButton.setOnClickListener {
             filterTracks(searchText)
         }
+
+        clearHistoryButton.setOnClickListener {
+            searchHistory.clearHistory()
+            trackAdapter.updateTracks(emptyList())
+            clearHistoryButton.visibility = View.GONE
+        }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -134,6 +152,17 @@ class SearchActivity : AppCompatActivity() {
         }
     }
 
+    private fun displaySearchHistory() {
+        val history = searchHistory.getSearchHistory()
+        if (history.isNotEmpty()) {
+            trackAdapter.updateTracks(history)
+            clearHistoryButton.visibility = View.VISIBLE
+            recyclerView.visibility = View.VISIBLE
+        } else {
+            clearHistoryButton.visibility = View.GONE
+        }
+    }
+
     private fun filterTracks(query: String) {
         if (query.isEmpty()) {
             recyclerView.visibility = View.GONE
@@ -156,6 +185,10 @@ class SearchActivity : AppCompatActivity() {
                     recyclerView.visibility = View.VISIBLE
                     nothingFound.visibility = View.GONE
                     connectionProblem.visibility = View.GONE
+
+                    tracks.forEach { track ->
+                        searchHistory.addTrackToHistory(track)
+                    }
                 } else {
                     recyclerView.visibility = View.GONE
                     nothingFound.visibility = View.VISIBLE
@@ -171,4 +204,3 @@ class SearchActivity : AppCompatActivity() {
         })
     }
 }
-
