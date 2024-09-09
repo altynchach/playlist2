@@ -63,7 +63,6 @@ class SearchActivity : AppCompatActivity() {
         trackAdapter = TrackAdapter(arrayListOf())
         recyclerView.adapter = trackAdapter
 
-        // Setup for search history
         historyRecyclerView = findViewById(R.id.search_history_recycler)
         searchHistoryLayout = findViewById(R.id.search_history_layout)
         clearHistoryButton = findViewById(R.id.clear_history_button)
@@ -80,7 +79,6 @@ class SearchActivity : AppCompatActivity() {
         historyAdapter.setOnTrackClickListener { track ->
             searchHistory.saveTrack(track)
             inputText.setText(track.trackName)
-            // Optionally: you can perform the search again using track info here
         }
 
         inputText.addTextChangedListener(object : TextWatcher {
@@ -97,7 +95,7 @@ class SearchActivity : AppCompatActivity() {
         inputText.setOnFocusChangeListener { _, hasFocus ->
             if (hasFocus) {
                 showKeyboard()
-                displaySearchHistory() // Show search history when input is focused
+                displaySearchHistory()
             }
         }
 
@@ -133,7 +131,7 @@ class SearchActivity : AppCompatActivity() {
             filterTracks(searchText)
         }
 
-        displaySearchHistory() // Display search history when starting
+        displaySearchHistory()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -171,7 +169,7 @@ class SearchActivity : AppCompatActivity() {
             recyclerView.visibility = View.GONE
             nothingFound.visibility = View.GONE
             connectionProblem.visibility = View.GONE
-            displaySearchHistory() // Show search history if no query is entered
+            displaySearchHistory()
             return
         }
 
@@ -190,9 +188,9 @@ class SearchActivity : AppCompatActivity() {
                     nothingFound.visibility = View.GONE
                     connectionProblem.visibility = View.GONE
 
-                    // Save the first track to search history
+
                     searchHistory.saveTrack(tracks[0])
-                    displaySearchHistory() // Update history after saving
+                    displaySearchHistory()
                 } else {
                     recyclerView.visibility = View.GONE
                     nothingFound.visibility = View.VISIBLE
