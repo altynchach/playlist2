@@ -43,6 +43,10 @@ dependencies {
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
     implementation(libs.glide)
+    implementation(libs.retrofit)
+    implementation(libs.converter.gson)
+    implementation(libs.gson)
+
     //noinspection KaptUsageInsteadOfKsp
     kapt(libs.compiler)
     testImplementation(libs.junit)

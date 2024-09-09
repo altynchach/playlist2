@@ -17,6 +17,7 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.playlistmaker.recyclerView.Track
+import com.example.playlistmaker.recyclerView.TrackAdapter
 import com.example.playlistmaker.retrofit.ITunesApi
 import com.example.playlistmaker.retrofit.TracksResponse
 import retrofit2.Call
@@ -68,7 +69,7 @@ class SearchActivity : AppCompatActivity() {
         clearHistoryButton = findViewById(R.id.clear_history_button)
 
         historyRecyclerView.layoutManager = LinearLayoutManager(this)
-        historyAdapter = TrackAdapter(searchHistory.getHistory() as ArrayList<Track>)
+        historyAdapter = TrackAdapter(searchHistory.getHistory().toMutableList() as ArrayList<Track>)
         historyRecyclerView.adapter = historyAdapter
 
         clearHistoryButton.setOnClickListener {
@@ -188,7 +189,6 @@ class SearchActivity : AppCompatActivity() {
                     nothingFound.visibility = View.GONE
                     connectionProblem.visibility = View.GONE
 
-
                     searchHistory.saveTrack(tracks[0])
                     displaySearchHistory()
                 } else {
@@ -210,7 +210,7 @@ class SearchActivity : AppCompatActivity() {
         val history = searchHistory.getHistory()
         if (history.isNotEmpty()) {
             searchHistoryLayout.visibility = View.VISIBLE
-            historyAdapter.updateTracks(history as ArrayList<Track>)
+            historyAdapter.updateTracks(history.toMutableList() as ArrayList<Track>)
         } else {
             searchHistoryLayout.visibility = View.GONE
         }
