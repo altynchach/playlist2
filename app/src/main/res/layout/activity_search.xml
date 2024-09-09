@@ -52,27 +52,27 @@
 
             <EditText
                 android:id="@+id/inputEditText"
-                android:cursorVisible="true"
-                android:importantForAutofill="no"
-                android:textCursorDrawable="@drawable/cursor_color"
                 android:layout_width="0dp"
-                android:layout_weight="1"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="9dp"
+                android:layout_weight="1"
+                android:background="@drawable/search_background"
+                android:cursorVisible="true"
+                android:drawableStart="@drawable/search"
                 android:drawablePadding="8dp"
+                android:hint="@string/search"
+                android:importantForAutofill="no"
                 android:inputType="text"
                 android:maxLines="1"
                 android:padding="8dp"
-                android:background="@drawable/search_background"
-                android:drawableStart="@drawable/search"
-                android:hint="@string/search"
-                android:textColorHint="@color/icon_search"
                 android:textColor="@color/search_text"
-                tools:ignore="InefficientWeight,LabelFor,SpeakableTextPresentCheck,TouchTargetSizeCheck,VisualLintTextFieldSize" />
+                android:textColorHint="@color/icon_search"
+                android:textCursorDrawable="@drawable/cursor_color"
+                tools:ignore="TouchTargetSizeCheck" />
         </LinearLayout>
 
-        <!-- Контейнер для истории поиска -->
+
         <LinearLayout
             android:id="@+id/search_history_layout"
             android:layout_width="match_parent"
@@ -82,29 +82,27 @@
             android:visibility="gone"
             android:layout_marginBottom="10dp">
 
-            <!-- Заголовок истории поиска -->
+
             <TextView
                 android:id="@+id/history_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="История поиска"
+                android:text="@string/search_history"
                 android:textStyle="bold"
                 android:textSize="18sp"
                 android:layout_marginBottom="8dp" />
 
-            <!-- Список треков истории поиска -->
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/search_history_recycler"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp" />
 
-            <!-- Кнопка очистки истории -->
             <Button
                 android:id="@+id/clear_history_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Очистить историю"
+                android:text="@string/clear_history"
                 android:layout_gravity="end"
                 android:background="@drawable/button_background"
                 android:textColor="@color/white" />
@@ -179,7 +177,7 @@
             android:layout_height="wrap_content"
             android:layout_columnSpan="2"
             android:layout_marginTop="16dp"
-            android:layout_marginBottom="16dp"
+            android:layout_marginBottom="10dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

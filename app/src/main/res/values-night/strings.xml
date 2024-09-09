@@ -13,4 +13,5 @@
     <string name="search">Поиск</string>
     <string name="support_email">your_email@example.com</string>
     <string name="practicum_offer_url">https://yandex.ru/legal/practicum_offer/</string>
+    <string name="search_history">История поиска</string>
 </resources>
