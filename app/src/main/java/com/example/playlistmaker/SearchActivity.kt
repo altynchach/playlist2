@@ -12,7 +12,6 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.LinearLayout
-import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -44,6 +43,7 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var historyRecyclerView: RecyclerView
     private lateinit var clearHistoryButton: Button
     private lateinit var searchHistoryLayout: LinearLayout
+    private lateinit var historyAdapter: TrackAdapter
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -63,18 +63,24 @@ class SearchActivity : AppCompatActivity() {
         trackAdapter = TrackAdapter(arrayListOf())
         recyclerView.adapter = trackAdapter
 
-        // для истории поиска
+        // Setup for search history
         historyRecyclerView = findViewById(R.id.search_history_recycler)
         searchHistoryLayout = findViewById(R.id.search_history_layout)
         clearHistoryButton = findViewById(R.id.clear_history_button)
 
         historyRecyclerView.layoutManager = LinearLayoutManager(this)
-        val historyAdapter = TrackAdapter(searchHistory.getHistory() as ArrayList<Track>)
+        historyAdapter = TrackAdapter(searchHistory.getHistory() as ArrayList<Track>)
         historyRecyclerView.adapter = historyAdapter
 
         clearHistoryButton.setOnClickListener {
             searchHistory.clearHistory()
             displaySearchHistory()
+        }
+
+        historyAdapter.setOnTrackClickListener { track ->
+            searchHistory.saveTrack(track)
+            inputText.setText(track.trackName)
+            // Optionally: you can perform the search again using track info here
         }
 
         inputText.addTextChangedListener(object : TextWatcher {
@@ -91,7 +97,7 @@ class SearchActivity : AppCompatActivity() {
         inputText.setOnFocusChangeListener { _, hasFocus ->
             if (hasFocus) {
                 showKeyboard()
-                displaySearchHistory() // Показать историю поиска при фокусе
+                displaySearchHistory() // Show search history when input is focused
             }
         }
 
@@ -127,7 +133,7 @@ class SearchActivity : AppCompatActivity() {
             filterTracks(searchText)
         }
 
-        displaySearchHistory() // Отобразить историю при запуске
+        displaySearchHistory() // Display search history when starting
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -165,7 +171,7 @@ class SearchActivity : AppCompatActivity() {
             recyclerView.visibility = View.GONE
             nothingFound.visibility = View.GONE
             connectionProblem.visibility = View.GONE
-            displaySearchHistory() // Показать историю, если нет запроса
+            displaySearchHistory() // Show search history if no query is entered
             return
         }
 
@@ -184,9 +190,9 @@ class SearchActivity : AppCompatActivity() {
                     nothingFound.visibility = View.GONE
                     connectionProblem.visibility = View.GONE
 
-                    // Сохранение трека в историю
+                    // Save the first track to search history
                     searchHistory.saveTrack(tracks[0])
-                    displaySearchHistory() // Обновить историю
+                    displaySearchHistory() // Update history after saving
                 } else {
                     recyclerView.visibility = View.GONE
                     nothingFound.visibility = View.VISIBLE
@@ -206,7 +212,7 @@ class SearchActivity : AppCompatActivity() {
         val history = searchHistory.getHistory()
         if (history.isNotEmpty()) {
             searchHistoryLayout.visibility = View.VISIBLE
-            (historyRecyclerView.adapter as TrackAdapter).updateTracks(history as ArrayList<Track>)
+            historyAdapter.updateTracks(history as ArrayList<Track>)
         } else {
             searchHistoryLayout.visibility = View.GONE
         }

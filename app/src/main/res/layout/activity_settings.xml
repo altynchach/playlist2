@@ -62,7 +62,7 @@
                     android:text="@string/dark_theme" />
 
                 <Switch
-                    android:id="@+id/switchDarkTheme"
+                    android:id="@+id/switch_theme"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="end"
