@@ -17,6 +17,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.playlistmaker.recyclerView.Track
 import com.example.playlistmaker.retrofit.ITunesApi
 import com.example.playlistmaker.retrofit.TracksResponse
 import retrofit2.Call
@@ -39,10 +40,18 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var reloadButton: Button
     private var searchText: String = ""
 
+    private lateinit var searchHistory: SearchHistory
+    private lateinit var historyRecyclerView: RecyclerView
+    private lateinit var clearHistoryButton: Button
+    private lateinit var searchHistoryLayout: LinearLayout
+
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_search)
+
+        val sharedPreferences = getSharedPreferences("com.example.playlistmaker.PREFERENCES", MODE_PRIVATE)
+        searchHistory = SearchHistory(sharedPreferences)
 
         inputText = findViewById(R.id.inputEditText)
         recyclerView = findViewById(R.id.recyclerView)
@@ -53,6 +62,20 @@ class SearchActivity : AppCompatActivity() {
         recyclerView.layoutManager = LinearLayoutManager(this)
         trackAdapter = TrackAdapter(arrayListOf())
         recyclerView.adapter = trackAdapter
+
+        // для истории поиска
+        historyRecyclerView = findViewById(R.id.search_history_recycler)
+        searchHistoryLayout = findViewById(R.id.search_history_layout)
+        clearHistoryButton = findViewById(R.id.clear_history_button)
+
+        historyRecyclerView.layoutManager = LinearLayoutManager(this)
+        val historyAdapter = TrackAdapter(searchHistory.getHistory() as ArrayList<Track>)
+        historyRecyclerView.adapter = historyAdapter
+
+        clearHistoryButton.setOnClickListener {
+            searchHistory.clearHistory()
+            displaySearchHistory()
+        }
 
         inputText.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
@@ -68,6 +91,7 @@ class SearchActivity : AppCompatActivity() {
         inputText.setOnFocusChangeListener { _, hasFocus ->
             if (hasFocus) {
                 showKeyboard()
+                displaySearchHistory() // Показать историю поиска при фокусе
             }
         }
 
@@ -102,6 +126,8 @@ class SearchActivity : AppCompatActivity() {
         reloadButton.setOnClickListener {
             filterTracks(searchText)
         }
+
+        displaySearchHistory() // Отобразить историю при запуске
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -139,6 +165,7 @@ class SearchActivity : AppCompatActivity() {
             recyclerView.visibility = View.GONE
             nothingFound.visibility = View.GONE
             connectionProblem.visibility = View.GONE
+            displaySearchHistory() // Показать историю, если нет запроса
             return
         }
 
@@ -156,6 +183,10 @@ class SearchActivity : AppCompatActivity() {
                     recyclerView.visibility = View.VISIBLE
                     nothingFound.visibility = View.GONE
                     connectionProblem.visibility = View.GONE
+
+                    // Сохранение трека в историю
+                    searchHistory.saveTrack(tracks[0])
+                    displaySearchHistory() // Обновить историю
                 } else {
                     recyclerView.visibility = View.GONE
                     nothingFound.visibility = View.VISIBLE
@@ -170,5 +201,14 @@ class SearchActivity : AppCompatActivity() {
             }
         })
     }
-}
 
+    private fun displaySearchHistory() {
+        val history = searchHistory.getHistory()
+        if (history.isNotEmpty()) {
+            searchHistoryLayout.visibility = View.VISIBLE
+            (historyRecyclerView.adapter as TrackAdapter).updateTracks(history as ArrayList<Track>)
+        } else {
+            searchHistoryLayout.visibility = View.GONE
+        }
+    }
+}
