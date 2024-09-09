@@ -1,12 +1,6 @@
-<?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.playlistmaker"
     xmlns:tools="http://schemas.android.com/tools">
-
-    <!-- Permission to use the internet -->
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
-
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -15,15 +9,17 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar"
+        android:theme="@style/Base.Theme.PlaylistMaker"
         tools:targetApi="31">
-
         <activity
-            android:name=".MediaActivity" />
+            android:name=".SearchActivity"
+            android:exported="false" />
         <activity
-            android:name=".SearchActivity" />
+            android:name=".MediaActivity"
+            android:exported="false" />
         <activity
-            android:name=".SettingsActivity" />
+            android:name=".SettingsActivity"
+            android:exported="false" />
         <activity
             android:name=".MainActivity"
             android:exported="true">
@@ -33,5 +29,4 @@
             </intent-filter>
         </activity>
     </application>
-
 </manifest>

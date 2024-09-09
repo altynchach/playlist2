@@ -8,12 +8,22 @@ import android.text.TextWatcher
 import android.view.MotionEvent
 import android.view.View
 import android.view.inputmethod.InputMethodManager
+import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
+import android.widget.LinearLayout
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.playlistmaker.retrofit.ITunesApi
+import com.example.playlistmaker.retrofit.TracksResponse
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 
 class SearchActivity : AppCompatActivity() {
 
@@ -24,15 +34,10 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var inputText: EditText
     private lateinit var recyclerView: RecyclerView
     private lateinit var trackAdapter: TrackAdapter
+    private lateinit var nothingFound: LinearLayout
+    private lateinit var connectionProblem: LinearLayout
+    private lateinit var reloadButton: Button
     private var searchText: String = ""
-
-    private val tracks = listOf(
-        Track("Smells Like Teen Spirit", "Nirvana", "5:01", "https://is5-ssl.mzstatic.com/image/thumb/Music115/v4/7b/58/c2/7b58c21a-2b51-2bb2-e59a-9bb9b96ad8c3/00602567924166.rgb.jpg/100x100bb.jpg"),
-        Track("Billie Jean", "Michael Jackson", "4:35", "https://is5-ssl.mzstatic.com/image/thumb/Music125/v4/3d/9d/38/3d9d3811-71f0-3a0e-1ada-3004e56ff852/827969428726.jpg/100x100bb.jpg"),
-        Track("Stayin' Alive", "Bee Gees", "4:10", "https://is4-ssl.mzstatic.com/image/thumb/Music115/v4/1f/80/1f/1f801fc1-8c0f-ea3e-d3e5-387c6619619e/16UMGIM86640.rgb.jpg/100x100bb.jpg"),
-        Track("Whole Lotta Love", "Led Zeppelin", "5:33", "https://is2-ssl.mzstatic.com/image/thumb/Music62/v4/7e/17/e3/7e17e33f-2efa-2a36-e916-7f808576cf6b/mzm.fyigqcbs.jpg/100x100bb.jpg"),
-        Track("Sweet Child O'Mine", "Guns N' Roses", "5:03", "https://is5-ssl.mzstatic.com/image/thumb/Music125/v4/a0/4d/c4/a04dc484-03cc-02aa-fa82-5334fcb4bc16/18UMGIM24878.rgb.jpg/100x100bb.jpg"),
-    )
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -41,9 +46,12 @@ class SearchActivity : AppCompatActivity() {
 
         inputText = findViewById(R.id.inputEditText)
         recyclerView = findViewById(R.id.recyclerView)
+        nothingFound = findViewById(R.id.nothingFound)
+        connectionProblem = findViewById(R.id.connectionProblem)
+        reloadButton = findViewById(R.id.reload_button)
 
         recyclerView.layoutManager = LinearLayoutManager(this)
-        trackAdapter = TrackAdapter(tracks.toMutableList(), this)
+        trackAdapter = TrackAdapter(arrayListOf())
         recyclerView.adapter = trackAdapter
 
         inputText.addTextChangedListener(object : TextWatcher {
@@ -72,7 +80,8 @@ class SearchActivity : AppCompatActivity() {
                     inputText.text.clear()
                     hideKeyboard(v)
                     updateClearButtonVisibility()
-                    filterTracks("")
+                    recyclerView.visibility = View.GONE
+                    nothingFound.visibility = View.GONE
                     return@setOnTouchListener true
                 }
             }
@@ -88,6 +97,10 @@ class SearchActivity : AppCompatActivity() {
         backButton2.setOnClickListener {
             val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)
+        }
+
+        reloadButton.setOnClickListener {
+            filterTracks(searchText)
         }
     }
 
@@ -122,14 +135,40 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun filterTracks(query: String) {
-        val filteredTracks = if (query.isEmpty()) {
-            tracks
-        } else {
-            tracks.filter {
-                it.trackName.contains(query, ignoreCase = true) ||
-                        it.artistName.contains(query, ignoreCase = true)
-            }
+        if (query.isEmpty()) {
+            recyclerView.visibility = View.GONE
+            nothingFound.visibility = View.GONE
+            connectionProblem.visibility = View.GONE
+            return
         }
-        trackAdapter.updateTracks(filteredTracks)
+
+        val retrofit = Retrofit.Builder()
+            .baseUrl("https://itunes.apple.com/")
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+
+        val api = retrofit.create(ITunesApi::class.java)
+        api.search(query).enqueue(object : Callback<TracksResponse> {
+            override fun onResponse(call: Call<TracksResponse>, response: Response<TracksResponse>) {
+                if (response.isSuccessful && response.body()?.results?.isNotEmpty() == true) {
+                    val tracks = response.body()!!.results
+                    trackAdapter.updateTracks(tracks)
+                    recyclerView.visibility = View.VISIBLE
+                    nothingFound.visibility = View.GONE
+                    connectionProblem.visibility = View.GONE
+                } else {
+                    recyclerView.visibility = View.GONE
+                    nothingFound.visibility = View.VISIBLE
+                    connectionProblem.visibility = View.GONE
+                }
+            }
+
+            override fun onFailure(call: Call<TracksResponse>, t: Throwable) {
+                recyclerView.visibility = View.GONE
+                nothingFound.visibility = View.GONE
+                connectionProblem.visibility = View.VISIBLE
+            }
+        })
     }
 }
+
