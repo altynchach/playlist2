@@ -72,40 +72,33 @@
                 tools:ignore="TouchTargetSizeCheck" />
         </LinearLayout>
 
-
         <LinearLayout
             android:id="@+id/search_history_layout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_columnSpan="2"
             android:orientation="vertical"
-            android:visibility="gone"
-            android:layout_marginBottom="10dp">
-
+            android:visibility="gone">
 
             <TextView
                 android:id="@+id/history_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                style="@style/HistorySearchText"
                 android:text="@string/search_history"
-                android:textStyle="bold"
-                android:textSize="18sp"
-                android:layout_marginBottom="8dp" />
+                android:layout_marginTop="22dp"
+                android:layout_marginBottom="22dp" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/search_history_recycler"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp" />
+                android:layout_height="0dp"
+                android:layout_weight="1" />
 
             <Button
                 android:id="@+id/clear_history_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
                 android:text="@string/clear_history"
-                android:layout_gravity="end"
-                android:background="@drawable/button_background"
-                android:textColor="@color/white" />
+                style="@style/SearchButtonStyle" />
         </LinearLayout>
 
         <LinearLayout
