@@ -97,6 +97,8 @@ class SearchActivity : AppCompatActivity() {
             if (hasFocus) {
                 showKeyboard()
                 displaySearchHistory()
+            } else {
+                searchHistoryLayout.visibility = View.GONE
             }
         }
 
@@ -208,7 +210,7 @@ class SearchActivity : AppCompatActivity() {
 
     private fun displaySearchHistory() {
         val history = searchHistory.getHistory()
-        if (history.isNotEmpty()) {
+        if (inputText.hasFocus() && inputText.text.isEmpty() && history.isNotEmpty()) {
             searchHistoryLayout.visibility = View.VISIBLE
             historyAdapter.updateTracks(history.toMutableList() as ArrayList<Track>)
         } else {
