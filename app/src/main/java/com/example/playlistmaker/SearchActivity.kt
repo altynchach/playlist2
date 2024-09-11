@@ -80,7 +80,6 @@ class SearchActivity : AppCompatActivity() {
 
         trackAdapter.setOnTrackClickListener { track ->
             searchHistory.saveTrack(track)
-            inputText.setText(track.trackName)
         }
 
         inputText.addTextChangedListener(object : TextWatcher {
@@ -184,8 +183,6 @@ class SearchActivity : AppCompatActivity() {
         }
 
         searchHistoryLayout.visibility = View.GONE
-
-        // Проверка, если отображается история поиска, запрещаем отображение recyclerView
         if (searchHistoryLayout.visibility == View.VISIBLE) {
             recyclerView.visibility = View.GONE
             return
