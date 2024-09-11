@@ -13,4 +13,9 @@
     <color name="color_bback">#FFFFFF</color>
     <color name="color_back">#3772E7</color>
     <color name="colorError">#FFFFFFFF</color>
+    <color name="search_text">#FFFFFF</color>
+    <color name="black_dark">#1A1B22</color>
+    <color name="color_text_search">#1A1B22</color>
+    <color name="color_area">#1A1B22</color>
+
 </resources>

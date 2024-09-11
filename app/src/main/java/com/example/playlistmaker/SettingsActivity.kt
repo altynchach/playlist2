@@ -1,15 +1,24 @@
 package com.example.playlistmaker
 
 import android.content.Intent
+import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Bundle
 import android.widget.ImageView
+import android.widget.Switch
 import android.widget.TextView
-import androidx.appcompat.app.AppCompatActivity
 
-class SettingsActivity : AppCompatActivity() {
+class SettingsActivity : BaseActivity() {
+
+    private lateinit var sharedPreferences: SharedPreferences
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        sharedPreferences = getSharedPreferences("com.example.playlistmaker.PREFERENCES", MODE_PRIVATE)
+
+        val isDarkMode = sharedPreferences.getBoolean("DARK_MODE", false)
+        applyTheme(isDarkMode)
 
         setContentView(R.layout.activity_settings)
 
@@ -18,12 +27,22 @@ class SettingsActivity : AppCompatActivity() {
             finish()
         }
 
+        val themeSwitch = findViewById<Switch>(R.id.switch_theme)
+        themeSwitch.isChecked = isDarkMode
+
+        themeSwitch.setOnCheckedChangeListener { _, isChecked ->
+            applyTheme(isChecked)
+            sharedPreferences.edit().putBoolean("DARK_MODE", isChecked).apply()
+            recreate()
+        }
+
         val shareAppButton = findViewById<TextView>(R.id.tvShareApp)
         val shareAppImage = findViewById<ImageView>(R.id.iv_share_app)
         val shareAppClickListener = {
-            val shareIntent = Intent(Intent.ACTION_SEND)
-            shareIntent.type = "text/plain"
-            shareIntent.putExtra(Intent.EXTRA_TEXT, getString(R.string.share_message))
+            val shareIntent = Intent(Intent.ACTION_SEND).apply {
+                type = "text/plain"
+                putExtra(Intent.EXTRA_TEXT, getString(R.string.share_message))
+            }
             startActivity(Intent.createChooser(shareIntent, getString(R.string.share_app)))
         }
         shareAppButton.setOnClickListener { shareAppClickListener.invoke() }
@@ -42,7 +61,6 @@ class SettingsActivity : AppCompatActivity() {
         }
         supportButton.setOnClickListener { supportClickListener.invoke() }
         supportImage.setOnClickListener { supportClickListener.invoke() }
-
 
         val userAgreementButton = findViewById<TextView>(R.id.tvUserAgreement)
         val userAgreementImage = findViewById<ImageView>(R.id.ivUserAgreement)

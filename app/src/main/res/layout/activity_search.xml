@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -53,24 +52,55 @@
 
             <EditText
                 android:id="@+id/inputEditText"
-                android:cursorVisible="true"
-                android:importantForAutofill="no"
-                android:textCursorDrawable="@drawable/cursor_color"
                 android:layout_width="0dp"
-                android:layout_weight="1"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="9dp"
+                android:layout_weight="1"
+                android:background="@drawable/search_background"
+                android:cursorVisible="true"
+                android:drawableStart="@drawable/search"
                 android:drawablePadding="8dp"
+                android:hint="@string/search"
+                android:importantForAutofill="no"
                 android:inputType="text"
                 android:maxLines="1"
                 android:padding="8dp"
-                android:background="@drawable/search_background"
-                android:drawableStart="@drawable/search"
-                android:hint="@string/search"
+                android:textColor="@color/color_area"
                 android:textColorHint="@color/icon_search"
-                android:textColor="@color/search_text"
-                tools:ignore="InefficientWeight,LabelFor,SpeakableTextPresentCheck,TouchTargetSizeCheck,VisualLintTextFieldSize" />
+                android:textCursorDrawable="@drawable/cursor_color"
+                tools:ignore="TouchTargetSizeCheck" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/search_history_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_columnSpan="2"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/history_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="@style/HistorySearchText"
+                android:text="@string/search_history"
+                android:layout_marginTop="22dp"
+                android:layout_marginBottom="22dp" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/search_history_recycler"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
+
+            <Button
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="16dp"
+                android:id="@+id/clear_history_button"
+                android:text="@string/clear_history"
+                style="@style/ClearSearchButtonStyle"
+                />
         </LinearLayout>
 
         <LinearLayout
@@ -135,8 +165,6 @@
             </LinearLayout>
 
         </LinearLayout>
-
-
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerView"

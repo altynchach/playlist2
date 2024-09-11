@@ -74,11 +74,36 @@
         <item name="android:fontFamily">@font/ys_display_medium</item>
     </style>
 
+    <style name="HistorySearchText">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:gravity">center</item>
+        <item name="android:layout_gravity">center_horizontal</item>
+        <item name="android:textSize">@dimen/error_search_text</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:fontFamily">@font/ys_display_medium</item>
+        <item name="android:textColor">@color/search_text</item>
+        <item name="android:layout_marginTop">@dimen/button_radius</item>
+    </style>
+
     <style name="reloadButton">
         <item name="android:textColor">@color/black</item>
         <item name="android:textSize">14sp</item>
         <item name="android:backgroundTint">@color/white</item>
         <item name="android:textFontWeight">500</item>
+        <item name="android:fontFamily">@font/ys_display_medium</item>
+    </style>
+
+    <style name="ClearSearchButtonStyle" parent="Widget.MaterialComponents.Button.UnelevatedButton">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:backgroundTint">@color/search_text</item>
+        <item name="android:layout_marginTop">@dimen/margin_top</item>
+        <item name="android:textColor">@color/black_dark</item>
+        <item name="android:textSize">@dimen/error_button_text</item>
+        <item name="cornerRadius">@dimen/error_button_radius</item>
+        <item name="android:textAllCaps">false</item>
         <item name="android:fontFamily">@font/ys_display_medium</item>
     </style>
 

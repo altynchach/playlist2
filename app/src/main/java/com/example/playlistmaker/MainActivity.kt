@@ -3,9 +3,8 @@ package com.example.playlistmaker
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
-import androidx.appcompat.app.AppCompatActivity
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -18,7 +17,7 @@ class MainActivity : AppCompatActivity() {
 
         val libraryButton = findViewById<Button>(R.id.button_library)
         libraryButton.setOnClickListener {
-
+            // Действие для кнопки библиотеки
         }
 
         val settingsButton = findViewById<Button>(R.id.button_settings)
