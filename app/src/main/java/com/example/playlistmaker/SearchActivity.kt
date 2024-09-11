@@ -77,21 +77,21 @@ class SearchActivity : AppCompatActivity() {
             displaySearchHistory()
         }
 
+
         trackAdapter.setOnTrackClickListener { track ->
             searchHistory.saveTrack(track)
             inputText.setText(track.trackName)
         }
 
-        // Обновляем UI при вводе текста в поле поиска
         inputText.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
                 searchText = s.toString()
                 updateClearButtonVisibility()
                 if (searchText.isEmpty()) {
-                    displaySearchHistory() // Показываем историю при пустом поле
+                    displaySearchHistory()
                 } else {
-                    searchHistoryLayout.visibility = View.GONE // Скрываем историю
-                    filterTracks(searchText) // Показываем результаты поиска
+                    searchHistoryLayout.visibility = View.GONE
+                    filterTracks(searchText)
                 }
             }
 
@@ -99,10 +99,10 @@ class SearchActivity : AppCompatActivity() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
         })
 
-        // Отображаем историю только если поле в фокусе и пустое
+
         inputText.setOnFocusChangeListener { _, hasFocus ->
             if (hasFocus && inputText.text.isEmpty()) {
-                displaySearchHistory() // Показываем историю при фокусе и пустом поле
+                displaySearchHistory()
             } else {
                 searchHistoryLayout.visibility = View.GONE
             }
@@ -110,7 +110,6 @@ class SearchActivity : AppCompatActivity() {
 
         updateClearButtonVisibility()
 
-        // Обработка клика на кнопку очистки
         inputText.setOnTouchListener { v, event ->
             if (event.action == MotionEvent.ACTION_UP) {
                 val drawableEnd = 2
@@ -118,9 +117,9 @@ class SearchActivity : AppCompatActivity() {
                     inputText.text.clear()
                     hideKeyboard(v)
                     updateClearButtonVisibility()
-                    recyclerView.visibility = View.GONE // Скрываем результаты поиска
+                    recyclerView.visibility = View.GONE
                     nothingFound.visibility = View.GONE
-                    displaySearchHistory() // Показываем историю
+                    displaySearchHistory()
                     return@setOnTouchListener true
                 }
             }
@@ -180,7 +179,15 @@ class SearchActivity : AppCompatActivity() {
             recyclerView.visibility = View.GONE
             nothingFound.visibility = View.GONE
             connectionProblem.visibility = View.GONE
-            displaySearchHistory() // Показываем историю при пустом запросе
+            displaySearchHistory()
+            return
+        }
+
+        searchHistoryLayout.visibility = View.GONE
+
+        // Проверка, если отображается история поиска, запрещаем отображение recyclerView
+        if (searchHistoryLayout.visibility == View.VISIBLE) {
+            recyclerView.visibility = View.GONE
             return
         }
 
@@ -213,14 +220,16 @@ class SearchActivity : AppCompatActivity() {
         })
     }
 
+
     private fun displaySearchHistory() {
         val history = searchHistory.getHistory()
         if (inputText.hasFocus() && inputText.text.isEmpty() && history.isNotEmpty()) {
             searchHistoryLayout.visibility = View.VISIBLE
             historyAdapter.updateTracks(history.toMutableList() as ArrayList<Track>)
-            historyAdapter.notifyDataSetChanged() // Обновляем интерфейс
+            historyAdapter.notifyDataSetChanged()
         } else {
             searchHistoryLayout.visibility = View.GONE
         }
     }
+
 }
