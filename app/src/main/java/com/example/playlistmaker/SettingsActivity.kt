@@ -7,11 +7,8 @@ import android.os.Bundle
 import android.widget.ImageView
 import android.widget.Switch
 import android.widget.TextView
-import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.app.AppCompatDelegate
-import androidx.appcompat.app.AppCompatDelegate.*
 
-class SettingsActivity : AppCompatActivity() {
+class SettingsActivity : BaseActivity() {
 
     private lateinit var sharedPreferences: SharedPreferences
 
@@ -19,12 +16,6 @@ class SettingsActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         sharedPreferences = getSharedPreferences("com.example.playlistmaker.PREFERENCES", MODE_PRIVATE)
-
-        if (!sharedPreferences.contains("DARK_MODE")) {
-            val isSystemInDarkMode = (resources.configuration.uiMode
-                    and android.content.res.Configuration.UI_MODE_NIGHT_MASK) == android.content.res.Configuration.UI_MODE_NIGHT_YES
-            sharedPreferences.edit().putBoolean("DARK_MODE", isSystemInDarkMode).apply()
-        }
 
         val isDarkMode = sharedPreferences.getBoolean("DARK_MODE", false)
         applyTheme(isDarkMode)
@@ -42,6 +33,7 @@ class SettingsActivity : AppCompatActivity() {
         themeSwitch.setOnCheckedChangeListener { _, isChecked ->
             applyTheme(isChecked)
             sharedPreferences.edit().putBoolean("DARK_MODE", isChecked).apply()
+            recreate()
         }
 
         val shareAppButton = findViewById<TextView>(R.id.tvShareApp)
@@ -78,13 +70,5 @@ class SettingsActivity : AppCompatActivity() {
         }
         userAgreementButton.setOnClickListener { userAgreementClickListener.invoke() }
         userAgreementImage.setOnClickListener { userAgreementClickListener.invoke() }
-    }
-
-    private fun applyTheme(isDarkMode: Boolean) {
-        if (isDarkMode) {
-            setDefaultNightMode(MODE_NIGHT_YES)
-        } else {
-            setDefaultNightMode(MODE_NIGHT_NO)
-        }
     }
 }
