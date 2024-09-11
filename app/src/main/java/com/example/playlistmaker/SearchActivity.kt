@@ -212,11 +212,9 @@ class SearchActivity : AppCompatActivity() {
         val history = searchHistory.getHistory()
         if (inputText.hasFocus() && inputText.text.isEmpty() && history.isNotEmpty()) {
             searchHistoryLayout.visibility = View.VISIBLE
-            clearHistoryButton.visibility = View.VISIBLE
             historyAdapter.updateTracks(history.toMutableList() as ArrayList<Track>)
         } else {
             searchHistoryLayout.visibility = View.GONE
-            clearHistoryButton.visibility = View.GONE
         }
     }
 }

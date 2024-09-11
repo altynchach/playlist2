@@ -12,6 +12,7 @@
     <color name="transparent">#00000000</color>
     <color name="gray_back">#E5E5E5</color>
     <color name="search_text">#1A1B22</color>
+    <color name="color_area">#1A1B22</color>
     <color name="color_back">#3772E7</color>
     <color name="color_bback">#1A1B22</color>
     <color name="color_name_time">#AEAFB4</color>
@@ -23,7 +24,7 @@
     <color name="gray_switch2_dark">#3C3C3F</color>
     <color name="color_bg_dark">#3C3C3F</color>
     <color name="gray_switch_track_dark">#3C3C3F</color>
-    <color name="black_dark">#FFFFFFFF</color>
+    <color name="black_dark">#FFFFFF</color>
     <color name="white_dark">#000000</color>
     <color name="gray_back_dark">#2C2C2F</color>
     <color name="search_text_dark">#EAEAEA</color>
