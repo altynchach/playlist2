@@ -9,7 +9,7 @@ class SearchHistory(private val sharedPreferences: SharedPreferences) {
 
     private val gson = Gson()
     private val historyKey = "search_history"
-    private val maxHistorySize = 7
+    private val maxHistorySize = 6
 
     fun getHistory(): List<Track> {
         val json = sharedPreferences.getString(historyKey, null)
