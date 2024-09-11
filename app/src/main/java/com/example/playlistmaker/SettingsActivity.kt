@@ -9,6 +9,7 @@ import android.widget.Switch
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.appcompat.app.AppCompatDelegate.*
 
 class SettingsActivity : AppCompatActivity() {
 
@@ -17,29 +18,32 @@ class SettingsActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Initialize SharedPreferences to store and retrieve theme settings
         sharedPreferences = getSharedPreferences("com.example.playlistmaker.PREFERENCES", MODE_PRIVATE)
+
+        if (!sharedPreferences.contains("DARK_MODE")) {
+            val isSystemInDarkMode = (resources.configuration.uiMode
+                    and android.content.res.Configuration.UI_MODE_NIGHT_MASK) == android.content.res.Configuration.UI_MODE_NIGHT_YES
+            sharedPreferences.edit().putBoolean("DARK_MODE", isSystemInDarkMode).apply()
+        }
+
         val isDarkMode = sharedPreferences.getBoolean("DARK_MODE", false)
-        setTheme(isDarkMode)
+        applyTheme(isDarkMode)
 
         setContentView(R.layout.activity_settings)
 
-        // Back button functionality
         val arrow = findViewById<ImageView>(R.id.back_button)
         arrow.setOnClickListener {
-            finish()  // Close the settings activity
+            finish()
         }
 
-        // Theme switcher logic
         val themeSwitch = findViewById<Switch>(R.id.switch_theme)
         themeSwitch.isChecked = isDarkMode
 
         themeSwitch.setOnCheckedChangeListener { _, isChecked ->
-            setTheme(isChecked)  // Update theme
-            sharedPreferences.edit().putBoolean("DARK_MODE", isChecked).apply()  // Save preference
+            applyTheme(isChecked)
+            sharedPreferences.edit().putBoolean("DARK_MODE", isChecked).apply()
         }
 
-        // Share app functionality
         val shareAppButton = findViewById<TextView>(R.id.tvShareApp)
         val shareAppImage = findViewById<ImageView>(R.id.iv_share_app)
         val shareAppClickListener = {
@@ -52,7 +56,6 @@ class SettingsActivity : AppCompatActivity() {
         shareAppButton.setOnClickListener { shareAppClickListener.invoke() }
         shareAppImage.setOnClickListener { shareAppClickListener.invoke() }
 
-        // Support contact functionality
         val supportButton = findViewById<TextView>(R.id.tvSupport)
         val supportImage = findViewById<ImageView>(R.id.ivSupport)
         val supportClickListener = {
@@ -67,7 +70,6 @@ class SettingsActivity : AppCompatActivity() {
         supportButton.setOnClickListener { supportClickListener.invoke() }
         supportImage.setOnClickListener { supportClickListener.invoke() }
 
-        // User agreement link functionality
         val userAgreementButton = findViewById<TextView>(R.id.tvUserAgreement)
         val userAgreementImage = findViewById<ImageView>(R.id.ivUserAgreement)
         val userAgreementClickListener = {
@@ -78,11 +80,11 @@ class SettingsActivity : AppCompatActivity() {
         userAgreementImage.setOnClickListener { userAgreementClickListener.invoke() }
     }
 
-    private fun setTheme(isDarkMode: Boolean) {
+    private fun applyTheme(isDarkMode: Boolean) {
         if (isDarkMode) {
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+            setDefaultNightMode(MODE_NIGHT_YES)
         } else {
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+            setDefaultNightMode(MODE_NIGHT_NO)
         }
     }
 }
