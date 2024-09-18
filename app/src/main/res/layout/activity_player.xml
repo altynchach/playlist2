@@ -1,0 +1,278 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/main"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".PlayerActivity">
+
+        <ImageView
+            android:id="@+id/ivBackToPrevScr"
+            style="@style/BackArrow"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            tools:ignore="ContentDescription" />
+
+        <ImageView
+            android:id="@+id/ivSongCover"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginHorizontal="@dimen/icon_size"
+            android:layout_marginTop="42dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/ivBackToPrevScr"
+            app:layout_constraintBottom_toTopOf="@id/tvSongTitle"
+            app:layout_constraintDimensionRatio="w, 1:1"
+            android:scaleType="centerCrop"
+            tools:srcCompat="@drawable/song_cover_placeholder" />
+
+        <TextView
+            android:id="@+id/tvSongTitle"
+            style="@style/TextForInfoAboutSong"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/ivSongCover"
+            android:layout_marginHorizontal="@dimen/icon_size"
+            android:layout_marginTop="24dp"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:fontFamily="@font/ys_display_medium"
+            android:textFontWeight="400"
+            android:textSize="22sp"
+            tools:text="Yesterday (Remastered 2009)" />
+
+        <TextView
+            android:id="@+id/tvAuthorOfSong"
+            style="@style/TextForInfoAboutSong"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tvSongTitle"
+            android:layout_marginHorizontal="@dimen/icon_size"
+            android:layout_marginTop="@dimen/elem_padding"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:fontFamily="@font/ys_display_medium"
+            android:textSize="14sp"
+            android:textFontWeight="400"
+            tools:text="The Beatles" />
+
+        <ImageButton
+            android:id="@+id/ibAddToPlaylist"
+            style="@style/GreyButtonsInPlayerActivity"
+            android:layout_width="52dp"
+            android:layout_height="52dp"
+            app:layout_constraintHorizontal_chainStyle="spread_inside"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/ibPlayStop"
+            app:layout_constraintTop_toTopOf="@id/ibPlayStop"
+            app:layout_constraintBottom_toBottomOf="@id/ibPlayStop"
+            android:layout_marginStart="24dp"
+            android:background="@drawable/background_for_refresh_button"
+            app:srcCompat="@drawable/add_to_playlist_icon" />
+
+        <ImageButton
+            android:id="@+id/ibPlayStop"
+            style="@style/PlayStopButton"
+            android:layout_width="84dp"
+            android:layout_height="84dp"
+            app:layout_constraintStart_toEndOf="@id/ibAddToPlaylist"
+            app:layout_constraintEnd_toStartOf="@id/ibLike"
+            app:layout_constraintTop_toBottomOf="@id/tvAuthorOfSong"
+            android:layout_marginTop="32dp"
+            android:background="@drawable/background_for_refresh_button"
+            app:srcCompat="@drawable/play_icon" />
+
+        <ImageButton
+            android:id="@+id/ibLike"
+            style="@style/GreyButtonsInPlayerActivity"
+            android:layout_width="52dp"
+            android:layout_height="52dp"
+            app:layout_constraintStart_toEndOf="@id/ibPlayStop"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/ibPlayStop"
+            app:layout_constraintBottom_toBottomOf="@id/ibPlayStop"
+            android:layout_marginEnd="24dp"
+            android:background="@drawable/background_for_refresh_button"
+            app:srcCompat="@drawable/like_icon" />
+
+        <TextView
+            android:id="@+id/tvCurrentTrackTime"
+            style="@style/TextForInfoAboutSong"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/ibPlayStop"
+            android:layout_marginTop="16dp"
+            android:layout_marginHorizontal="24dp"
+            android:textAlignment="center"
+            android:fontFamily="@font/ys_display_medium"
+            android:textSize="14sp"
+            android:textFontWeight="500"
+            android:text="0:00" />
+
+        <TextView
+            android:id="@+id/tvTrackTimePermanent"
+            style="@style/TextForInfoAboutSong"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/tvTrackTimeChanging"
+            app:layout_constraintTop_toBottomOf="@id/tvCurrentTrackTime"
+            android:layout_marginTop="40dp"
+            android:layout_marginHorizontal="24dp"
+            app:layout_constraintHorizontal_chainStyle="spread"
+            android:textColor="@color/yp_text_gray"
+            android:text="@string/duration" />
+
+        <TextView
+            android:id="@+id/tvTrackTimeChanging"
+            style="@style/TextForInfoAboutSong"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toEndOf="@id/tvTrackTimePermanent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/tvTrackTimePermanent"
+            app:layout_constraintBottom_toBottomOf="@id/tvTrackTimePermanent"
+            android:layout_marginEnd="@dimen/padding_dimen"
+            android:textAlignment="textEnd"
+            android:ellipsize="end"
+            android:maxLines="1"
+            tools:text="4:59" />
+
+        <androidx.constraintlayout.widget.Group
+            android:id="@+id/gAlbumInfo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:constraint_referenced_ids="tvAlbumPermanent, tvAlbumNameChanging" />
+
+        <TextView
+            android:id="@+id/tvAlbumPermanent"
+            style="@style/TextForInfoAboutSong"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/tvAlbumNameChanging"
+            app:layout_constraintTop_toBottomOf="@id/tvTrackTimePermanent"
+            android:layout_marginHorizontal="24dp"
+            android:layout_marginTop="@dimen/padding_dimen"
+            app:layout_constraintHorizontal_chainStyle="spread"
+            android:textColor="@color/yp_text_gray"
+            android:text="@string/album" />
+
+        <TextView
+            android:id="@+id/tvAlbumNameChanging"
+            style="@style/TextForInfoAboutSong"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toEndOf="@id/tvAlbumPermanent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/tvAlbumPermanent"
+            android:layout_marginEnd="@dimen/padding_dimen"
+            android:textAlignment="textEnd"
+            android:ellipsize="end"
+            android:maxLines="1"
+            tools:text="Some album name" />
+
+        <TextView
+            android:id="@+id/tvYearOfSongPermanent"
+            style="@style/TextForInfoAboutSong"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/tvYearOfSongChanging"
+            app:layout_constraintTop_toBottomOf="@id/tvAlbumPermanent"
+            android:layout_marginHorizontal="24dp"
+            android:layout_marginTop="@dimen/padding_dimen"
+            app:layout_constraintHorizontal_chainStyle="spread"
+            android:textColor="@color/yp_text_gray"
+            android:text="@string/year" />
+
+        <TextView
+            android:id="@+id/tvYearOfSongChanging"
+            style="@style/TextForInfoAboutSong"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toEndOf="@id/tvYearOfSongPermanent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/tvYearOfSongPermanent"
+            app:layout_constraintBottom_toBottomOf="@id/tvYearOfSongPermanent"
+            android:layout_marginEnd="@dimen/padding_dimen"
+            android:textAlignment="textEnd"
+            android:ellipsize="end"
+            android:maxLines="1"
+            tools:text="1984" />
+
+        <TextView
+            android:id="@+id/tvGenrePermanent"
+            style="@style/TextForInfoAboutSong"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/tvGenreChanging"
+            app:layout_constraintTop_toBottomOf="@id/tvYearOfSongPermanent"
+            android:layout_marginHorizontal="24dp"
+            android:layout_marginTop="@dimen/padding_dimen"
+            app:layout_constraintHorizontal_chainStyle="spread"
+            android:textColor="@color/yp_text_gray"
+            android:text="@string/genre" />
+
+        <TextView
+            android:id="@+id/tvGenreChanging"
+            style="@style/TextForInfoAboutSong"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toEndOf="@id/tvGenrePermanent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/tvGenrePermanent"
+            app:layout_constraintBottom_toBottomOf="@id/tvGenrePermanent"
+            android:layout_marginEnd="@dimen/padding_dimen"
+            android:textAlignment="textEnd"
+            android:ellipsize="end"
+            android:maxLines="1"
+            tools:text="Еее, роцк!" />
+
+        <TextView
+            android:id="@+id/tvCountryOfSongPermanent"
+            style="@style/TextForInfoAboutSong"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/tvCountryOfSongChanging"
+            app:layout_constraintTop_toBottomOf="@id/tvGenrePermanent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginHorizontal="24dp"
+            android:layout_marginTop="@dimen/padding_dimen"
+            android:layout_marginBottom="@dimen/padding_dimen"
+            app:layout_constraintHorizontal_chainStyle="spread"
+            android:textColor="@color/yp_text_gray"
+            android:text="@string/country" />
+
+        <TextView
+            android:id="@+id/tvCountryOfSongChanging"
+            style="@style/TextForInfoAboutSong"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toEndOf="@id/tvCountryOfSongPermanent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/tvCountryOfSongPermanent"
+            app:layout_constraintBottom_toBottomOf="@id/tvCountryOfSongPermanent"
+            android:layout_marginEnd="@dimen/padding_dimen"
+            android:textAlignment="textEnd"
+            android:ellipsize="end"
+            android:maxLines="1"
+            tools:text="Великобритания" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</ScrollView>
