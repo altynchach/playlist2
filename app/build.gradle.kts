@@ -1,7 +1,7 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
-    id("org.jetbrains.kotlin.kapt")  // Add this line
+    id("org.jetbrains.kotlin.kapt")  // Добавление поддержки KAPT
 }
 
 android {
@@ -27,10 +27,20 @@ android {
             )
         }
     }
+
+    // Добавление блока packagingOptions в формате Kotlin Script для исключения файлов
+    packagingOptions {
+        resources {
+            excludes.add("LICENSE_OFL")
+            excludes.add("LICENSE_UNICODE")  // Исключение дублирующегося файла LICENSE_UNICODE
+        }
+    }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
+
     kotlinOptions {
         jvmTarget = "1.8"
     }
@@ -46,8 +56,9 @@ dependencies {
     implementation(libs.retrofit)
     implementation(libs.converter.gson)
     implementation(libs.gson)
+    implementation(libs.androidx.emoji.bundled)
+    implementation(libs.androidx.emoji2.bundled)
 
-    //noinspection KaptUsageInsteadOfKsp
     kapt(libs.compiler)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit.v121)

@@ -1,14 +1,15 @@
-package ru.xrom.playlistmaker.data.dto
+package com.example.playlistmaker.recyclerView
 
-data class TrackDto(
-    val trackId: String,
-    val trackName: String,
-    val artistName: String,
-    val trackTimeMillis: Long,
-    val artworkUrl100: String,
-    val collectionName: String,
-    val primaryGenreName: String,
-    val releaseDate: String,
-    val country: String,
-    val previewUrl: String,
+import com.google.gson.annotations.SerializedName
+
+data class Track(
+    @SerializedName("trackName") val trackName: String,
+    @SerializedName("artistName") val artistName: String,
+    @SerializedName("trackTimeMillis") val trackTime: Int,
+    @SerializedName("artworkUrl100") val artworkUrl100: String,
+    @SerializedName("collectionName") val collectionName: String?, // Collection name can be nullable
+    @SerializedName("releaseDate") val releaseDate: String, // Year of track release
+    @SerializedName("primaryGenreName") val primaryGenreName: String, // Genre
+    @SerializedName("country") val country: String, // Country of release
+    @SerializedName("previewUrl") val previewUrl: String // Link to 30-second track preview
 )

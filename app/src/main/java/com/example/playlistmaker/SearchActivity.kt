@@ -33,8 +33,6 @@ class SearchActivity : AppCompatActivity() {
 
     companion object {
         const val SEARCH_QUERY_KEY = "SEARCH_QUERY"
-
-
     }
 
     private lateinit var inputText: EditText
@@ -82,23 +80,21 @@ class SearchActivity : AppCompatActivity() {
             displaySearchHistory()
         }
 
-
+        // Обработка клика на трек из результатов поиска
         trackAdapter.setOnTrackClickListener { track ->
             Log.d(TAG, "Track selected: ${track.trackName} by ${track.artistName}")
+
+            // Сохраняем трек в историю поиска
             searchHistory.saveTrack(track)
 
+            // Передаем данные о треке в PlayerActivity
             val intent = Intent(this, PlayerActivity::class.java)
             intent.putExtra("Selected track", Gson().toJson(track))
             Log.d(TAG, "Starting PlayerActivity with track data")
             startActivity(intent)
         }
 
-        val historyRecyclerView = findViewById<RecyclerView>(R.id.search_history_recycler)
-        historyRecyclerView.layoutManager = LinearLayoutManager(this)
-        historyAdapter = TrackAdapter(searchHistory.getHistory().toMutableList() as ArrayList<Track>)
-        historyRecyclerView.adapter = historyAdapter
-
-        // Handle clicks on history items
+        // Обработка клика на трек из истории поиска
         historyAdapter.setOnTrackClickListener { track ->
             Log.d(TAG, "History track selected: ${track.trackName} by ${track.artistName}")
             val intent = Intent(this, PlayerActivity::class.java)
@@ -122,7 +118,6 @@ class SearchActivity : AppCompatActivity() {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
         })
-
 
         inputText.setOnFocusChangeListener { _, hasFocus ->
             if (hasFocus && inputText.text.isEmpty()) {
@@ -171,12 +166,6 @@ class SearchActivity : AppCompatActivity() {
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putString(SEARCH_QUERY_KEY, searchText)
-    }
-
-    private fun showKeyboard() {
-        inputText.requestFocus()
-        val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
-        imm.showSoftInput(inputText, InputMethodManager.SHOW_IMPLICIT)
     }
 
     private fun hideKeyboard(view: View) {
@@ -252,5 +241,4 @@ class SearchActivity : AppCompatActivity() {
             searchHistoryLayout.visibility = View.GONE
         }
     }
-
 }

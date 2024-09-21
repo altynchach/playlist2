@@ -13,8 +13,6 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.playlistmaker.recyclerView.Track
 import com.example.playlistmaker.Utils.dpToPx
 import com.google.gson.Gson
-import java.text.SimpleDateFormat
-import java.util.Locale
 
 class PlayerActivity : AppCompatActivity() {
 
@@ -27,6 +25,7 @@ class PlayerActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_player)
 
+        // Инициализация UI-элементов
         val backToPrevScreenButton = findViewById<ImageView>(R.id.ivBackToPrevScr)
         val songCover = findViewById<ImageView>(R.id.ivSongCover)
         val songTitle = findViewById<TextView>(R.id.tvSongTitle)
@@ -38,33 +37,61 @@ class PlayerActivity : AppCompatActivity() {
         val genreOfSong = findViewById<TextView>(R.id.tvGenreChanging)
         val countryOfSong = findViewById<TextView>(R.id.tvCountryOfSongChanging)
 
+        // Логика возврата на предыдущий экран
         backToPrevScreenButton.setOnClickListener {
             Log.d(TAG, "Back button pressed, finishing activity")
             finish()
         }
 
+        // Получение данных из Intent
         val json: String? = intent.getStringExtra(KEY_FOR_INTENT_DATA)
         if (json != null) {
-            val currentTrack: Track = Gson().fromJson(json, Track::class.java)
-            Log.d(TAG, "Received track data: $currentTrack")
+            try {
+                val currentTrack: Track = Gson().fromJson(json, Track::class.java)
+                Log.d(TAG, "Received track data: $currentTrack")
 
-            Glide.with(this)
-                .load(currentTrack.artworkUrl100.replace("100x100bb.jpg", "512x512bb.jpg"))
-                .placeholder(R.drawable.placeholder)
-                .centerCrop()
-                .transform(RoundedCorners(dpToPx(8f, this)))
-                .into(songCover)
-            songTitle.text = currentTrack.trackName
-            artistName.text = currentTrack.artistName
-            trackDuration.text = SimpleDateFormat("mm:ss", Locale.getDefault()).format(currentTrack.trackTime)
-            groupOfAlbumInfo.isVisible = currentTrack.collectionName != null
-            album.text = currentTrack.collectionName
-            yearOfSoundPublished.text = currentTrack.releaseDate.split("-")[0]
-            genreOfSong.text = currentTrack.primaryGenreName
-            countryOfSong.text = currentTrack.country
+                // Загрузка обложки трека
+                val artworkUrl512 = currentTrack.artworkUrl100?.replace("100x100bb.jpg", "512x512bb.jpg")
+                Glide.with(this)
+                    .load(artworkUrl512)
+                    .placeholder(R.drawable.placeholder)
+                    .centerCrop()
+                    .transform(RoundedCorners(dpToPx(8f, this)))
+                    .into(songCover)
+
+                // Присвоение данных трека UI-элементам
+                songTitle.text = currentTrack.trackName ?: "-"
+                artistName.text = currentTrack.artistName ?: "-"
+                trackDuration.text = formatTrackDuration(currentTrack.trackTime)
+                groupOfAlbumInfo.isVisible = !currentTrack.collectionName.isNullOrEmpty()
+                album.text = currentTrack.collectionName ?: "-"
+                yearOfSoundPublished.text = formatYear(currentTrack.releaseDate)
+                genreOfSong.text = currentTrack.primaryGenreName ?: "-"
+                countryOfSong.text = currentTrack.country ?: "-"
+            } catch (e: Exception) {
+                Log.e(TAG, "Error parsing track data: ${e.message}")
+                Toast.makeText(this, "Ошибка при загрузке данных трека", Toast.LENGTH_SHORT).show()
+            }
         } else {
+            // Логирование и показ ошибки, если данные не были переданы
             Log.e(TAG, "Error: no track data received in intent")
             Toast.makeText(this, "Произошла ошибка!", Toast.LENGTH_SHORT).show()
         }
+    }
+
+    // Метод для форматирования продолжительности трека
+    private fun formatTrackDuration(trackTimeMillis: Int?): String {
+        return if (trackTimeMillis != null) {
+            val minutes = (trackTimeMillis / 1000) / 60
+            val seconds = (trackTimeMillis / 1000) % 60
+            String.format("%02d:%02d", minutes, seconds)
+        } else {
+            "-"
+        }
+    }
+
+    // Метод для форматирования года выпуска трека
+    private fun formatYear(releaseDate: String?): String {
+        return releaseDate?.split("-")?.get(0) ?: "-"
     }
 }

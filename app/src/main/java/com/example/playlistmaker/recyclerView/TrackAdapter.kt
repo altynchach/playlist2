@@ -1,5 +1,6 @@
 package com.example.playlistmaker.recyclerView
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
@@ -8,6 +9,10 @@ import com.example.playlistmaker.R
 class TrackAdapter(private var tracks: ArrayList<Track>) : RecyclerView.Adapter<TrackViewHolder>() {
 
     private var onTrackClickListener: ((Track) -> Unit)? = null
+
+    companion object {
+        private const val TAG = "TrackAdapter"
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TrackViewHolder {
         val view = LayoutInflater
@@ -20,6 +25,7 @@ class TrackAdapter(private var tracks: ArrayList<Track>) : RecyclerView.Adapter<
         val track = tracks[position]
         holder.bind(track)
         holder.itemView.setOnClickListener {
+            Log.d(TAG, "Track clicked: ${track.trackName} by ${track.artistName}")
             onTrackClickListener?.invoke(track)
         }
     }
@@ -30,6 +36,7 @@ class TrackAdapter(private var tracks: ArrayList<Track>) : RecyclerView.Adapter<
         tracks.clear()
         tracks.addAll(newTracks)
         notifyDataSetChanged()
+        Log.d(TAG, "Tracks updated: ${newTracks.size} items")
     }
 
     fun setOnTrackClickListener(listener: (Track) -> Unit) {

@@ -16,6 +16,8 @@ contentpager = "1.0.0"
 retrofit = "2.11.0"
 converterGson = "2.9.0"
 gson = "2.10.1"
+emojiBundled = "1.1.0"
+emoji2Bundled = "1.5.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -34,6 +36,8 @@ androidx-contentpager = { group = "androidx.contentpager", name = "contentpager"
 converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "converterGson" }
 gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
+androidx-emoji-bundled = { group = "androidx.emoji", name = "emoji-bundled", version.ref = "emojiBundled" }
+androidx-emoji2-bundled = { group = "androidx.emoji2", name = "emoji2-bundled", version.ref = "emoji2Bundled" }
 
 
 [plugins]
