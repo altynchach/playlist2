@@ -32,5 +32,6 @@
     <color name="color_bback_dark">#EAEAEA</color>
     <color name="placeholder_dark">#555555</color>
     <color name="yp_white">#EAEAEA</color>
+    <color name="gray">#AEAFB4</color>
 
 </resources>
