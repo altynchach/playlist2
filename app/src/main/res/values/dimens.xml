@@ -20,5 +20,7 @@
     <dimen name="track_size_16">16sp</dimen>
     <dimen name="error_button_radius">54dp</dimen>
     <dimen name="error_search_text">19sp</dimen>
+    <dimen name="elem_padding">12dp</dimen>
+    <dimen name="padding_dimen">16dp</dimen>
 
 </resources>
