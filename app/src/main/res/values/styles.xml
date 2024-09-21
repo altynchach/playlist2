@@ -151,19 +151,15 @@
         <item name="android:layout_marginTop">@dimen/padding_dimen</item>
         <item name="android:src">@drawable/settings_back</item>
         <item name="android:tint">@color/color_area</item>
+    </style>
 
         <style name="GreyButtonsInPlayerActivity" parent="Widget.AppCompat.ImageButton">
             <item name="android:backgroundTint">#401A1B22</item>
         </style>
 
-        <style name="PlayStopButton" parent="Widget.AppCompat.ImageButton">
+        <style name="PlayStopButton">
             <item name="tint">@color/white</item>
-            <item name="backgroundTint">@color/area_black</item>
+            <item name="backgroundTint">@color/color_area</item>
         </style>
-
-
-
-    </style>
-
 
 </resources>

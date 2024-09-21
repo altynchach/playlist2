@@ -8,15 +8,16 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/main"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         tools:context=".PlayerActivity">
 
         <ImageView
             android:id="@+id/ivBackToPrevScr"
+            android:contentDescription="@string/iv_back_to_prev_scr"
             style="@style/BackArrow"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            tools:ignore="ContentDescription" />
+            />
 
         <ImageView
             android:id="@+id/ivSongCover"
@@ -69,6 +70,7 @@
         <ImageButton
             android:id="@+id/ibAddToPlaylist"
             style="@style/GreyButtonsInPlayerActivity"
+            android:contentDescription="@string/add_to_playlist_button_description"
             android:layout_width="52dp"
             android:layout_height="52dp"
             app:layout_constraintHorizontal_chainStyle="spread_inside"
@@ -85,6 +87,7 @@
             style="@style/PlayStopButton"
             android:layout_width="84dp"
             android:layout_height="84dp"
+            android:contentDescription="@string/play_button_description"
             app:layout_constraintStart_toEndOf="@id/ibAddToPlaylist"
             app:layout_constraintEnd_toStartOf="@id/ibLike"
             app:layout_constraintTop_toBottomOf="@id/tvAuthorOfSong"
@@ -94,6 +97,7 @@
 
         <ImageButton
             android:id="@+id/ibLike"
+            android:contentDescription="@string/like_button_description"
             style="@style/GreyButtonsInPlayerActivity"
             android:layout_width="52dp"
             android:layout_height="52dp"
@@ -119,7 +123,7 @@
             android:fontFamily="@font/ys_display_medium"
             android:textSize="14sp"
             android:textFontWeight="500"
-            android:text="0:00" />
+            android:text="@string/_0_00" />
 
         <TextView
             android:id="@+id/tvTrackTimePermanent"
