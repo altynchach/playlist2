@@ -111,7 +111,10 @@
         <item name="android:backgroundTint">#40FFFFFF</item>
     </style>
 
-    <style name="PlayStopButton"></style>
+    <style name="PlayStopButton">
+        <item name="tint">@color/white</item>
+        <item name="backgroundTint">@color/color_area</item>
+    </style>
 
 
 </resources>

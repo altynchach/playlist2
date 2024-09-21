@@ -25,12 +25,13 @@
             android:layout_height="0dp"
             android:layout_marginHorizontal="@dimen/margin_top"
             android:layout_marginTop="42dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/ivBackToPrevScr"
+            android:scaleType="centerCrop"
             app:layout_constraintBottom_toTopOf="@id/tvSongTitle"
             app:layout_constraintDimensionRatio="w, 1:1"
-            android:scaleType="centerCrop"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/ivBackToPrevScr"
+            tools:ignore="ContentDescription,ImageContrastCheck"
             tools:srcCompat="@drawable/placeholder" />
 
         <TextView
@@ -97,17 +98,18 @@
 
         <ImageButton
             android:id="@+id/ibLike"
-            android:contentDescription="@string/like_button_description"
             style="@style/GreyButtonsInPlayerActivity"
             android:layout_width="52dp"
             android:layout_height="52dp"
-            app:layout_constraintStart_toEndOf="@id/ibPlayStop"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@id/ibPlayStop"
-            app:layout_constraintBottom_toBottomOf="@id/ibPlayStop"
             android:layout_marginEnd="24dp"
             android:background="@drawable/background_for_refresh_button"
-            app:srcCompat="@drawable/like_icon" />
+            android:contentDescription="@string/like_button_description"
+            app:layout_constraintBottom_toBottomOf="@id/ibPlayStop"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/ibPlayStop"
+            app:layout_constraintTop_toTopOf="@id/ibPlayStop"
+            app:srcCompat="@drawable/like_icon"
+            tools:ignore="ImageContrastCheck" />
 
         <TextView
             android:id="@+id/tvCurrentTrackTime"
@@ -244,7 +246,7 @@
             android:textAlignment="textEnd"
             android:ellipsize="end"
             android:maxLines="1"
-            tools:text="Еее, роцк!" />
+            tools:text="Рок" />
 
         <TextView
             android:id="@+id/tvCountryOfSongPermanent"
@@ -275,7 +277,7 @@
             android:textAlignment="textEnd"
             android:ellipsize="end"
             android:maxLines="1"
-            tools:text="Великобритания" />
+            tools:text="UK" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
