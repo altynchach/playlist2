@@ -1,6 +1,7 @@
 package com.example.playlistmaker
 
 import android.os.Bundle
+import android.util.Log
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
@@ -19,6 +20,7 @@ class PlayerActivity : AppCompatActivity() {
 
     companion object {
         private const val KEY_FOR_INTENT_DATA = "Selected track"
+        private const val TAG = "PlayerActivity"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -36,11 +38,16 @@ class PlayerActivity : AppCompatActivity() {
         val genreOfSong = findViewById<TextView>(R.id.tvGenreChanging)
         val countryOfSong = findViewById<TextView>(R.id.tvCountryOfSongChanging)
 
-        backToPrevScreenButton.setOnClickListener { finish() }
+        backToPrevScreenButton.setOnClickListener {
+            Log.d(TAG, "Back button pressed, finishing activity")
+            finish()
+        }
 
         val json: String? = intent.getStringExtra(KEY_FOR_INTENT_DATA)
         if (json != null) {
             val currentTrack: Track = Gson().fromJson(json, Track::class.java)
+            Log.d(TAG, "Received track data: $currentTrack")
+
             Glide.with(this)
                 .load(currentTrack.artworkUrl100.replace("100x100bb.jpg", "512x512bb.jpg"))
                 .placeholder(R.drawable.placeholder)
@@ -49,18 +56,14 @@ class PlayerActivity : AppCompatActivity() {
                 .into(songCover)
             songTitle.text = currentTrack.trackName
             artistName.text = currentTrack.artistName
-            trackDuration.text = SimpleDateFormat(
-                "mm:ss",
-                Locale.getDefault()
-            ).format(
-                currentTrack.trackTime
-            )
+            trackDuration.text = SimpleDateFormat("mm:ss", Locale.getDefault()).format(currentTrack.trackTime)
             groupOfAlbumInfo.isVisible = currentTrack.collectionName != null
             album.text = currentTrack.collectionName
             yearOfSoundPublished.text = currentTrack.releaseDate.split("-")[0]
             genreOfSong.text = currentTrack.primaryGenreName
             countryOfSong.text = currentTrack.country
         } else {
+            Log.e(TAG, "Error: no track data received in intent")
             Toast.makeText(this, "Произошла ошибка!", Toast.LENGTH_SHORT).show()
         }
     }

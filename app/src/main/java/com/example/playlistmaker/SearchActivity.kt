@@ -1,10 +1,12 @@
 package com.example.playlistmaker
 
 import android.annotation.SuppressLint
+import android.content.ContentValues.TAG
 import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import android.view.inputmethod.InputMethodManager
@@ -20,6 +22,7 @@ import com.example.playlistmaker.recyclerView.Track
 import com.example.playlistmaker.recyclerView.TrackAdapter
 import com.example.playlistmaker.retrofit.ITunesApi
 import com.example.playlistmaker.retrofit.TracksResponse
+import com.google.gson.Gson
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -30,6 +33,8 @@ class SearchActivity : AppCompatActivity() {
 
     companion object {
         const val SEARCH_QUERY_KEY = "SEARCH_QUERY"
+
+
     }
 
     private lateinit var inputText: EditText
@@ -79,7 +84,27 @@ class SearchActivity : AppCompatActivity() {
 
 
         trackAdapter.setOnTrackClickListener { track ->
+            Log.d(TAG, "Track selected: ${track.trackName} by ${track.artistName}")
             searchHistory.saveTrack(track)
+
+            val intent = Intent(this, PlayerActivity::class.java)
+            intent.putExtra("Selected track", Gson().toJson(track))
+            Log.d(TAG, "Starting PlayerActivity with track data")
+            startActivity(intent)
+        }
+
+        val historyRecyclerView = findViewById<RecyclerView>(R.id.search_history_recycler)
+        historyRecyclerView.layoutManager = LinearLayoutManager(this)
+        historyAdapter = TrackAdapter(searchHistory.getHistory().toMutableList() as ArrayList<Track>)
+        historyRecyclerView.adapter = historyAdapter
+
+        // Handle clicks on history items
+        historyAdapter.setOnTrackClickListener { track ->
+            Log.d(TAG, "History track selected: ${track.trackName} by ${track.artistName}")
+            val intent = Intent(this, PlayerActivity::class.java)
+            intent.putExtra("Selected track", Gson().toJson(track))
+            Log.d(TAG, "Starting PlayerActivity with track data from history")
+            startActivity(intent)
         }
 
         inputText.addTextChangedListener(object : TextWatcher {
@@ -216,7 +241,6 @@ class SearchActivity : AppCompatActivity() {
             }
         })
     }
-
 
     private fun displaySearchHistory() {
         val history = searchHistory.getHistory()
