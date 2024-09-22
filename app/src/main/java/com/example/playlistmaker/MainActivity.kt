@@ -17,6 +17,7 @@ class MainActivity : BaseActivity() {
 
         val libraryButton = findViewById<Button>(R.id.button_library)
         libraryButton.setOnClickListener {
+            // Действие для кнопки библиотеки
         }
 
         val settingsButton = findViewById<Button>(R.id.button_settings)

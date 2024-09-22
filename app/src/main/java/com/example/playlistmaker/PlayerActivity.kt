@@ -49,7 +49,6 @@ class PlayerActivity : AppCompatActivity() {
             try {
                 val currentTrack: Track = Gson().fromJson(json, Track::class.java)
                 Log.d(TAG, "Received track data: $currentTrack")
-
                 // Загрузка обложки трека
                 val artworkUrl512 = currentTrack.artworkUrl100?.replace("100x100bb.jpg", "512x512bb.jpg")
                 Glide.with(this)
@@ -78,6 +77,37 @@ class PlayerActivity : AppCompatActivity() {
             Toast.makeText(this, "Произошла ошибка!", Toast.LENGTH_SHORT).show()
         }
     }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        val trackJson = intent.getStringExtra(KEY_FOR_INTENT_DATA)
+        outState.putString(KEY_FOR_INTENT_DATA, trackJson)  // Сохраняем данные трека
+    }
+
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+        val trackJson = savedInstanceState.getString(KEY_FOR_INTENT_DATA)
+        if (trackJson != null) {
+            val currentTrack: Track = Gson().fromJson(trackJson, Track::class.java)
+            // Повторное заполнение данных трека при восстановлении экрана
+            Glide.with(this)
+                .load(currentTrack.artworkUrl100?.replace("100x100bb.jpg", "512x512bb.jpg"))
+                .placeholder(R.drawable.placeholder)
+                .centerCrop()
+                .transform(RoundedCorners(dpToPx(8f, this)))
+                .into(findViewById(R.id.ivSongCover))
+
+            findViewById<TextView>(R.id.tvSongTitle).text = currentTrack.trackName ?: "-"
+            findViewById<TextView>(R.id.tvAuthorOfSong).text = currentTrack.artistName ?: "-"
+            findViewById<TextView>(R.id.tvTrackTimeChanging).text = formatTrackDuration(currentTrack.trackTime)
+            findViewById<Group>(R.id.gAlbumInfo).isVisible = !currentTrack.collectionName.isNullOrEmpty()
+            findViewById<TextView>(R.id.tvAlbumNameChanging).text = currentTrack.collectionName ?: "-"
+            findViewById<TextView>(R.id.tvYearOfSongChanging).text = formatYear(currentTrack.releaseDate)
+            findViewById<TextView>(R.id.tvGenreChanging).text = currentTrack.primaryGenreName ?: "-"
+            findViewById<TextView>(R.id.tvCountryOfSongChanging).text = currentTrack.country ?: "-"
+        }
+    }
+
 
     // Метод для форматирования продолжительности трека
     private fun formatTrackDuration(trackTimeMillis: Int?): String {

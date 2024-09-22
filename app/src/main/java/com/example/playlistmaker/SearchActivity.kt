@@ -74,6 +74,12 @@ class SearchActivity : AppCompatActivity() {
         historyAdapter = TrackAdapter(searchHistory.getHistory().toMutableList() as ArrayList<Track>)
         historyRecyclerView.adapter = historyAdapter
 
+        historyAdapter.setOnTrackClickListener { track ->
+            val intent = Intent(this, PlayerActivity::class.java)
+            intent.putExtra("Selected track", Gson().toJson(track))
+            startActivity(intent)
+        }
+
         clearHistoryButton.setOnClickListener {
             searchHistory.clearHistory()
             displaySearchHistory()
@@ -81,9 +87,10 @@ class SearchActivity : AppCompatActivity() {
 
 
         trackAdapter.setOnTrackClickListener { track ->
-            searchHistory.saveTrack(track)
+            val intent = Intent(this, PlayerActivity::class.java)
+            intent.putExtra("Selected track", Gson().toJson(track))
+            startActivity(intent)
         }
-
 
         inputText.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
