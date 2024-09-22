@@ -20,6 +20,7 @@ import com.example.playlistmaker.recyclerView.Track
 import com.example.playlistmaker.recyclerView.TrackAdapter
 import com.example.playlistmaker.retrofit.ITunesApi
 import com.example.playlistmaker.retrofit.TracksResponse
+import com.google.gson.Gson
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -31,6 +32,7 @@ class SearchActivity : AppCompatActivity() {
     companion object {
         const val SEARCH_QUERY_KEY = "SEARCH_QUERY"
         const val ITUNES_URL = "https://itunes.apple.com"
+        const val NAME_TRACK = "name"
     }
 
     private lateinit var inputText: EditText
@@ -81,6 +83,10 @@ class SearchActivity : AppCompatActivity() {
 
         trackAdapter.setOnTrackClickListener { track ->
             searchHistory.saveTrack(track)
+            val displayIntent = Intent(this, PlayerActivity::class.java)
+            val strTrack = Gson().toJson(track)
+            displayIntent.putExtra(NAME_TRACK, strTrack)
+            startActivity(displayIntent)
         }
 
         inputText.addTextChangedListener(object : TextWatcher {
