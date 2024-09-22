@@ -14,13 +14,14 @@
         android:id="@+id/buttonBack"
         android:layout_width="48dp"
         android:layout_height="48dp"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="4dp"
         android:background="@color/transparent"
         android:contentDescription="@string/description"
         android:src="@drawable/settings_back"
-        android:layout_marginStart="4dp"
-        android:layout_marginTop="4dp"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"/>
+        tools:ignore="DuplicateSpeakableTextCheck" />
 
     <ScrollView
         android:layout_width="match_parent"

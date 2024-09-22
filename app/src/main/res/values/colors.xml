@@ -32,6 +32,7 @@
     <color name="placeholder_dark">#555555</color>
     <color name="blue">#3772E7</color>
     <color name="grey">#AEAFB4</color>
+    <color name="gray">#AEAFB4</color>
     <color name="lightGrey">#E6E8EB</color>
     <color name="fade_black">#C5C6C7</color>
     <color name="fade_white">#535459</color>

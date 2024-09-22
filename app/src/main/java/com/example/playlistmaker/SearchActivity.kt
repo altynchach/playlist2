@@ -189,7 +189,7 @@ class SearchActivity : AppCompatActivity() {
             return
         }
 
-        searchHistoryLayout.visibility = View.GONE
+        this.searchHistoryLayout.visibility = View.GONE
         if (searchHistoryLayout.visibility == View.VISIBLE) {
             recyclerView.visibility = View.GONE
             return
@@ -225,6 +225,7 @@ class SearchActivity : AppCompatActivity() {
     }
 
 
+    @SuppressLint("NotifyDataSetChanged")
     private fun displaySearchHistory() {
         val history = searchHistory.getHistory()
         if (inputText.hasFocus() && inputText.text.isEmpty() && history.isNotEmpty()) {

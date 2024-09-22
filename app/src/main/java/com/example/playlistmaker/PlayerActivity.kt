@@ -63,20 +63,5 @@ class PlayerActivity : AppCompatActivity() {
             .transform(RoundedCorners(8))
             .placeholder(R.drawable.placeholder_max)
             .into(cover)
-//        title.text = intent.getStringExtra("name")
-//        author.text = intent.getStringExtra("author")
-//        durationSong.text = intent.getStringExtra("duration")
-//        currentTime.text = durationSong.text
-//        albumSong.text = intent.getStringExtra("album")
-//        yearSong.text = intent.getStringExtra("year")
-//        genreSong.text = intent.getStringExtra("genre")
-//        countrySong.text = intent.getStringExtra("country")
-//        imgSource = intent.getStringExtra("imageSrc").toString()
-//        Glide.with(applicationContext)
-//            .load(imgSource)
-//            .centerInside()
-//            .transform(RoundedCorners(8))
-//            .placeholder(R.drawable.placeholder_max)
-//            .into(cover)
     }
 }
