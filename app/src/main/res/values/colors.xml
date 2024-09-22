@@ -17,7 +17,6 @@
     <color name="color_bback">#1A1B22</color>
     <color name="color_name_time">#AEAFB4</color>
     <color name="colorError">#FF000000</color>
-
     <color name="blue_sky_dark">#3056A6</color>
     <color name="gray_switch1_dark">#8A8A8F</color>
     <color name="icon_search_dark">#8A8A8F</color>
@@ -31,4 +30,9 @@
     <color name="color_back_dark">#3056A6</color>
     <color name="color_bback_dark">#EAEAEA</color>
     <color name="placeholder_dark">#555555</color>
+    <color name="blue">#3772E7</color>
+    <color name="grey">#AEAFB4</color>
+    <color name="lightGrey">#E6E8EB</color>
+    <color name="fade_black">#C5C6C7</color>
+    <color name="fade_white">#535459</color>
 </resources>

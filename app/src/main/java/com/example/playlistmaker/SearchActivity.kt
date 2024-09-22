@@ -30,6 +30,7 @@ class SearchActivity : AppCompatActivity() {
 
     companion object {
         const val SEARCH_QUERY_KEY = "SEARCH_QUERY"
+        const val ITUNES_URL = "https://itunes.apple.com"
     }
 
     private lateinit var inputText: EditText
@@ -189,7 +190,7 @@ class SearchActivity : AppCompatActivity() {
         }
 
         val retrofit = Retrofit.Builder()
-            .baseUrl("https://itunes.apple.com/")
+            .baseUrl(ITUNES_URL)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
 
