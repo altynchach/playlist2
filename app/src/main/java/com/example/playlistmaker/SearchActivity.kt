@@ -150,6 +150,7 @@ class SearchActivity : AppCompatActivity() {
         displaySearchHistory()
     }
 
+
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putString(SEARCH_QUERY_KEY, searchText)
@@ -179,6 +180,7 @@ class SearchActivity : AppCompatActivity() {
             )
         }
     }
+
 
     private fun filterTracks(query: String) {
         if (query.isEmpty()) {
@@ -232,6 +234,13 @@ class SearchActivity : AppCompatActivity() {
             searchHistoryLayout.visibility = View.VISIBLE
             historyAdapter.updateTracks(history.toMutableList() as ArrayList<Track>)
             historyAdapter.notifyDataSetChanged()
+
+            historyAdapter.setOnTrackClickListener { track ->
+                val displayIntent = Intent(this, PlayerActivity::class.java)
+                val strTrack = Gson().toJson(track)
+                displayIntent.putExtra(NAME_TRACK, strTrack)
+                startActivity(displayIntent)
+            }
         } else {
             searchHistoryLayout.visibility = View.GONE
         }
