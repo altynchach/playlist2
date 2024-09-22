@@ -18,7 +18,6 @@ class MainActivity : AppCompatActivity() {
 
         val libraryButton = findViewById<Button>(R.id.button_library)
         libraryButton.setOnClickListener {
-//
         }
 
         val settingsButton = findViewById<Button>(R.id.button_settings)
