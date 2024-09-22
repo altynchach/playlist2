@@ -1,7 +1,7 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
-    id("org.jetbrains.kotlin.kapt")  // Добавление поддержки KAPT
+    id("org.jetbrains.kotlin.kapt")
 }
 
 android {
@@ -28,11 +28,14 @@ android {
         }
     }
 
-    // Добавление блока packagingOptions в формате Kotlin Script для исключения файлов
+    buildFeatures {
+        viewBinding = true
+    }
+
     packagingOptions {
         resources {
-            excludes.add("LICENSE_OFL")
-            excludes.add("LICENSE_UNICODE")  // Исключение дублирующегося файла LICENSE_UNICODE
+            excludes.add("LICENSE_OFL")  // Исключение файла LICENSE_OFL
+            excludes.add("LICENSE_UNICODE")
         }
     }
 
@@ -59,14 +62,8 @@ dependencies {
     implementation(libs.androidx.emoji.bundled)
     implementation(libs.androidx.emoji2.bundled)
 
-    kapt(libs.compiler)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit.v121)
     androidTestImplementation(libs.androidx.espresso.core.v361)
-    implementation(libs.glide)
-    annotationProcessor(libs.compiler)
-
-    implementation(libs.retrofit)
-    implementation(libs.converter.gson)
-    implementation(libs.gson)
+    kapt(libs.compiler) // KAPT вместо annotationProcessor
 }
