@@ -1,7 +1,12 @@
 [versions]
+activityVersion = "1.9.1"
 agp = "8.5.0"
+androidxEspressoCore = "3.5.1"
 androidxJunit = "1.2.1"
+androidxJunitVersion = "1.1.5"
+appcompatVersion = "1.6.1"
 espressoCoreVersion = "3.6.1"
+gsonVersion = "2.10"
 kotlin = "1.9.0"
 coreKtx = "1.13.1"
 junit = "4.13.2"
@@ -13,15 +18,22 @@ activity = "1.9.0"
 constraintlayout = "2.1.4"
 glide = "4.14.2"
 contentpager = "1.0.0"
+materialVersion = "1.11.0"
 retrofit = "2.11.0"
 converterGson = "2.9.0"
 gson = "2.10.1"
+retrofitVersion = "2.9.0"
 
 [libraries]
+androidx-activity-v191 = { module = "androidx.activity:activity", version.ref = "activityVersion" }
+androidx-appcompat-v161 = { module = "androidx.appcompat:appcompat", version.ref = "appcompatVersion" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+androidx-espresso-core-v351 = { module = "androidx.test.espresso:espresso-core", version.ref = "androidxEspressoCore" }
 androidx-espresso-core-v361 = { module = "androidx.test.espresso:espresso-core", version.ref = "espressoCoreVersion" }
+androidx-junit-v115 = { module = "androidx.test.ext:junit", version.ref = "androidxJunitVersion" }
 androidx-junit-v121 = { module = "androidx.test.ext:junit", version.ref = "androidxJunit" }
 compiler = { module = "com.github.bumptech.glide:compiler", version.ref = "glide" }
+gson-v210 = { module = "com.google.code.gson:gson", version.ref = "gsonVersion" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
@@ -33,7 +45,9 @@ glide = { group = "com.github.bumptech.glide", name = "glide", version.ref = "gl
 androidx-contentpager = { group = "androidx.contentpager", name = "contentpager", version.ref = "contentpager" }
 converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "converterGson" }
 gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
+material-v1110 = { module = "com.google.android.material:material", version.ref = "materialVersion" }
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
+retrofit-v290 = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofitVersion" }
 
 
 [plugins]
