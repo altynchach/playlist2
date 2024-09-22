@@ -1,12 +1,10 @@
 package com.example.playlistmaker
 
 import android.annotation.SuppressLint
-import android.content.ContentValues.TAG
 import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import android.view.inputmethod.InputMethodManager
@@ -33,6 +31,7 @@ class SearchActivity : AppCompatActivity() {
 
     companion object {
         const val SEARCH_QUERY_KEY = "SEARCH_QUERY"
+        private const val KEY_FOR_INTENT_DATA = "Selected track"
     }
 
     private lateinit var inputText: EditText
@@ -80,28 +79,14 @@ class SearchActivity : AppCompatActivity() {
             displaySearchHistory()
         }
 
-        // Обработка клика на трек из результатов поиска
+
         trackAdapter.setOnTrackClickListener { track ->
-            Log.d(TAG, "Track selected: ${track.trackName} by ${track.artistName}")
-
-            // Сохраняем трек в историю поиска
             searchHistory.saveTrack(track)
-
-            // Передаем данные о треке в PlayerActivity
-            val intent = Intent(this, PlayerActivity::class.java)
-            intent.putExtra("Selected track", Gson().toJson(track))
-            Log.d(TAG, "Starting PlayerActivity with track data")
-            startActivity(intent)
         }
 
-        // Обработка клика на трек из истории поиска
-        historyAdapter.setOnTrackClickListener { track ->
-            Log.d(TAG, "History track selected: ${track.trackName} by ${track.artistName}")
-            val intent = Intent(this, PlayerActivity::class.java)
-            intent.putExtra("Selected track", Gson().toJson(track))
-            Log.d(TAG, "Starting PlayerActivity with track data from history")
-            startActivity(intent)
-        }
+        val playerIntent = Intent(this@SearchActivity, PlayerActivity::class.java)
+        playerIntent.putExtra(KEY_FOR_INTENT_DATA, Gson().toJson(track))
+        startActivity(playerIntent)
 
         inputText.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
@@ -119,6 +104,7 @@ class SearchActivity : AppCompatActivity() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
         })
 
+
         inputText.setOnFocusChangeListener { _, hasFocus ->
             if (hasFocus && inputText.text.isEmpty()) {
                 displaySearchHistory()
@@ -132,7 +118,8 @@ class SearchActivity : AppCompatActivity() {
         inputText.setOnTouchListener { v, event ->
             if (event.action == MotionEvent.ACTION_UP) {
                 val drawableEnd = 2
-                if (inputText.compoundDrawables[drawableEnd] != null && event.rawX >= (inputText.right - inputText.compoundDrawables[drawableEnd].bounds.width())) {
+                if (inputText.compoundDrawables[drawableEnd] != null && event.rawX >= (
+                            inputText.right - inputText.compoundDrawables[drawableEnd].bounds.width())) {
                     inputText.text.clear()
                     hideKeyboard(v)
                     updateClearButtonVisibility()
@@ -166,6 +153,12 @@ class SearchActivity : AppCompatActivity() {
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putString(SEARCH_QUERY_KEY, searchText)
+    }
+
+    private fun showKeyboard() {
+        inputText.requestFocus()
+        val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.showSoftInput(inputText, InputMethodManager.SHOW_IMPLICIT)
     }
 
     private fun hideKeyboard(view: View) {
@@ -231,6 +224,7 @@ class SearchActivity : AppCompatActivity() {
         })
     }
 
+
     private fun displaySearchHistory() {
         val history = searchHistory.getHistory()
         if (inputText.hasFocus() && inputText.text.isEmpty() && history.isNotEmpty()) {
@@ -241,4 +235,5 @@ class SearchActivity : AppCompatActivity() {
             searchHistoryLayout.visibility = View.GONE
         }
     }
+
 }
