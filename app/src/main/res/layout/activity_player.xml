@@ -118,7 +118,7 @@
                 android:layout_width="51dp"
                 android:layout_height="51dp"
                 android:background="@drawable/round_button"
-                android:backgroundTint="@color/fade_white"
+                android:backgroundTint="@color/gray"
                 android:src="@drawable/add_to_playlist"
                 android:contentDescription="@string/description"
                 android:layout_marginTop="54dp"
