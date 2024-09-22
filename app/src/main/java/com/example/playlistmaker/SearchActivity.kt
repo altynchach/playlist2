@@ -84,9 +84,6 @@ class SearchActivity : AppCompatActivity() {
             searchHistory.saveTrack(track)
         }
 
-        val playerIntent = Intent(this@SearchActivity, PlayerActivity::class.java)
-        playerIntent.putExtra(KEY_FOR_INTENT_DATA, Gson().toJson(track))
-        startActivity(playerIntent)
 
         inputText.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
