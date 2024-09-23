@@ -1,7 +1,6 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
-    id("org.jetbrains.kotlin.kapt")  // Add this line
 }
 
 android {
@@ -37,25 +36,18 @@ android {
 }
 
 dependencies {
+
     implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.appcompat)
-    implementation(libs.material)
-    implementation(libs.androidx.activity)
+    implementation(libs.androidx.appcompat.v161)
+    implementation(libs.material.v1110)
     implementation(libs.androidx.constraintlayout)
-    implementation(libs.glide)
-    implementation(libs.retrofit)
-    implementation(libs.converter.gson)
-    implementation(libs.gson)
-
-    //noinspection KaptUsageInsteadOfKsp
-    kapt(libs.compiler)
+    implementation(libs.androidx.activity.v191)
     testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.junit.v121)
-    androidTestImplementation(libs.androidx.espresso.core.v361)
-    implementation(libs.glide)
-    annotationProcessor(libs.compiler)
-
-    implementation(libs.retrofit)
-    implementation(libs.converter.gson)
-    implementation(libs.gson)
+    androidTestImplementation(libs.androidx.junit.v115)
+    androidTestImplementation(libs.androidx.espresso.core.v351)
+    implementation (libs.gson.v210)
+    implementation (libs.retrofit.v290)
+    implementation (libs.converter.gson)
+    implementation (libs.glide)
+    annotationProcessor (libs.compiler)
 }

@@ -20,6 +20,7 @@ import com.example.playlistmaker.recyclerView.Track
 import com.example.playlistmaker.recyclerView.TrackAdapter
 import com.example.playlistmaker.retrofit.ITunesApi
 import com.example.playlistmaker.retrofit.TracksResponse
+import com.google.gson.Gson
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -30,6 +31,8 @@ class SearchActivity : AppCompatActivity() {
 
     companion object {
         const val SEARCH_QUERY_KEY = "SEARCH_QUERY"
+        const val ITUNES_URL = "https://itunes.apple.com"
+        const val NAME_TRACK = "name"
     }
 
     private lateinit var inputText: EditText
@@ -80,6 +83,10 @@ class SearchActivity : AppCompatActivity() {
 
         trackAdapter.setOnTrackClickListener { track ->
             searchHistory.saveTrack(track)
+            val displayIntent = Intent(this, PlayerActivity::class.java)
+            val strTrack = Gson().toJson(track)
+            displayIntent.putExtra(NAME_TRACK, strTrack)
+            startActivity(displayIntent)
         }
 
         inputText.addTextChangedListener(object : TextWatcher {
@@ -143,6 +150,7 @@ class SearchActivity : AppCompatActivity() {
         displaySearchHistory()
     }
 
+
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putString(SEARCH_QUERY_KEY, searchText)
@@ -173,6 +181,7 @@ class SearchActivity : AppCompatActivity() {
         }
     }
 
+
     private fun filterTracks(query: String) {
         if (query.isEmpty()) {
             recyclerView.visibility = View.GONE
@@ -182,14 +191,14 @@ class SearchActivity : AppCompatActivity() {
             return
         }
 
-        searchHistoryLayout.visibility = View.GONE
+        this.searchHistoryLayout.visibility = View.GONE
         if (searchHistoryLayout.visibility == View.VISIBLE) {
             recyclerView.visibility = View.GONE
             return
         }
 
         val retrofit = Retrofit.Builder()
-            .baseUrl("https://itunes.apple.com/")
+            .baseUrl(ITUNES_URL)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
 
@@ -218,12 +227,20 @@ class SearchActivity : AppCompatActivity() {
     }
 
 
+    @SuppressLint("NotifyDataSetChanged")
     private fun displaySearchHistory() {
         val history = searchHistory.getHistory()
         if (inputText.hasFocus() && inputText.text.isEmpty() && history.isNotEmpty()) {
             searchHistoryLayout.visibility = View.VISIBLE
             historyAdapter.updateTracks(history.toMutableList() as ArrayList<Track>)
             historyAdapter.notifyDataSetChanged()
+
+            historyAdapter.setOnTrackClickListener { track ->
+                val displayIntent = Intent(this, PlayerActivity::class.java)
+                val strTrack = Gson().toJson(track)
+                displayIntent.putExtra(NAME_TRACK, strTrack)
+                startActivity(displayIntent)
+            }
         } else {
             searchHistoryLayout.visibility = View.GONE
         }
