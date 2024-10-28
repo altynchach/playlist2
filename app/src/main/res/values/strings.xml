@@ -28,4 +28,5 @@
     <string name="genre_song">Жанр песни</string>
     <string name="country_song">Страна</string>
     <string name="counrtytag">counrtyTag</string>
+    <string name ="start">00:00</string>
 </resources>
