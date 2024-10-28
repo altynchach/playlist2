@@ -182,6 +182,8 @@
                 android:id="@+id/albumSong"
                 style="@style/TextOnPlayerRight"
                 tools:text="@string/album_track"
+                android:maxLines="1"
+                android:ellipsize="end"
                 app:layout_constraintStart_toEndOf="@id/textsBarrier"
                 app:layout_constraintBottom_toTopOf="@id/yearSong"
                 app:layout_constraintEnd_toStartOf="@id/rightBorderBottom"/>
