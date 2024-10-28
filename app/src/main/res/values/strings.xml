@@ -18,6 +18,7 @@
     <string name="search_history">Вы искали</string>
     <string name="clear_history">Очистить историю</string>
     <string name="duration">Длительность</string>
+    <string name="player_error_loading_preview">Ошибка загрузки аудиофайла</string>
     <string name="album">Альбом</string>
     <string name="year">Год</string>
     <string name="country">Страна</string>

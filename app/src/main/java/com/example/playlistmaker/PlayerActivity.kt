@@ -1,6 +1,9 @@
 package com.example.playlistmaker
 
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.media.MediaPlayer
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
@@ -17,8 +20,10 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import java.text.SimpleDateFormat
 import java.util.Locale
+import java.io.IOException
 
 class PlayerActivity : AppCompatActivity() {
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,6 +35,7 @@ class PlayerActivity : AppCompatActivity() {
             insets
         }
 
+
         val backButton = findViewById<ImageButton>(R.id.buttonBack)
 
         backButton.setOnClickListener {
@@ -39,10 +45,11 @@ class PlayerActivity : AppCompatActivity() {
         val title = findViewById<TextView>(R.id.title)
         val author = findViewById<TextView>(R.id.author)
         val durationSong = findViewById<TextView>(R.id.durationSong)
-        val currentTime = findViewById<TextView>(R.id.currentTime)
         val albumSong = findViewById<TextView>(R.id.albumSong)
         val yearSong = findViewById<TextView>(R.id.yearSong)
         val genreSong = findViewById<TextView>(R.id.genreSong)
+
+
         val countrySong = findViewById<TextView>(R.id.countrySong)
         val cover = findViewById<ImageView>(R.id.cover)
         var imgSource: String = ""
@@ -51,7 +58,6 @@ class PlayerActivity : AppCompatActivity() {
         title.text = track.trackName
         author.text = track.artistName
         durationSong.text = SimpleDateFormat("mm:ss", Locale.getDefault()).format(track.trackTime)
-        currentTime.text = durationSong.text
         albumSong.text = track.collectionName
         yearSong.text = track.releaseDate.substring(0,4)
         genreSong.text = track.primaryGenreName
@@ -63,5 +69,6 @@ class PlayerActivity : AppCompatActivity() {
             .transform(RoundedCorners(8))
             .placeholder(R.drawable.placeholder_max)
             .into(cover)
+
     }
 }
