@@ -105,7 +105,7 @@ class SearchActivity : AppCompatActivity() {
             override fun afterTextChanged(s: Editable?) {
                 searchText = s.toString()
                 updateClearButtonVisibility()
-                handler.removeCallbacks(searchRunnable)
+                searchRunnable?.let { handler.removeCallbacks(it) }
                 searchRunnable = Runnable {
                     if (searchText.isEmpty()) {
                         displaySearchHistory()
