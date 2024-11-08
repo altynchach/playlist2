@@ -12,6 +12,7 @@ import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.EditText
+import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.ProgressBar
@@ -44,7 +45,7 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var nothingFound: LinearLayout
     private lateinit var connectionProblem: LinearLayout
     private lateinit var reloadButton: Button
-    private lateinit var progressBar: ProgressBar
+    private lateinit var progressBarLayout: FrameLayout
     private var searchText: String = ""
 
     private lateinit var searchHistory: SearchHistory
@@ -70,7 +71,7 @@ class SearchActivity : AppCompatActivity() {
         nothingFound = findViewById(R.id.nothingFound)
         connectionProblem = findViewById(R.id.connectionProblem)
         reloadButton = findViewById(R.id.reload_button)
-        progressBar = findViewById(R.id.progress_bar)
+        progressBarLayout = findViewById(R.id.progress_bar_layout)
 
         recyclerView.layoutManager = LinearLayoutManager(this)
         trackAdapter = TrackAdapter(arrayListOf())
@@ -206,8 +207,10 @@ class SearchActivity : AppCompatActivity() {
             return
         }
 
-        progressBar.visibility = View.VISIBLE
+        // Отображение контейнера прогресс-бара перед началом поиска
+        progressBarLayout.visibility = View.VISIBLE
         recyclerView.visibility = View.GONE
+
         val retrofit = Retrofit.Builder()
             .baseUrl(ITUNES_URL)
             .addConverterFactory(GsonConverterFactory.create())
@@ -215,7 +218,8 @@ class SearchActivity : AppCompatActivity() {
         val api = retrofit.create(ITunesApi::class.java)
         api.search(query).enqueue(object : Callback<TracksResponse> {
             override fun onResponse(call: Call<TracksResponse>, response: Response<TracksResponse>) {
-                progressBar.visibility = View.GONE
+                // Скрываем контейнер прогресс-бара после завершения запроса
+                progressBarLayout.visibility = View.GONE
                 if (response.isSuccessful && response.body()?.results?.isNotEmpty() == true) {
                     val tracks = response.body()!!.results
                     trackAdapter.updateTracks(tracks)
@@ -230,7 +234,8 @@ class SearchActivity : AppCompatActivity() {
             }
 
             override fun onFailure(call: Call<TracksResponse>, t: Throwable) {
-                progressBar.visibility = View.GONE
+                // Скрываем контейнер прогресс-бара при ошибке запроса
+                progressBarLayout.visibility = View.GONE
                 recyclerView.visibility = View.GONE
                 nothingFound.visibility = View.GONE
                 connectionProblem.visibility = View.VISIBLE
