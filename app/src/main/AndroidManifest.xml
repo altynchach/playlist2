@@ -16,7 +16,7 @@
         android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar"
         tools:targetApi="31">
         <activity
-            android:name=".PlayerActivity"
+            android:name=".presentation.player.PlayerActivity"
             android:exported="false" />
         <activity
             android:name=".presentation.search.SearchActivity"
@@ -25,7 +25,7 @@
             android:name=".presentation.medialib.MediaActivity"
             android:exported="false" />
         <activity
-            android:name=".SettingsActivity"
+            android:name=".presentation.settings.SettingsActivity"
             android:exported="false" />
         <activity
             android:name=".presentation.main.MainActivity"

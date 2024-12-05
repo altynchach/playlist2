@@ -1,4 +1,4 @@
-package com.example.playlistmaker
+package com.example.playlistmaker.presentation.search
 
 import android.content.SharedPreferences
 import com.example.playlistmaker.recyclerView.Track
