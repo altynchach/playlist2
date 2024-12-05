@@ -1,4 +1,4 @@
-package com.example.playlistmaker
+package com.example.playlistmaker.presentation.search
 
 import android.annotation.SuppressLint
 import android.content.Intent
@@ -19,6 +19,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.playlistmaker.PlayerActivity
+import com.example.playlistmaker.R
+import com.example.playlistmaker.SearchHistory
 import com.example.playlistmaker.presentation.main.MainActivity
 import com.example.playlistmaker.recyclerView.Track
 import com.example.playlistmaker.recyclerView.TrackAdapter

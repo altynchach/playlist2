@@ -1,41 +1,41 @@
-package com.example.playlistmaker
+package com.example.playlistmaker.presentation.settings
 
 import android.content.Intent
-import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Bundle
 import android.widget.ImageView
 import android.widget.Switch
 import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
+import com.example.playlistmaker.Creator
+import com.example.playlistmaker.R
+import com.example.playlistmaker.domain.interactor.ThemeInteractor
+import com.example.playlistmaker.presentation.utils.ThemeManager
 
-class SettingsActivity : BaseActivity() {
+class SettingsActivity : AppCompatActivity() {
 
-    private lateinit var sharedPreferences: SharedPreferences
+    private lateinit var themeInteractor: ThemeInteractor
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        sharedPreferences = getSharedPreferences("com.example.playlistmaker.PREFERENCES", MODE_PRIVATE)
-
-        val isDarkMode = sharedPreferences.getBoolean("DARK_MODE", false)
-        applyTheme(isDarkMode)
-
+        // Инициализируем ThemeInteractor через Creator
+        themeInteractor = Creator.provideThemeInteractor(applicationContext)
         setContentView(R.layout.activity_settings)
-
+        // Кнопка "Назад"
         val arrow = findViewById<ImageView>(R.id.back_button)
         arrow.setOnClickListener {
             finish()
         }
-
+        // Настраиваем переключатель темы
         val themeSwitch = findViewById<Switch>(R.id.switch_theme)
+        val isDarkMode = themeInteractor.isDarkMode()
         themeSwitch.isChecked = isDarkMode
 
         themeSwitch.setOnCheckedChangeListener { _, isChecked ->
-            applyTheme(isChecked)
-            sharedPreferences.edit().putBoolean("DARK_MODE", isChecked).apply()
-            recreate()
+            themeInteractor.setDarkMode(isChecked)
+            ThemeManager.applyTheme(isChecked)
         }
-
+        // Кнопка "Поделиться приложением"
         val shareAppButton = findViewById<TextView>(R.id.tvShareApp)
         val shareAppImage = findViewById<ImageView>(R.id.iv_share_app)
         val shareAppClickListener = {
@@ -48,6 +48,7 @@ class SettingsActivity : BaseActivity() {
         shareAppButton.setOnClickListener { shareAppClickListener.invoke() }
         shareAppImage.setOnClickListener { shareAppClickListener.invoke() }
 
+        // Кнопка "Поддержка"
         val supportButton = findViewById<TextView>(R.id.tvSupport)
         val supportImage = findViewById<ImageView>(R.id.ivSupport)
         val supportClickListener = {
@@ -62,6 +63,7 @@ class SettingsActivity : BaseActivity() {
         supportButton.setOnClickListener { supportClickListener.invoke() }
         supportImage.setOnClickListener { supportClickListener.invoke() }
 
+        // Кнопка "Пользовательское соглашение"
         val userAgreementButton = findViewById<TextView>(R.id.tvUserAgreement)
         val userAgreementImage = findViewById<ImageView>(R.id.ivUserAgreement)
         val userAgreementClickListener = {

@@ -14,7 +14,7 @@ import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
-import com.example.playlistmaker.SearchActivity.Companion.NAME_TRACK
+import com.example.playlistmaker.presentation.search.SearchActivity.Companion.NAME_TRACK
 import com.example.playlistmaker.recyclerView.Track
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
