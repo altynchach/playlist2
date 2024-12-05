@@ -9,7 +9,7 @@ object TrackMapper {
             trackId = dto.trackId,
             trackName = dto.trackName,
             artistName = dto.artistName,
-            trackTime = formatTrackTime(dto.trackTimeMillis),
+            trackTime = dto.trackTimeMillis,
             artworkUrl100 = dto.artworkUrl100,
             collectionName = dto.collectionName,
             releaseDate = dto.releaseDate,
@@ -24,7 +24,7 @@ object TrackMapper {
             trackId = track.trackId,
             trackName = track.trackName,
             artistName = track.artistName,
-            trackTimeMillis = parseTrackTime(track.trackTime),
+            trackTimeMillis = track.trackTime,
             artworkUrl100 = track.artworkUrl100,
             collectionName = track.collectionName,
             releaseDate = track.releaseDate,
@@ -32,18 +32,5 @@ object TrackMapper {
             country = track.country,
             previewUrl = track.previewUrl
         )
-    }
-
-    private fun formatTrackTime(trackTimeMillis: Long): String {
-        val minutes = trackTimeMillis / 60000
-        val seconds = (trackTimeMillis % 60000) / 1000
-        return String.format("%d:%02d", minutes, seconds)
-    }
-
-    private fun parseTrackTime(trackTime: String): Long {
-        val parts = trackTime.split(":")
-        val minutes = parts[0].toLong()
-        val seconds = parts[1].toLong()
-        return (minutes * 60 + seconds) * 1000
     }
 }

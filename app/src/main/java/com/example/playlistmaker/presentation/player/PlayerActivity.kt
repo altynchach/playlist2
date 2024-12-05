@@ -13,20 +13,17 @@ import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
-import com.example.playlistmaker.Creator
 import com.example.playlistmaker.R
 import com.example.playlistmaker.domain.interactor.PlayerInteractor
 import com.example.playlistmaker.domain.models.Track
+import com.example.playlistmaker.presentation.search.SearchActivity
+import com.example.playlistmaker.Creator
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import java.text.SimpleDateFormat
 import java.util.Locale
 
 class PlayerActivity : AppCompatActivity() {
-
-    companion object {
-        private const val NAME_TRACK = "name"
-    }
 
     private lateinit var playButton: ImageButton
     private lateinit var handler: Handler
@@ -56,31 +53,12 @@ class PlayerActivity : AppCompatActivity() {
         val backButton = findViewById<ImageButton>(R.id.buttonBack)
         backButton.setOnClickListener { finish() }
 
-        if (!initializeTrackInfo()) {
-            finish()
-            return
-        }
-
+        initializeTrackInfo()
         initializePlayer()
         setupPlayButton()
     }
 
-    private fun initializeTrackInfo(): Boolean {
-        val trackJson = intent.getStringExtra(NAME_TRACK)
-        if (trackJson.isNullOrEmpty()) {
-            Toast.makeText(this, "No track info provided", Toast.LENGTH_SHORT).show()
-            return false
-        }
-
-        val type = object : TypeToken<Track>() {}.type
-        val parsedTrack = Gson().fromJson<Track>(trackJson, type)
-        if (parsedTrack == null) {
-            Toast.makeText(this, "Failed to parse track info", Toast.LENGTH_SHORT).show()
-            return false
-        }
-
-        track = parsedTrack
-
+    private fun initializeTrackInfo() {
         val title = findViewById<TextView>(R.id.title)
         val author = findViewById<TextView>(R.id.author)
         val durationSong = findViewById<TextView>(R.id.durationSong)
@@ -90,25 +68,22 @@ class PlayerActivity : AppCompatActivity() {
         val countrySong = findViewById<TextView>(R.id.countrySong)
         val cover = findViewById<ImageView>(R.id.cover)
 
-        title.text = track.trackName ?: ""
-        author.text = track.artistName ?: ""
-        val trackTimeMs = track.trackTime ?: 0L
-        durationSong.text = SimpleDateFormat("mm:ss", Locale.getDefault()).format(trackTimeMs)
+        val type = object : TypeToken<Track>() {}.type
+        track = Gson().fromJson(intent.getStringExtra(SearchActivity.NAME_TRACK), type)
+
+        title.text = track.trackName
+        author.text = track.artistName
+
+        // Форматирование длительности
+        // trackTime - миллисекунды, форматируем в mm:ss
+        durationSong.text = SimpleDateFormat("mm:ss", Locale.getDefault()).format(track.trackTime)
 
         albumSong.text = track.collectionName ?: ""
-
-        val releaseDate = track.releaseDate ?: ""
-        yearSong.text = if (releaseDate.length >= 4) releaseDate.substring(0, 4) else ""
-
+        yearSong.text = if (track.releaseDate.length >= 4) track.releaseDate.substring(0, 4) else ""
         genreSong.text = track.primaryGenreName ?: ""
         countrySong.text = track.country ?: ""
 
-        val artworkUrl = track.artworkUrl100 ?: ""
-        val imgSource = if (artworkUrl.isNotEmpty()) {
-            artworkUrl.replaceAfterLast('/', "512x512bb.jpg")
-        } else {
-            ""
-        }
+        val imgSource = track.artworkUrl100.replaceAfterLast('/', "512x512bb.jpg")
 
         Glide.with(this)
             .load(imgSource)
@@ -116,19 +91,16 @@ class PlayerActivity : AppCompatActivity() {
             .transform(RoundedCorners(8))
             .placeholder(R.drawable.placeholder_max)
             .into(cover)
-
-        return true
     }
 
     private fun initializePlayer() {
-        val previewUrl = track.previewUrl
-        if (previewUrl.isNullOrEmpty()) {
-            Toast.makeText(this, "No preview URL available", Toast.LENGTH_SHORT).show()
-            return
-        }
-
         try {
-            playerInteractor.setTrackPreview(previewUrl)
+            track.previewUrl?.let { url ->
+                playerInteractor.setTrackPreview(url)
+            } ?: run {
+                Toast.makeText(this, "No preview available", Toast.LENGTH_SHORT).show()
+            }
+
             playerInteractor.setOnCompletionListener {
                 stopPlayback()
             }

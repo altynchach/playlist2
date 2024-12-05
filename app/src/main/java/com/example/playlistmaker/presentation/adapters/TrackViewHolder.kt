@@ -21,7 +21,11 @@ class TrackViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     fun bind(track: Track) {
         trackNameTextView.text = track.trackName
         artistNameTextView.text = track.artistName
-        trackTimeTextView.text = track.trackTime
+
+        // Форматируем длительность трека для отображения в списке, аналогично PlayerActivity
+        val minutes = (track.trackTime / 1000) / 60
+        val seconds = (track.trackTime / 1000) % 60
+        trackTimeTextView.text = String.format("%02d:%02d", minutes, seconds)
 
         LoadImageTask(artworkImageView).execute(track.artworkUrl100)
     }

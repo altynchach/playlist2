@@ -26,8 +26,8 @@ import com.google.gson.Gson
 class SearchActivity : AppCompatActivity() {
 
     companion object {
-        private const val SEARCH_QUERY_KEY = "SEARCH_QUERY"
-        private const val NAME_TRACK = "name"
+        const val SEARCH_QUERY_KEY = "SEARCH_QUERY"
+        const val NAME_TRACK = "name"
     }
 
     private lateinit var inputText: EditText
@@ -67,7 +67,6 @@ class SearchActivity : AppCompatActivity() {
         trackAdapter = TrackAdapter(arrayListOf())
         recyclerView.adapter = trackAdapter
 
-
         historyRecyclerView = findViewById(R.id.search_history_recycler)
         searchHistoryLayout = findViewById(R.id.search_history_layout)
         clearHistoryButton = findViewById(R.id.clear_history_button)
@@ -76,29 +75,19 @@ class SearchActivity : AppCompatActivity() {
         historyAdapter = TrackAdapter(arrayListOf())
         historyRecyclerView.adapter = historyAdapter
 
-
         clearHistoryButton.setOnClickListener {
             searchInteractor.clearSearchHistory()
             displaySearchHistory()
         }
 
+        // Клик по треку из результатов поиска
         trackAdapter.setOnTrackClickListener { track ->
             val currentTime = System.currentTimeMillis()
-            if (currentTime - lastClickTime > 2000) {  // Prevent multiple rapid clicks
+            if (currentTime - lastClickTime > 2000) {
                 lastClickTime = currentTime
                 searchInteractor.saveTrackToHistory(track)
-                val displayIntent = Intent(this, PlayerActivity::class.java)
-                val strTrack = Gson().toJson(track)
-                displayIntent.putExtra(NAME_TRACK, strTrack)
-                startActivity(displayIntent)
+                openPlayerActivity(track)
             }
-        }
-
-        historyAdapter.setOnTrackClickListener { track ->
-            val displayIntent = Intent(this, PlayerActivity::class.java)
-            val strTrack = Gson().toJson(track)
-            displayIntent.putExtra(NAME_TRACK, strTrack)
-            startActivity(displayIntent)
         }
 
         inputText.addTextChangedListener(object : TextWatcher {
@@ -114,9 +103,8 @@ class SearchActivity : AppCompatActivity() {
                         searchTracks(searchText)
                     }
                 }
-                handler.postDelayed(searchRunnable!!, 2000) // Delay of 2 seconds
+                handler.postDelayed(searchRunnable!!, 2000)
             }
-
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
         })
@@ -229,8 +217,20 @@ class SearchActivity : AppCompatActivity() {
             searchHistoryLayout.visibility = View.VISIBLE
             historyAdapter.updateTracks(ArrayList(history))
             historyAdapter.notifyDataSetChanged()
+
+            // Клик по треку из истории
+            historyAdapter.setOnTrackClickListener { track ->
+                openPlayerActivity(track)
+            }
         } else {
             searchHistoryLayout.visibility = View.GONE
         }
+    }
+
+    private fun openPlayerActivity(track: Track) {
+        val displayIntent = Intent(this, PlayerActivity::class.java)
+        val strTrack = Gson().toJson(track)
+        displayIntent.putExtra(NAME_TRACK, strTrack)
+        startActivity(displayIntent)
     }
 }

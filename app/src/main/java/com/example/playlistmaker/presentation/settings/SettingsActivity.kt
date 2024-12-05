@@ -18,20 +18,24 @@ class SettingsActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         themeInteractor = Creator.provideThemeInteractor(applicationContext)
+
         setContentView(R.layout.activity_settings)
+
         val arrow = findViewById<ImageView>(R.id.back_button)
         arrow.setOnClickListener {
             finish()
         }
-        val themeSwitch = findViewById<Switch>(R.id.switch_theme)
-        val isDarkMode = themeInteractor.isDarkMode()
-        themeSwitch.isChecked = isDarkMode
 
+        val isDarkMode = themeInteractor.isDarkMode()
+        val themeSwitch = findViewById<Switch>(R.id.switch_theme)
+        themeSwitch.isChecked = isDarkMode
         themeSwitch.setOnCheckedChangeListener { _, isChecked ->
             themeInteractor.setDarkMode(isChecked)
             ThemeManager.applyTheme(isChecked)
         }
+
         val shareAppButton = findViewById<TextView>(R.id.tvShareApp)
         val shareAppImage = findViewById<ImageView>(R.id.iv_share_app)
         val shareAppClickListener = {
@@ -60,6 +64,7 @@ class SettingsActivity : AppCompatActivity() {
 
         val userAgreementButton = findViewById<TextView>(R.id.tvUserAgreement)
         val userAgreementImage = findViewById<ImageView>(R.id.ivUserAgreement)
+
         val userAgreementClickListener = {
             val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.practicum_offer_url)))
             startActivity(browserIntent)
