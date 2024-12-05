@@ -164,6 +164,22 @@
 
             </LinearLayout>
 
+            <FrameLayout
+                android:id="@+id/progress_bar_layout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="gone"
+                >
+
+                <ProgressBar
+                    android:id="@+id/progress_bar"
+                    android:layout_width="@dimen/size_44"
+                    android:layout_height="@dimen/size_44"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="@dimen/size_140"
+                    android:indeterminateTint="@color/blue_sky" />
+            </FrameLayout>
+
         </LinearLayout>
 
         <androidx.recyclerview.widget.RecyclerView
