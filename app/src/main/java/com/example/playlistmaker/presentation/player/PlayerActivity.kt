@@ -74,12 +74,10 @@ class PlayerActivity : AppCompatActivity() {
         title.text = track.trackName
         author.text = track.artistName
 
-        // Форматирование длительности
-        // trackTime - миллисекунды, форматируем в mm:ss
         durationSong.text = SimpleDateFormat("mm:ss", Locale.getDefault()).format(track.trackTime)
 
         albumSong.text = track.collectionName ?: ""
-        yearSong.text = if (track.releaseDate.length >= 4) track.releaseDate.substring(0, 4) else ""
+        yearSong.text = if (track.releaseDate!!.length >= 4) track.releaseDate!!.substring(0, 4) else ""
         genreSong.text = track.primaryGenreName ?: ""
         countrySong.text = track.country ?: ""
 
