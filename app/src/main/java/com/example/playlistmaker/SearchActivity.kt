@@ -15,14 +15,14 @@ import android.widget.EditText
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
-import android.widget.ProgressBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.playlistmaker.presentation.main.MainActivity
 import com.example.playlistmaker.recyclerView.Track
 import com.example.playlistmaker.recyclerView.TrackAdapter
-import com.example.playlistmaker.retrofit.ITunesApi
+import com.example.playlistmaker.data.network.ITunesApi
 import com.example.playlistmaker.retrofit.TracksResponse
 import com.google.gson.Gson
 import retrofit2.Call
