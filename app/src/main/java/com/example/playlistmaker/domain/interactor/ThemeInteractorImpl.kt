@@ -14,7 +14,7 @@ class ThemeInteractorImpl(
         return if (themePreferencesRepository.hasUserChangedTheme()) {
             themePreferencesRepository.isDarkMode()
         } else {
-            false // Или другая логика по умолчанию
+            false
         }
     }
 

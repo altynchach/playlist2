@@ -54,10 +54,8 @@ class SearchActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_search)
 
-        // Initialize the SearchInteractor
         searchInteractor = Creator.provideSearchInteractor(applicationContext)
 
-        // Initialize UI elements
         inputText = findViewById(R.id.inputEditText)
         recyclerView = findViewById(R.id.recyclerView)
         nothingFound = findViewById(R.id.nothingFound)
@@ -65,12 +63,11 @@ class SearchActivity : AppCompatActivity() {
         reloadButton = findViewById(R.id.reload_button)
         progressBarLayout = findViewById(R.id.progress_bar_layout)
 
-        // Setup RecyclerView for search results
         recyclerView.layoutManager = LinearLayoutManager(this)
         trackAdapter = TrackAdapter(arrayListOf())
         recyclerView.adapter = trackAdapter
 
-        // Setup RecyclerView for search history
+
         historyRecyclerView = findViewById(R.id.search_history_recycler)
         searchHistoryLayout = findViewById(R.id.search_history_layout)
         clearHistoryButton = findViewById(R.id.clear_history_button)
@@ -79,13 +76,12 @@ class SearchActivity : AppCompatActivity() {
         historyAdapter = TrackAdapter(arrayListOf())
         historyRecyclerView.adapter = historyAdapter
 
-        // Clear history button click listener
+
         clearHistoryButton.setOnClickListener {
             searchInteractor.clearSearchHistory()
             displaySearchHistory()
         }
 
-        // Track item click listener for search results
         trackAdapter.setOnTrackClickListener { track ->
             val currentTime = System.currentTimeMillis()
             if (currentTime - lastClickTime > 2000) {  // Prevent multiple rapid clicks
@@ -98,7 +94,6 @@ class SearchActivity : AppCompatActivity() {
             }
         }
 
-        // Track item click listener for history items
         historyAdapter.setOnTrackClickListener { track ->
             val displayIntent = Intent(this, PlayerActivity::class.java)
             val strTrack = Gson().toJson(track)
@@ -106,7 +101,6 @@ class SearchActivity : AppCompatActivity() {
             startActivity(displayIntent)
         }
 
-        // Text change listener for search input
         inputText.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
                 searchText = s.toString()
@@ -127,7 +121,6 @@ class SearchActivity : AppCompatActivity() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
         })
 
-        // Focus change listener for search input
         inputText.setOnFocusChangeListener { _, hasFocus ->
             if (hasFocus && inputText.text.isEmpty()) {
                 displaySearchHistory()
@@ -138,7 +131,6 @@ class SearchActivity : AppCompatActivity() {
 
         updateClearButtonVisibility()
 
-        // Clear button functionality in the search input
         inputText.setOnTouchListener { v, event ->
             if (event.action == MotionEvent.ACTION_UP) {
                 val drawableEnd = 2
@@ -158,19 +150,16 @@ class SearchActivity : AppCompatActivity() {
             false
         }
 
-        // Restore search query on configuration change
         if (savedInstanceState != null) {
             searchText = savedInstanceState.getString(SEARCH_QUERY_KEY, "")
             inputText.setText(searchText)
         }
 
-        // Back button functionality
         val backButton2 = findViewById<ImageView>(R.id.back_button2)
         backButton2.setOnClickListener {
             finish()
         }
 
-        // Reload button functionality
         reloadButton.setOnClickListener {
             searchTracks(searchText)
         }

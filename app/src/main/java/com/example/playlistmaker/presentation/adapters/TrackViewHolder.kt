@@ -23,7 +23,6 @@ class TrackViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         artistNameTextView.text = track.artistName
         trackTimeTextView.text = track.trackTime
 
-        // Загрузка изображения без Picasso
         LoadImageTask(artworkImageView).execute(track.artworkUrl100)
     }
 
@@ -47,7 +46,6 @@ class TrackViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
                 val bitmap = BitmapFactory.decodeByteArray(result, 0, result.size)
                 imageView.setImageBitmap(bitmap)
             } else {
-                // Устанавливаем placeholder из drawable
                 imageView.setImageResource(R.drawable.placeholder)
             }
         }

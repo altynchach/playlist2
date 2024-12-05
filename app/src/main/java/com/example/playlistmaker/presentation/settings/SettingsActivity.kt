@@ -18,15 +18,12 @@ class SettingsActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // Инициализируем ThemeInteractor через Creator
         themeInteractor = Creator.provideThemeInteractor(applicationContext)
         setContentView(R.layout.activity_settings)
-        // Кнопка "Назад"
         val arrow = findViewById<ImageView>(R.id.back_button)
         arrow.setOnClickListener {
             finish()
         }
-        // Настраиваем переключатель темы
         val themeSwitch = findViewById<Switch>(R.id.switch_theme)
         val isDarkMode = themeInteractor.isDarkMode()
         themeSwitch.isChecked = isDarkMode
@@ -35,7 +32,6 @@ class SettingsActivity : AppCompatActivity() {
             themeInteractor.setDarkMode(isChecked)
             ThemeManager.applyTheme(isChecked)
         }
-        // Кнопка "Поделиться приложением"
         val shareAppButton = findViewById<TextView>(R.id.tvShareApp)
         val shareAppImage = findViewById<ImageView>(R.id.iv_share_app)
         val shareAppClickListener = {
@@ -48,7 +44,6 @@ class SettingsActivity : AppCompatActivity() {
         shareAppButton.setOnClickListener { shareAppClickListener.invoke() }
         shareAppImage.setOnClickListener { shareAppClickListener.invoke() }
 
-        // Кнопка "Поддержка"
         val supportButton = findViewById<TextView>(R.id.tvSupport)
         val supportImage = findViewById<ImageView>(R.id.ivSupport)
         val supportClickListener = {
@@ -63,7 +58,6 @@ class SettingsActivity : AppCompatActivity() {
         supportButton.setOnClickListener { supportClickListener.invoke() }
         supportImage.setOnClickListener { supportClickListener.invoke() }
 
-        // Кнопка "Пользовательское соглашение"
         val userAgreementButton = findViewById<TextView>(R.id.tvUserAgreement)
         val userAgreementImage = findViewById<ImageView>(R.id.ivUserAgreement)
         val userAgreementClickListener = {
