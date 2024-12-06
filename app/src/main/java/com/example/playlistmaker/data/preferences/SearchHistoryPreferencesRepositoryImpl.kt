@@ -1,4 +1,4 @@
-package com.example.playlistmaker.data.repository
+package com.example.playlistmaker.data.preferences
 
 import android.content.SharedPreferences
 import com.example.playlistmaker.data.dto.TrackDto
@@ -8,7 +8,7 @@ import com.example.playlistmaker.domain.repository.SearchHistoryRepository
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 
-class SearchHistoryRepositoryImpl(private val sharedPreferences: SharedPreferences) : SearchHistoryRepository {
+class SearchHistoryPreferencesRepositoryImpl(private val sharedPreferences: SharedPreferences) : SearchHistoryRepository {
 
     companion object {
         private const val SEARCH_HISTORY_KEY = "search_history"

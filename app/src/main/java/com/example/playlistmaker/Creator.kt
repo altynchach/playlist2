@@ -4,7 +4,7 @@ import android.content.Context
 import com.example.playlistmaker.data.network.ITunesApiService
 import com.example.playlistmaker.data.preferences.ThemePreferencesRepositoryImpl
 import com.example.playlistmaker.data.repository.PlayerRepositoryImpl
-import com.example.playlistmaker.data.repository.SearchHistoryRepositoryImpl
+import com.example.playlistmaker.data.preferences.SearchHistoryPreferencesRepositoryImpl
 import com.example.playlistmaker.data.repository.TrackRepositoryImpl
 import com.example.playlistmaker.domain.interactor.*
 import com.example.playlistmaker.domain.repository.SearchHistoryRepository
@@ -42,7 +42,7 @@ object Creator {
             "com.example.playlistmaker.PREFERENCES",
             Context.MODE_PRIVATE
         )
-        return SearchHistoryRepositoryImpl(sharedPreferences)
+        return SearchHistoryPreferencesRepositoryImpl(sharedPreferences)
     }
 
     fun provideSearchInteractor(context: Context): SearchInteractor {

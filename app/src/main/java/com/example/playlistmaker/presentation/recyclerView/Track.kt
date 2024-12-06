@@ -1,4 +1,4 @@
-package com.example.playlistmaker.recyclerView
+package com.example.playlistmaker.presentation.recyclerView
 
 import com.google.gson.annotations.SerializedName
 
