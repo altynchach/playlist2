@@ -16,21 +16,17 @@ import retrofit2.converter.gson.GsonConverterFactory
 object Creator {
 
     private const val ITUNES_URL = "https://itunes.apple.com"
+    private const val PREFERENCES = "com.example.playlistmaker.PREFERENCES"
 
-    private var retrofit: Retrofit? = null
-
-    private fun provideRetrofit(): Retrofit {
-        if (retrofit == null) {
-            retrofit = Retrofit.Builder()
-                .baseUrl(ITUNES_URL)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build()
-        }
-        return retrofit!!
+    private val retrofit: Retrofit by lazy {
+        Retrofit.Builder()
+            .baseUrl(ITUNES_URL)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
     }
 
     private fun provideApiService(): ITunesApiService {
-        return provideRetrofit().create(ITunesApiService::class.java)
+        return retrofit.create(ITunesApiService::class.java)
     }
 
     fun provideTrackRepository(): TrackRepository {
@@ -39,7 +35,7 @@ object Creator {
 
     fun provideSearchHistoryRepository(context: Context): SearchHistoryRepository {
         val sharedPreferences = context.getSharedPreferences(
-            "com.example.playlistmaker.PREFERENCES",
+            PREFERENCES,
             Context.MODE_PRIVATE
         )
         return SearchHistoryPreferencesRepositoryImpl(sharedPreferences)
@@ -58,7 +54,7 @@ object Creator {
 
     private fun provideThemePreferencesRepository(context: Context): ThemePreferencesRepository {
         val sharedPreferences = context.getSharedPreferences(
-            "com.example.playlistmaker.PREFERENCES",
+            PREFERENCES,
             Context.MODE_PRIVATE
         )
         return ThemePreferencesRepositoryImpl(sharedPreferences)

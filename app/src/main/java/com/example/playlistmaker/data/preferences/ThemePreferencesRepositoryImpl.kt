@@ -5,16 +5,17 @@ import com.example.playlistmaker.domain.repository.ThemePreferencesRepository
 
 class ThemePreferencesRepositoryImpl(private val sharedPreferences: SharedPreferences) :
     ThemePreferencesRepository {
+    private val darkMode = "DARK_MODE"
 
     override fun isDarkMode(): Boolean {
-        return sharedPreferences.getBoolean("DARK_MODE", false)
+        return sharedPreferences.getBoolean(darkMode, false)
     }
 
     override fun setDarkMode(isDarkMode: Boolean) {
-        sharedPreferences.edit().putBoolean("DARK_MODE", isDarkMode).apply()
+        sharedPreferences.edit().putBoolean(darkMode, isDarkMode).apply()
     }
 
     override fun hasUserChangedTheme(): Boolean {
-        return sharedPreferences.contains("DARK_MODE")
+        return sharedPreferences.contains(darkMode)
     }
 }
