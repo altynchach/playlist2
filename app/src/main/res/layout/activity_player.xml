@@ -7,7 +7,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:background="?attr/colorPrimaryVariant"
     android:orientation="vertical"
-    tools:context=".PlayerActivity"
+    tools:context=".presentation.player.PlayerActivity"
     android:theme="@style/Theme.PlaylistMaker">
 
     <ImageButton

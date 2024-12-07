@@ -1,24 +1,25 @@
-package com.example.playlistmaker
+package com.example.playlistmaker.presentation.settings
 
 import android.content.Intent
-import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Bundle
 import android.widget.ImageView
 import android.widget.Switch
 import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
+import com.example.playlistmaker.Creator
+import com.example.playlistmaker.R
+import com.example.playlistmaker.domain.interactor.ThemeInteractor
+import com.example.playlistmaker.presentation.utils.ThemeManager
 
-class SettingsActivity : BaseActivity() {
+class SettingsActivity : AppCompatActivity() {
 
-    private lateinit var sharedPreferences: SharedPreferences
+    private lateinit var themeInteractor: ThemeInteractor
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        sharedPreferences = getSharedPreferences("com.example.playlistmaker.PREFERENCES", MODE_PRIVATE)
-
-        val isDarkMode = sharedPreferences.getBoolean("DARK_MODE", false)
-        applyTheme(isDarkMode)
+        themeInteractor = Creator.provideThemeInteractor(applicationContext)
 
         setContentView(R.layout.activity_settings)
 
@@ -27,13 +28,12 @@ class SettingsActivity : BaseActivity() {
             finish()
         }
 
+        val isDarkMode = themeInteractor.isDarkMode()
         val themeSwitch = findViewById<Switch>(R.id.switch_theme)
         themeSwitch.isChecked = isDarkMode
-
         themeSwitch.setOnCheckedChangeListener { _, isChecked ->
-            applyTheme(isChecked)
-            sharedPreferences.edit().putBoolean("DARK_MODE", isChecked).apply()
-            recreate()
+            themeInteractor.setDarkMode(isChecked)
+            ThemeManager.applyTheme(isChecked)
         }
 
         val shareAppButton = findViewById<TextView>(R.id.tvShareApp)
@@ -64,6 +64,7 @@ class SettingsActivity : BaseActivity() {
 
         val userAgreementButton = findViewById<TextView>(R.id.tvUserAgreement)
         val userAgreementImage = findViewById<ImageView>(R.id.ivUserAgreement)
+
         val userAgreementClickListener = {
             val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.practicum_offer_url)))
             startActivity(browserIntent)

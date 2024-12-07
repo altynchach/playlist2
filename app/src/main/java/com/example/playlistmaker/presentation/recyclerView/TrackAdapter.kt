@@ -1,4 +1,4 @@
-package com.example.playlistmaker.recyclerView
+package com.example.playlistmaker.presentation.recyclerView
 
 import android.view.LayoutInflater
 import android.view.ViewGroup

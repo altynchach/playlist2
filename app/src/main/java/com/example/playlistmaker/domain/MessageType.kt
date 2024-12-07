@@ -1,4 +1,4 @@
-package com.practicum.playlistmaker
+package com.example.playlistmaker.domain
 
 enum class MessageType {
 
