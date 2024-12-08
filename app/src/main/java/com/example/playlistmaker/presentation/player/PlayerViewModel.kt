@@ -1,30 +1,27 @@
 package com.example.playlistmaker.presentation.player
 
 import android.media.MediaPlayer
-import androidx.lifecycle.*
+import android.os.Handler
+import android.os.Looper
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import com.example.playlistmaker.domain.models.Track
 import com.example.playlistmaker.presentation.states.PlayerScreenState
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import java.io.IOException
-import java.text.SimpleDateFormat
-import java.util.Locale
 
 class PlayerViewModel : ViewModel() {
 
-    private val _state = MutableLiveData<PlayerScreenState>()
-    val state: LiveData<PlayerScreenState> = _state
+    private val stateLiveData = MutableLiveData(PlayerScreenState())
+    fun getState(): LiveData<PlayerScreenState> = stateLiveData
 
     private var mediaPlayer: MediaPlayer? = null
-    private var updateJob: Job? = null
-
-    init {
-        _state.value = PlayerScreenState()
-    }
+    private val handler = Handler(Looper.getMainLooper())
+    private var updateRunnable: Runnable? = null
 
     fun setTrack(track: Track) {
-        _state.value = _state.value?.copy(track = track)
+        stateLiveData.value = stateLiveData.value?.copy(track = track)
         preparePlayer(track.previewUrl)
     }
 
@@ -32,7 +29,6 @@ class PlayerViewModel : ViewModel() {
         mediaPlayer?.release()
         mediaPlayer = MediaPlayer()
         if (url == null) return
-
         try {
             mediaPlayer?.setDataSource(url)
             mediaPlayer?.prepare()
@@ -40,13 +36,12 @@ class PlayerViewModel : ViewModel() {
                 stopPlayback()
             }
         } catch (e: IOException) {
-            // Handle error if needed
         }
     }
 
     fun onPlayPauseClicked() {
-        val curState = _state.value ?: return
-        if (curState.isPlaying) {
+        val currentState = stateLiveData.value ?: return
+        if (currentState.isPlaying) {
             pausePlayback()
         } else {
             startPlayback()
@@ -55,20 +50,20 @@ class PlayerViewModel : ViewModel() {
 
     private fun startPlayback() {
         mediaPlayer?.start()
-        _state.value = _state.value?.copy(isPlaying = true)
+        stateLiveData.value = stateLiveData.value?.copy(isPlaying = true)
         startUpdatingProgress()
     }
 
     private fun pausePlayback() {
         mediaPlayer?.pause()
-        _state.value = _state.value?.copy(isPlaying = false)
+        stateLiveData.value = stateLiveData.value?.copy(isPlaying = false)
         stopUpdatingProgress()
     }
 
     private fun stopPlayback() {
         mediaPlayer?.stop()
         mediaPlayer?.prepare()
-        _state.value = _state.value?.copy(
+        stateLiveData.value = stateLiveData.value?.copy(
             isPlaying = false,
             currentTimeFormatted = "00:00"
         )
@@ -76,26 +71,27 @@ class PlayerViewModel : ViewModel() {
     }
 
     private fun startUpdatingProgress() {
-        updateJob?.cancel()
-        updateJob = viewModelScope.launch {
-            while (true) {
+        stopUpdatingProgress()
+        updateRunnable = object : Runnable {
+            override fun run() {
                 val currentPositionMs = mediaPlayer?.currentPosition ?: 0
                 val minutes = (currentPositionMs / 1000) / 60
                 val seconds = (currentPositionMs / 1000) % 60
                 val currentTime = String.format("%02d:%02d", minutes, seconds)
-                _state.value = _state.value?.copy(currentTimeFormatted = currentTime)
-                delay(1000)
+                stateLiveData.value = stateLiveData.value?.copy(currentTimeFormatted = currentTime)
+                handler.postDelayed(this, 1000)
             }
         }
+        handler.post(updateRunnable!!)
     }
 
     private fun stopUpdatingProgress() {
-        updateJob?.cancel()
-        updateJob = null
+        updateRunnable?.let { handler.removeCallbacks(it) }
+        updateRunnable = null
     }
 
     fun onPause() {
-        if (_state.value?.isPlaying == true) {
+        if (stateLiveData.value?.isPlaying == true) {
             pausePlayback()
         }
     }

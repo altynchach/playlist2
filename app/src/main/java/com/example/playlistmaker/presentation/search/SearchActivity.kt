@@ -3,51 +3,71 @@ package com.example.playlistmaker.presentation.search
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.view.MotionEvent
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.playlistmaker.R
 import com.example.playlistmaker.domain.models.Track
 import com.example.playlistmaker.presentation.adapters.TrackAdapter
 import com.example.playlistmaker.presentation.player.PlayerActivity
 import com.example.playlistmaker.presentation.states.SearchScreenState
 import com.google.gson.Gson
-import kotlinx.android.synthetic.main.activity_search.*
 
 class SearchActivity : AppCompatActivity() {
 
     companion object {
         const val NAME_TRACK = "name"
+        const val SEARCH_QUERY_KEY = "SEARCH_QUERY"
     }
 
     private val viewModel: SearchViewModel by viewModels { SearchViewModel.Factory(applicationContext) }
 
+    private lateinit var inputText: EditText
+    private lateinit var recyclerView: RecyclerView
     private lateinit var trackAdapter: TrackAdapter
+    private lateinit var nothingFound: LinearLayout
+    private lateinit var connectionProblem: LinearLayout
+    private lateinit var reloadButton: Button
+    private lateinit var progressBarLayout: FrameLayout
+    private lateinit var searchHistoryLayout: LinearLayout
+    private lateinit var historyRecyclerView: RecyclerView
+    private lateinit var clearHistoryButton: Button
     private lateinit var historyAdapter: TrackAdapter
+    private lateinit var backButton2: ImageView
 
     private var lastClickTime: Long = 0
+    private var searchText: String = ""
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_search)
 
+        inputText = findViewById(R.id.inputEditText)
+        recyclerView = findViewById(R.id.recyclerView)
+        nothingFound = findViewById(R.id.nothingFound)
+        connectionProblem = findViewById(R.id.connectionProblem)
+        reloadButton = findViewById(R.id.reload_button)
+        progressBarLayout = findViewById(R.id.progress_bar_layout)
+        searchHistoryLayout = findViewById(R.id.search_history_layout)
+        historyRecyclerView = findViewById(R.id.search_history_recycler)
+        clearHistoryButton = findViewById(R.id.clear_history_button)
+        backButton2 = findViewById(R.id.back_button2)
+
         recyclerView.layoutManager = LinearLayoutManager(this)
         trackAdapter = TrackAdapter(arrayListOf())
         recyclerView.adapter = trackAdapter
 
-        search_history_recycler.layoutManager = LinearLayoutManager(this)
+        historyRecyclerView.layoutManager = LinearLayoutManager(this)
         historyAdapter = TrackAdapter(arrayListOf())
-        search_history_recycler.adapter = historyAdapter
+        historyRecyclerView.adapter = historyAdapter
 
-        clear_history_button.setOnClickListener {
+        clearHistoryButton.setOnClickListener {
             viewModel.clearHistory()
         }
 
@@ -64,26 +84,28 @@ class SearchActivity : AppCompatActivity() {
             openPlayerActivity(track)
         }
 
-        inputEditText.addTextChangedListener(object : TextWatcher {
-            override fun afterTextChanged(s: Editable?) {
-                viewModel.onSearchQueryChanged(s.toString())
+        inputText.addTextChangedListener(object : android.text.TextWatcher {
+            override fun afterTextChanged(s: android.text.Editable?) {
+                searchText = s.toString()
+                viewModel.onSearchQueryChanged(searchText)
                 updateClearButtonVisibility()
             }
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
         })
 
-        inputEditText.setOnFocusChangeListener { _, hasFocus ->
+        inputText.setOnFocusChangeListener { _, hasFocus ->
             viewModel.onFocusChanged(hasFocus)
         }
 
-        inputEditText.setOnTouchListener { v, event ->
+        inputText.setOnTouchListener { v, event ->
             if (event.action == MotionEvent.ACTION_UP) {
                 val drawableEnd = 2
-                if (inputEditText.compoundDrawables[drawableEnd] != null &&
-                    event.rawX >= (inputEditText.right - inputEditText.compoundDrawables[drawableEnd].bounds.width())
+                val drawable = inputText.compoundDrawables[drawableEnd]
+                if (drawable != null &&
+                    event.rawX >= (inputText.right - drawable.bounds.width())
                 ) {
-                    inputEditText.text.clear()
+                    inputText.text.clear()
                     hideKeyboard(v)
                     return@setOnTouchListener true
                 }
@@ -91,40 +113,29 @@ class SearchActivity : AppCompatActivity() {
             false
         }
 
-        back_button2.setOnClickListener {
+        backButton2.setOnClickListener {
             finish()
         }
 
-        reload_button.setOnClickListener {
+        reloadButton.setOnClickListener {
             viewModel.onReloadClicked()
         }
 
-        viewModel.state.observe(this) { state ->
+        if (savedInstanceState != null) {
+            searchText = savedInstanceState.getString(SEARCH_QUERY_KEY, "")
+            inputText.setText(searchText)
+        }
+
+        viewModel.getState().observe(this) { state ->
             renderState(state)
         }
 
-        // Инициализируем состояние при старте
         viewModel.init()
     }
 
-    private fun renderState(state: SearchScreenState) {
-        progress_bar_layout.visibility = if (state.isLoading) View.VISIBLE else View.GONE
-        recyclerView.visibility = if (state.showResults) View.VISIBLE else View.GONE
-        nothingFound.visibility = if (state.showNothingFound) View.VISIBLE else View.GONE
-        connectionProblem.visibility = if (state.showError) View.VISIBLE else View.GONE
-        search_history_layout.visibility = if (state.showHistory) View.VISIBLE else View.GONE
-
-        if (state.results.isNotEmpty()) {
-            trackAdapter.updateTracks(state.results)
-        }
-
-        if (state.history.isNotEmpty()) {
-            historyAdapter.updateTracks(state.history)
-        }
-
-        if (inputEditText.hasFocus() && inputEditText.text.isEmpty()) {
-            search_history_layout.visibility = View.VISIBLE
-        }
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putString(SEARCH_QUERY_KEY, searchText)
     }
 
     private fun hideKeyboard(view: View) {
@@ -133,16 +144,32 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun updateClearButtonVisibility() {
-        if (inputEditText.text.isNotEmpty()) {
-            inputEditText.setCompoundDrawablesWithIntrinsicBounds(
-                ContextCompat.getDrawable(this, R.drawable.search), null,
-                ContextCompat.getDrawable(this, R.drawable.clear), null
+        if (inputText.text.isNotEmpty()) {
+            inputText.setCompoundDrawablesWithIntrinsicBounds(
+                getDrawable(R.drawable.search), null,
+                getDrawable(R.drawable.clear), null
             )
         } else {
-            inputEditText.setCompoundDrawablesWithIntrinsicBounds(
-                ContextCompat.getDrawable(this, R.drawable.search), null,
+            inputText.setCompoundDrawablesWithIntrinsicBounds(
+                getDrawable(R.drawable.search), null,
                 null, null
             )
+        }
+    }
+
+    private fun renderState(state: SearchScreenState) {
+        progressBarLayout.visibility = if (state.isLoading) View.VISIBLE else View.GONE
+        recyclerView.visibility = if (state.showResults) View.VISIBLE else View.GONE
+        nothingFound.visibility = if (state.showNothingFound) View.VISIBLE else View.GONE
+        connectionProblem.visibility = if (state.showError) View.VISIBLE else View.GONE
+        searchHistoryLayout.visibility = if (state.showHistory) View.VISIBLE else View.GONE
+
+        if (state.results.isNotEmpty()) {
+            trackAdapter.updateTracks(state.results)
+        }
+
+        if (state.history.isNotEmpty()) {
+            historyAdapter.updateTracks(state.history)
         }
     }
 
