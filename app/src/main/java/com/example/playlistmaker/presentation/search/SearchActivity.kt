@@ -3,32 +3,29 @@ package com.example.playlistmaker.presentation.search
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
-import android.text.Editable
-import android.text.TextWatcher
 import android.view.MotionEvent
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.playlistmaker.Creator
 import com.example.playlistmaker.R
-import com.example.playlistmaker.domain.interactor.SearchInteractor
 import com.example.playlistmaker.domain.models.Track
 import com.example.playlistmaker.presentation.adapters.TrackAdapter
 import com.example.playlistmaker.presentation.player.PlayerActivity
+import com.example.playlistmaker.presentation.states.SearchScreenState
 import com.google.gson.Gson
 
 class SearchActivity : AppCompatActivity() {
 
     companion object {
-        const val SEARCH_QUERY_KEY = "SEARCH_QUERY"
         const val NAME_TRACK = "name"
+        const val SEARCH_QUERY_KEY = "SEARCH_QUERY"
     }
+
+    private val viewModel: SearchViewModel by viewModels { SearchViewModel.Factory(applicationContext) }
 
     private lateinit var inputText: EditText
     private lateinit var recyclerView: RecyclerView
@@ -37,24 +34,19 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var connectionProblem: LinearLayout
     private lateinit var reloadButton: Button
     private lateinit var progressBarLayout: FrameLayout
-    private var searchText: String = ""
-
-    private lateinit var searchInteractor: SearchInteractor
+    private lateinit var searchHistoryLayout: LinearLayout
     private lateinit var historyRecyclerView: RecyclerView
     private lateinit var clearHistoryButton: Button
-    private lateinit var searchHistoryLayout: LinearLayout
     private lateinit var historyAdapter: TrackAdapter
+    private lateinit var backButton2: ImageView
 
-    private val handler = Handler(Looper.getMainLooper())
-    private var searchRunnable: Runnable? = null
     private var lastClickTime: Long = 0
+    private var searchText: String = ""
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_search)
-
-        searchInteractor = Creator.provideSearchInteractor(applicationContext)
 
         inputText = findViewById(R.id.inputEditText)
         recyclerView = findViewById(R.id.recyclerView)
@@ -62,80 +54,71 @@ class SearchActivity : AppCompatActivity() {
         connectionProblem = findViewById(R.id.connectionProblem)
         reloadButton = findViewById(R.id.reload_button)
         progressBarLayout = findViewById(R.id.progress_bar_layout)
+        searchHistoryLayout = findViewById(R.id.search_history_layout)
+        historyRecyclerView = findViewById(R.id.search_history_recycler)
+        clearHistoryButton = findViewById(R.id.clear_history_button)
+        backButton2 = findViewById(R.id.back_button2)
 
         recyclerView.layoutManager = LinearLayoutManager(this)
         trackAdapter = TrackAdapter(arrayListOf())
         recyclerView.adapter = trackAdapter
-
-        historyRecyclerView = findViewById(R.id.search_history_recycler)
-        searchHistoryLayout = findViewById(R.id.search_history_layout)
-        clearHistoryButton = findViewById(R.id.clear_history_button)
 
         historyRecyclerView.layoutManager = LinearLayoutManager(this)
         historyAdapter = TrackAdapter(arrayListOf())
         historyRecyclerView.adapter = historyAdapter
 
         clearHistoryButton.setOnClickListener {
-            searchInteractor.clearSearchHistory()
-            displaySearchHistory()
+            viewModel.clearHistory()
         }
 
-        // Клик по треку из результатов поиска
         trackAdapter.setOnTrackClickListener { track ->
             val currentTime = System.currentTimeMillis()
             if (currentTime - lastClickTime > 2000) {
                 lastClickTime = currentTime
-                searchInteractor.saveTrackToHistory(track)
+                viewModel.saveTrackToHistory(track)
                 openPlayerActivity(track)
             }
         }
 
-        inputText.addTextChangedListener(object : TextWatcher {
-            override fun afterTextChanged(s: Editable?) {
+        historyAdapter.setOnTrackClickListener { track ->
+            openPlayerActivity(track)
+        }
+
+        inputText.addTextChangedListener(object : android.text.TextWatcher {
+            override fun afterTextChanged(s: android.text.Editable?) {
                 searchText = s.toString()
+                viewModel.onSearchQueryChanged(searchText)
                 updateClearButtonVisibility()
-                searchRunnable?.let { handler.removeCallbacks(it) }
-                searchRunnable = Runnable {
-                    if (searchText.isEmpty()) {
-                        displaySearchHistory()
-                    } else {
-                        searchHistoryLayout.visibility = View.GONE
-                        searchTracks(searchText)
-                    }
-                }
-                handler.postDelayed(searchRunnable!!, 2000)
             }
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
         })
 
         inputText.setOnFocusChangeListener { _, hasFocus ->
-            if (hasFocus && inputText.text.isEmpty()) {
-                displaySearchHistory()
-            } else {
-                searchHistoryLayout.visibility = View.GONE
-            }
+            viewModel.onFocusChanged(hasFocus)
         }
-
-        updateClearButtonVisibility()
 
         inputText.setOnTouchListener { v, event ->
             if (event.action == MotionEvent.ACTION_UP) {
                 val drawableEnd = 2
-                if (inputText.compoundDrawables[drawableEnd] != null &&
-                    event.rawX >= (inputText.right - inputText.compoundDrawables[drawableEnd].bounds.width())
+                val drawable = inputText.compoundDrawables[drawableEnd]
+                if (drawable != null &&
+                    event.rawX >= (inputText.right - drawable.bounds.width())
                 ) {
                     inputText.text.clear()
                     hideKeyboard(v)
-                    updateClearButtonVisibility()
-                    recyclerView.visibility = View.GONE
-                    nothingFound.visibility = View.GONE
-                    connectionProblem.visibility = View.GONE
-                    displaySearchHistory()
                     return@setOnTouchListener true
                 }
             }
             false
+        }
+
+        backButton2.setOnClickListener {
+            finish()
+        }
+
+        reloadButton.setOnClickListener {
+            viewModel.onReloadClicked()
         }
 
         if (savedInstanceState != null) {
@@ -143,16 +126,11 @@ class SearchActivity : AppCompatActivity() {
             inputText.setText(searchText)
         }
 
-        val backButton2 = findViewById<ImageView>(R.id.back_button2)
-        backButton2.setOnClickListener {
-            finish()
+        viewModel.getState().observe(this) { state ->
+            renderState(state)
         }
 
-        reloadButton.setOnClickListener {
-            searchTracks(searchText)
-        }
-
-        displaySearchHistory()
+        viewModel.init()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -168,62 +146,30 @@ class SearchActivity : AppCompatActivity() {
     private fun updateClearButtonVisibility() {
         if (inputText.text.isNotEmpty()) {
             inputText.setCompoundDrawablesWithIntrinsicBounds(
-                ContextCompat.getDrawable(this, R.drawable.search), null,
-                ContextCompat.getDrawable(this, R.drawable.clear), null
+                getDrawable(R.drawable.search), null,
+                getDrawable(R.drawable.clear), null
             )
         } else {
             inputText.setCompoundDrawablesWithIntrinsicBounds(
-                ContextCompat.getDrawable(this, R.drawable.search), null,
+                getDrawable(R.drawable.search), null,
                 null, null
             )
         }
     }
 
-    private fun searchTracks(query: String) {
-        if (query.isEmpty()) {
-            recyclerView.visibility = View.GONE
-            nothingFound.visibility = View.GONE
-            connectionProblem.visibility = View.GONE
-            displaySearchHistory()
-            return
+    private fun renderState(state: SearchScreenState) {
+        progressBarLayout.visibility = if (state.isLoading) View.VISIBLE else View.GONE
+        recyclerView.visibility = if (state.showResults) View.VISIBLE else View.GONE
+        nothingFound.visibility = if (state.showNothingFound) View.VISIBLE else View.GONE
+        connectionProblem.visibility = if (state.showError) View.VISIBLE else View.GONE
+        searchHistoryLayout.visibility = if (state.showHistory) View.VISIBLE else View.GONE
+
+        if (state.results.isNotEmpty()) {
+            trackAdapter.updateTracks(state.results)
         }
 
-        progressBarLayout.visibility = View.VISIBLE
-        recyclerView.visibility = View.GONE
-        nothingFound.visibility = View.GONE
-        connectionProblem.visibility = View.GONE
-
-        searchInteractor.searchTracks(query, { tracks ->
-            progressBarLayout.visibility = View.GONE
-            if (tracks.isNotEmpty()) {
-                trackAdapter.updateTracks(ArrayList(tracks))
-                recyclerView.visibility = View.VISIBLE
-                nothingFound.visibility = View.GONE
-            } else {
-                recyclerView.visibility = View.GONE
-                nothingFound.visibility = View.VISIBLE
-            }
-        }, {
-            progressBarLayout.visibility = View.GONE
-            recyclerView.visibility = View.GONE
-            connectionProblem.visibility = View.VISIBLE
-        })
-    }
-
-    @SuppressLint("NotifyDataSetChanged")
-    private fun displaySearchHistory() {
-        val history = searchInteractor.getSearchHistory()
-        if (inputText.hasFocus() && inputText.text.isEmpty() && history.isNotEmpty()) {
-            searchHistoryLayout.visibility = View.VISIBLE
-            historyAdapter.updateTracks(ArrayList(history))
-            historyAdapter.notifyDataSetChanged()
-
-            // Клик по треку из истории
-            historyAdapter.setOnTrackClickListener { track ->
-                openPlayerActivity(track)
-            }
-        } else {
-            searchHistoryLayout.visibility = View.GONE
+        if (state.history.isNotEmpty()) {
+            historyAdapter.updateTracks(state.history)
         }
     }
 

@@ -18,19 +18,4 @@ object TrackMapper {
             previewUrl = dto.previewUrl
         )
     }
-
-    fun mapDomainToDto(track: Track): TrackDto {
-        return TrackDto(
-            trackId = track.trackId,
-            trackName = track.trackName,
-            artistName = track.artistName,
-            trackTimeMillis = track.trackTime,
-            artworkUrl100 = track.artworkUrl100,
-            collectionName = track.collectionName,
-            releaseDate = track.releaseDate,
-            primaryGenreName = track.primaryGenreName,
-            country = track.country,
-            previewUrl = track.previewUrl
-        )
-    }
 }
