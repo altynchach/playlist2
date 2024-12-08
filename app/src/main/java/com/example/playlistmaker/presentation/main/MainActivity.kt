@@ -27,6 +27,5 @@ class MainActivity : AppCompatActivity() {
             startActivity(Intent(this, SettingsActivity::class.java))
         }
 
-        // Main screen logic is minimal, just navigation.
     }
 }
