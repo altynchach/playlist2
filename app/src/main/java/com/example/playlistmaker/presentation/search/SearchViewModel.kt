@@ -127,7 +127,6 @@ class SearchViewModel(private val searchInteractor: SearchInteractor) : ViewMode
     fun clearHistory() {
         searchInteractor.clearSearchHistory()
         val history = searchInteractor.getSearchHistory()
-        // Если строка поиска пустая и история пустая — скрываем историю
         updateState(
             stateLiveData.value!!.copy(
                 showHistory = currentQuery.isEmpty() && history.isNotEmpty(),
