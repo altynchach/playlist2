@@ -8,7 +8,8 @@ import com.example.playlistmaker.domain.repository.SearchHistoryRepository
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 
-class SearchHistoryPreferencesRepositoryImpl(private val sharedPreferences: SharedPreferences) : SearchHistoryRepository {
+class SearchHistoryPreferencesRepositoryImpl(private val sharedPreferences: SharedPreferences) :
+    SearchHistoryRepository {
 
     companion object {
         private const val SEARCH_HISTORY_KEY = "search_history"
@@ -35,7 +36,20 @@ class SearchHistoryPreferencesRepositoryImpl(private val sharedPreferences: Shar
         if (history.size > MAX_HISTORY_SIZE) {
             history.removeAt(history.size - 1)
         }
-        val trackDtos = history.map { TrackMapper.mapDomainToDto(it) }
+        val trackDtos = history.map {
+            TrackDto(
+                trackId = it.trackId,
+                trackName = it.trackName,
+                artistName = it.artistName,
+                trackTimeMillis = it.trackTime,
+                artworkUrl100 = it.artworkUrl100,
+                collectionName = it.collectionName,
+                releaseDate = it.releaseDate,
+                primaryGenreName = it.primaryGenreName,
+                country = it.country,
+                previewUrl = it.previewUrl
+            )
+        }
         val json = gson.toJson(trackDtos)
         sharedPreferences.edit().putString(SEARCH_HISTORY_KEY, json).apply()
     }

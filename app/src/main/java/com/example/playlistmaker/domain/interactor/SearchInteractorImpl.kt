@@ -9,12 +9,8 @@ class SearchInteractorImpl(
     private val searchHistoryRepository: SearchHistoryRepository
 ) : SearchInteractor {
 
-    override fun searchTracks(
-        query: String,
-        onSuccess: (List<Track>) -> Unit,
-        onFailure: () -> Unit
-    ) {
-        trackRepository.searchTracks(query, onSuccess, onFailure)
+    override suspend fun searchTracks(query: String): Result<List<Track>> {
+        return trackRepository.searchTracks(query)
     }
 
     override fun getSearchHistory(): List<Track> {
