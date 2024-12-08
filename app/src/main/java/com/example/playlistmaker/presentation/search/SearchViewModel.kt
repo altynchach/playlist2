@@ -19,9 +19,11 @@ class SearchViewModel(private val searchInteractor: SearchInteractor) : ViewMode
     private var searchRunnable: Runnable? = null
 
     fun init() {
+        val history = searchInteractor.getSearchHistory()
         updateState(
             stateLiveData.value!!.copy(
-                history = searchInteractor.getSearchHistory()
+                history = history,
+                showHistory = history.isNotEmpty()
             )
         )
     }
@@ -29,19 +31,25 @@ class SearchViewModel(private val searchInteractor: SearchInteractor) : ViewMode
     fun onSearchQueryChanged(query: String) {
         currentQuery = query
         if (query.isEmpty()) {
+            val history = searchInteractor.getSearchHistory()
             updateState(
                 stateLiveData.value!!.copy(
-                    showHistory = true,
+                    showHistory = history.isNotEmpty(),
                     showResults = false,
                     showNothingFound = false,
                     showError = false,
                     results = emptyList(),
-                    history = searchInteractor.getSearchHistory(),
+                    history = history,
                     isLoading = false
                 )
             )
         } else {
-            updateState(stateLiveData.value!!.copy(showHistory = false, history = emptyList()))
+            updateState(
+                stateLiveData.value!!.copy(
+                    showHistory = false,
+                    history = emptyList()
+                )
+            )
             debounceSearch(query)
         }
     }
@@ -104,10 +112,11 @@ class SearchViewModel(private val searchInteractor: SearchInteractor) : ViewMode
 
     fun onFocusChanged(hasFocus: Boolean) {
         if (hasFocus && currentQuery.isEmpty()) {
+            val history = searchInteractor.getSearchHistory()
             updateState(
                 stateLiveData.value!!.copy(
-                    showHistory = true,
-                    history = searchInteractor.getSearchHistory()
+                    showHistory = history.isNotEmpty(),
+                    history = history
                 )
             )
         } else {
@@ -117,14 +126,14 @@ class SearchViewModel(private val searchInteractor: SearchInteractor) : ViewMode
 
     fun clearHistory() {
         searchInteractor.clearSearchHistory()
-        if (currentQuery.isEmpty()) {
-            updateState(
-                stateLiveData.value!!.copy(
-                    showHistory = true,
-                    history = emptyList()
-                )
+        val history = searchInteractor.getSearchHistory()
+        // Если строка поиска пустая и история пустая — скрываем историю
+        updateState(
+            stateLiveData.value!!.copy(
+                showHistory = currentQuery.isEmpty() && history.isNotEmpty(),
+                history = history
             )
-        }
+        )
     }
 
     fun saveTrackToHistory(track: Track) {
