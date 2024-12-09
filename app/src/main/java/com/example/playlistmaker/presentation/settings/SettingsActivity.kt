@@ -15,6 +15,8 @@ class SettingsActivity : AppCompatActivity() {
 
     private val viewModel: SettingsViewModel by viewModel()
 
+    private var currentIsDarkMode: Boolean? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
@@ -48,6 +50,8 @@ class SettingsActivity : AppCompatActivity() {
 
         themeSwitch.setOnCheckedChangeListener { _, isChecked ->
             viewModel.onThemeSwitchChanged(isChecked)
+            // После изменения темы пересоздадим Activity, чтобы изменения стали видны сразу
+            recreate()
         }
 
         viewModel.init()
@@ -55,6 +59,9 @@ class SettingsActivity : AppCompatActivity() {
 
     private fun renderState(state: SettingsScreenState) {
         val themeSwitch = findViewById<Switch>(R.id.switch_theme)
+        if (currentIsDarkMode == null) {
+            currentIsDarkMode = state.isDarkMode
+        }
         themeSwitch.isChecked = state.isDarkMode
     }
 

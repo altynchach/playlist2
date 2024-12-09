@@ -28,8 +28,10 @@ class PlayerRepositoryImpl : PlayerRepository {
     }
 
     override fun stop() {
-        mediaPlayer?.stop()
-        mediaPlayer?.prepare()
+        mediaPlayer?.let {
+            it.stop()
+            it.prepare()
+        }
     }
 
     override fun release() {
