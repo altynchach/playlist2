@@ -71,10 +71,13 @@ class PlayerViewModel(
                 val minutes = TimeUnit.MILLISECONDS.toMinutes(currentPositionMs.toLong()) % 60
                 val seconds = TimeUnit.MILLISECONDS.toSeconds(currentPositionMs.toLong()) % 60
                 val currentTime = String.format(Locale.getDefault(), "%02d:%02d", minutes, seconds)
-                stateLiveData.postValue(
-                    stateLiveData.value?.copy(currentTimeFormatted = currentTime)
-                )
-                Thread.sleep(1000)
+                stateLiveData.postValue(stateLiveData.value?.copy(currentTimeFormatted = currentTime))
+
+                try {
+                    Thread.sleep(1000)
+                } catch (e: InterruptedException) {
+                    break
+                }
             }
         }
         updateThread = Thread(runnable)
