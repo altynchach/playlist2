@@ -89,11 +89,7 @@ class PlayerActivity : AppCompatActivity() {
             .into(cover)
 
         currentTimeText.text = state.currentTimeFormatted
-        if (state.isPlaying) {
-            playButton.setImageResource(R.drawable.pause)
-        } else {
-            playButton.setImageResource(R.drawable.button_play)
-        }
+        playButton.setImageResource(if (state.isPlaying) R.drawable.pause else R.drawable.button_play)
     }
 
     override fun onPause() {

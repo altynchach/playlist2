@@ -7,9 +7,9 @@ import android.widget.ImageView
 import android.widget.Switch
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.app.AppCompatDelegate
 import com.example.playlistmaker.R
 import com.example.playlistmaker.presentation.states.SettingsScreenState
+import com.example.playlistmaker.presentation.utils.ThemeManager
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class SettingsActivity : AppCompatActivity() {
@@ -49,6 +49,7 @@ class SettingsActivity : AppCompatActivity() {
 
         themeSwitch.setOnCheckedChangeListener { _, isChecked ->
             viewModel.onThemeSwitchChanged(isChecked)
+            ThemeManager.applyTheme(isChecked)
             delegate.applyDayNight()
         }
 

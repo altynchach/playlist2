@@ -1,7 +1,6 @@
 package com.example.playlistmaker.domain.interactor
 
 import com.example.playlistmaker.domain.repository.ThemePreferencesRepository
-import com.example.playlistmaker.presentation.utils.ThemeManager
 
 class ThemeInteractorImpl(
     private val themePreferencesRepository: ThemePreferencesRepository
@@ -9,7 +8,6 @@ class ThemeInteractorImpl(
 
     override fun applyTheme(isDarkMode: Boolean) {
         themePreferencesRepository.setDarkMode(isDarkMode)
-        ThemeManager.applyTheme(isDarkMode)
     }
 
     override fun shouldApplyDarkTheme(): Boolean {
@@ -26,6 +24,5 @@ class ThemeInteractorImpl(
 
     override fun setDarkMode(isDarkMode: Boolean) {
         themePreferencesRepository.setDarkMode(isDarkMode)
-        ThemeManager.applyTheme(isDarkMode)
     }
 }
