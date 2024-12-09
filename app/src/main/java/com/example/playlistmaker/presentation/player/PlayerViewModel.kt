@@ -1,42 +1,27 @@
 package com.example.playlistmaker.presentation.player
 
-import android.media.MediaPlayer
-import android.os.Handler
-import android.os.Looper
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
+import com.example.playlistmaker.domain.interactor.PlayerInteractor
 import com.example.playlistmaker.domain.models.Track
 import com.example.playlistmaker.presentation.states.PlayerScreenState
-import java.io.IOException
+import java.util.Locale
+import java.util.concurrent.TimeUnit
 
-class PlayerViewModel : ViewModel() {
+class PlayerViewModel(
+    private val playerInteractor: PlayerInteractor
+) : ViewModel() {
 
     private val stateLiveData = MutableLiveData(PlayerScreenState())
     fun getState(): LiveData<PlayerScreenState> = stateLiveData
 
-    private var mediaPlayer: MediaPlayer? = null
-    private val handler = Handler(Looper.getMainLooper())
-    private var updateRunnable: Runnable? = null
+    private var isUpdatingProgress = false
+    private var updateThread: Thread? = null
 
     fun setTrack(track: Track) {
         stateLiveData.value = stateLiveData.value?.copy(track = track)
-        preparePlayer(track.previewUrl)
-    }
-
-    private fun preparePlayer(url: String?) {
-        mediaPlayer?.release()
-        mediaPlayer = MediaPlayer()
-        if (url == null) return
-        try {
-            mediaPlayer?.setDataSource(url)
-            mediaPlayer?.prepare()
-            mediaPlayer?.setOnCompletionListener {
-                stopPlayback()
-            }
-        } catch (e: IOException) {
-        }
+        track.previewUrl?.let { playerInteractor.setTrackPreview(it) }
     }
 
     fun onPlayPauseClicked() {
@@ -49,20 +34,19 @@ class PlayerViewModel : ViewModel() {
     }
 
     private fun startPlayback() {
-        mediaPlayer?.start()
+        playerInteractor.play()
         stateLiveData.value = stateLiveData.value?.copy(isPlaying = true)
         startUpdatingProgress()
     }
 
     private fun pausePlayback() {
-        mediaPlayer?.pause()
+        playerInteractor.pause()
         stateLiveData.value = stateLiveData.value?.copy(isPlaying = false)
         stopUpdatingProgress()
     }
 
     private fun stopPlayback() {
-        mediaPlayer?.stop()
-        mediaPlayer?.prepare()
+        playerInteractor.stop()
         stateLiveData.value = stateLiveData.value?.copy(
             isPlaying = false,
             currentTimeFormatted = "00:00"
@@ -72,22 +56,25 @@ class PlayerViewModel : ViewModel() {
 
     private fun startUpdatingProgress() {
         stopUpdatingProgress()
-        updateRunnable = object : Runnable {
-            override fun run() {
-                val currentPositionMs = mediaPlayer?.currentPosition ?: 0
-                val minutes = (currentPositionMs / 1000) / 60
-                val seconds = (currentPositionMs / 1000) % 60
-                val currentTime = String.format("%02d:%02d", minutes, seconds)
-                stateLiveData.value = stateLiveData.value?.copy(currentTimeFormatted = currentTime)
-                handler.postDelayed(this, 1000)
+        isUpdatingProgress = true
+        val runnable = Runnable {
+            while (isUpdatingProgress) {
+                val currentPositionMs = playerInteractor.getCurrentPosition()
+                val minutes = TimeUnit.MILLISECONDS.toMinutes(currentPositionMs.toLong()) % 60
+                val seconds = TimeUnit.MILLISECONDS.toSeconds(currentPositionMs.toLong()) % 60
+                val currentTime = String.format(Locale.getDefault(), "%02d:%02d", minutes, seconds)
+                stateLiveData.postValue(stateLiveData.value?.copy(currentTimeFormatted = currentTime))
+                Thread.sleep(1000)
             }
         }
-        handler.post(updateRunnable!!)
+        updateThread = Thread(runnable)
+        updateThread?.start()
     }
 
     private fun stopUpdatingProgress() {
-        updateRunnable?.let { handler.removeCallbacks(it) }
-        updateRunnable = null
+        isUpdatingProgress = false
+        updateThread?.interrupt()
+        updateThread = null
     }
 
     fun onPause() {
@@ -97,15 +84,7 @@ class PlayerViewModel : ViewModel() {
     }
 
     fun onDestroy() {
-        mediaPlayer?.release()
-        mediaPlayer = null
+        playerInteractor.release()
         stopUpdatingProgress()
-    }
-
-    class Factory : ViewModelProvider.Factory {
-        @Suppress("UNCHECKED_CAST")
-        override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            return PlayerViewModel() as T
-        }
     }
 }
