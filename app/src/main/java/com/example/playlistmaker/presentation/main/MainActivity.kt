@@ -8,10 +8,11 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.playlistmaker.R
 import com.example.playlistmaker.presentation.search.SearchActivity
 import com.example.playlistmaker.presentation.settings.SettingsActivity
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MainActivity : AppCompatActivity() {
 
-    private val viewModel: MainViewModel by viewModels { MainViewModel.Factory() }
+    private val viewModel: MainViewModel by viewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -26,6 +27,5 @@ class MainActivity : AppCompatActivity() {
         settingsButton.setOnClickListener {
             startActivity(Intent(this, SettingsActivity::class.java))
         }
-
     }
 }

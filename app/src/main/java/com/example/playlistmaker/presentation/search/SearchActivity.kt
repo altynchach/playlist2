@@ -7,7 +7,6 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -17,6 +16,8 @@ import com.example.playlistmaker.presentation.adapters.TrackAdapter
 import com.example.playlistmaker.presentation.player.PlayerActivity
 import com.example.playlistmaker.presentation.states.SearchScreenState
 import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class SearchActivity : AppCompatActivity() {
 
@@ -25,7 +26,7 @@ class SearchActivity : AppCompatActivity() {
         const val SEARCH_QUERY_KEY = "SEARCH_QUERY"
     }
 
-    private val viewModel: SearchViewModel by viewModels { SearchViewModel.Factory(applicationContext) }
+    private val viewModel: SearchViewModel by viewModel()
 
     private lateinit var inputText: EditText
     private lateinit var recyclerView: RecyclerView
@@ -90,6 +91,7 @@ class SearchActivity : AppCompatActivity() {
                 viewModel.onSearchQueryChanged(searchText)
                 updateClearButtonVisibility()
             }
+
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
         })
