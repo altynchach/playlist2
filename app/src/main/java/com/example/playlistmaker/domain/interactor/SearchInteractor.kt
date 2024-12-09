@@ -8,7 +8,6 @@ interface SearchInteractor {
         onSuccess: (List<Track>) -> Unit,
         onFailure: () -> Unit
     )
-
     fun getSearchHistory(): List<Track>
     fun saveTrackToHistory(track: Track)
     fun clearSearchHistory()

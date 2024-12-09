@@ -1,9 +1,8 @@
 package com.example.playlistmaker.data.repository
 
-import com.example.playlistmaker.data.dto.TrackDto
-import com.example.playlistmaker.data.dto.TracksResponse
 import com.example.playlistmaker.data.mappers.TrackMapper
 import com.example.playlistmaker.data.network.ITunesApiService
+import com.example.playlistmaker.data.dto.TracksResponse
 import com.example.playlistmaker.domain.models.Track
 import com.example.playlistmaker.domain.repository.TrackRepository
 import retrofit2.Call
