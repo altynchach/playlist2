@@ -21,10 +21,7 @@ class PlayerViewModel(
 
     fun setTrack(track: Track) {
         stateLiveData.value = stateLiveData.value?.copy(track = track)
-        // Вызываем setTrackPreview только если previewUrl не null
-        track.previewUrl?.let {
-            playerInteractor.setTrackPreview(it)
-        }
+        track.previewUrl?.let { playerInteractor.setTrackPreview(it) }
     }
 
     fun onPlayPauseClicked() {

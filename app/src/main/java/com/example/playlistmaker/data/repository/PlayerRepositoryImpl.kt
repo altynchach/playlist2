@@ -20,17 +20,30 @@ class PlayerRepositoryImpl : PlayerRepository {
     }
 
     override fun play() {
-        mediaPlayer?.start()
+        mediaPlayer?.let {
+            if (!it.isPlaying) {
+                it.start()
+            }
+        }
     }
 
     override fun pause() {
-        mediaPlayer?.pause()
+        mediaPlayer?.let {
+            if (it.isPlaying) {
+                it.pause()
+            }
+        }
     }
 
     override fun stop() {
         mediaPlayer?.let {
-            it.stop()
-            it.prepare()
+            if (it.isPlaying) {
+                it.stop()
+                try {
+                    it.prepare()
+                } catch (e: Exception) {
+                }
+            }
         }
     }
 

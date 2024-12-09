@@ -7,6 +7,7 @@ import android.widget.ImageView
 import android.widget.Switch
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import com.example.playlistmaker.R
 import com.example.playlistmaker.presentation.states.SettingsScreenState
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -14,8 +15,6 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 class SettingsActivity : AppCompatActivity() {
 
     private val viewModel: SettingsViewModel by viewModel()
-
-    private var currentIsDarkMode: Boolean? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,8 +49,7 @@ class SettingsActivity : AppCompatActivity() {
 
         themeSwitch.setOnCheckedChangeListener { _, isChecked ->
             viewModel.onThemeSwitchChanged(isChecked)
-            // После изменения темы пересоздадим Activity, чтобы изменения стали видны сразу
-            recreate()
+            delegate.applyDayNight()
         }
 
         viewModel.init()
@@ -59,9 +57,6 @@ class SettingsActivity : AppCompatActivity() {
 
     private fun renderState(state: SettingsScreenState) {
         val themeSwitch = findViewById<Switch>(R.id.switch_theme)
-        if (currentIsDarkMode == null) {
-            currentIsDarkMode = state.isDarkMode
-        }
         themeSwitch.isChecked = state.isDarkMode
     }
 
