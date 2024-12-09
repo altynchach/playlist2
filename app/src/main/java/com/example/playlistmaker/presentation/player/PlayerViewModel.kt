@@ -19,9 +19,17 @@ class PlayerViewModel(
     private var isUpdatingProgress = false
     private var updateThread: Thread? = null
 
+    init {
+        playerInteractor.setOnCompletionListener {
+            stopPlayback()
+        }
+    }
+
     fun setTrack(track: Track) {
         stateLiveData.value = stateLiveData.value?.copy(track = track)
-        track.previewUrl?.let { playerInteractor.setTrackPreview(it) }
+        track.previewUrl?.let {
+            playerInteractor.setTrackPreview(it)
+        }
     }
 
     fun onPlayPauseClicked() {
@@ -63,7 +71,9 @@ class PlayerViewModel(
                 val minutes = TimeUnit.MILLISECONDS.toMinutes(currentPositionMs.toLong()) % 60
                 val seconds = TimeUnit.MILLISECONDS.toSeconds(currentPositionMs.toLong()) % 60
                 val currentTime = String.format(Locale.getDefault(), "%02d:%02d", minutes, seconds)
-                stateLiveData.postValue(stateLiveData.value?.copy(currentTimeFormatted = currentTime))
+                stateLiveData.postValue(
+                    stateLiveData.value?.copy(currentTimeFormatted = currentTime)
+                )
                 Thread.sleep(1000)
             }
         }
