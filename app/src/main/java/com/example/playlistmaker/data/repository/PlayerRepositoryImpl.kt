@@ -4,26 +4,30 @@ import android.media.MediaPlayer
 import com.example.playlistmaker.domain.repository.PlayerRepository
 import java.io.IOException
 
-class PlayerRepositoryImpl(
-    private val mediaPlayer: MediaPlayer
-) : PlayerRepository {
+class PlayerRepositoryImpl( private val mediaPlayer: MediaPlayer ) : PlayerRepository {
 
     private var onCompletionListener: (() -> Unit)? = null
     private var onErrorListener: ((String) -> Unit)? = null
     private var isPrepared = false
+    private var shouldPlay = false
+
 
     override fun setDataSource(url: String) {
         mediaPlayer.reset()
         isPrepared = false
+        shouldPlay = false
         try {
             mediaPlayer.setDataSource(url)
-            mediaPlayer.setOnErrorListener { _, what, extra ->
-                onErrorListener?.invoke("MediaPlayer Error (what=$what, extra=$extra)")
-                true
-            }
             mediaPlayer.setOnPreparedListener {
                 isPrepared = true
                 mediaPlayer.seekTo(0)
+                if (shouldPlay) {
+                    mediaPlayer.start()
+                }
+            }
+            mediaPlayer.setOnErrorListener { _, what, extra ->
+                onErrorListener?.invoke("MediaPlayer Error (what=$what, extra=$extra)")
+                true
             }
             mediaPlayer.setOnCompletionListener {
                 onCompletionListener?.invoke()
@@ -35,8 +39,12 @@ class PlayerRepositoryImpl(
     }
 
     override fun play() {
-        if (!mediaPlayer.isPlaying && isPrepared) {
-            mediaPlayer.start()
+        if (isPrepared) {
+            if (!mediaPlayer.isPlaying) {
+                mediaPlayer.start()
+            }
+        } else {
+            shouldPlay = true
         }
     }
 
@@ -50,12 +58,11 @@ class PlayerRepositoryImpl(
         if (mediaPlayer.isPlaying) {
             mediaPlayer.stop()
         }
+        mediaPlayer.prepareAsync()
         isPrepared = false
         mediaPlayer.setOnPreparedListener {
             isPrepared = true
-            mediaPlayer.seekTo(0)
         }
-        mediaPlayer.prepareAsync()
     }
 
     override fun release() {
@@ -75,5 +82,4 @@ class PlayerRepositoryImpl(
         onErrorListener = listener
     }
 }
-
 
