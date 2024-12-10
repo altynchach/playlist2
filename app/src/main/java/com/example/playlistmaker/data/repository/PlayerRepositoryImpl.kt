@@ -11,9 +11,8 @@ class PlayerRepositoryImpl : PlayerRepository {
     private var onErrorListener: ((String) -> Unit)? = null
     private var isPrepared = false
 
-    // Ensures we have a fresh MediaPlayer in Idle state
     private fun initMediaPlayer() {
-        // Release any existing instance
+
         mediaPlayer?.release()
         mediaPlayer = MediaPlayer().apply {
             setOnErrorListener { _, what, extra ->
@@ -24,14 +23,12 @@ class PlayerRepositoryImpl : PlayerRepository {
     }
 
     override fun setDataSource(url: String) {
-        // If mediaPlayer is null, re-initialize it
         if (mediaPlayer == null) {
             initMediaPlayer()
         }
 
-        // Now mediaPlayer should be non-null and idle
         mediaPlayer?.apply {
-            reset()  // Valid to call now as the player is idle
+            reset()
             isPrepared = false
             try {
                 setDataSource(url)
