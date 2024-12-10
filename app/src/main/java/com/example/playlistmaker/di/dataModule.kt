@@ -1,5 +1,6 @@
 package com.example.playlistmaker.di
 
+import android.media.MediaPlayer
 import com.example.playlistmaker.data.network.ITunesApiService
 import com.example.playlistmaker.data.preferences.SearchHistoryPreferencesRepositoryImpl
 import com.example.playlistmaker.data.preferences.ThemePreferencesRepositoryImpl
@@ -28,5 +29,6 @@ val dataModule = module {
     single<TrackRepository> { TrackRepositoryImpl(apiService = get()) }
     single<SearchHistoryRepository> { SearchHistoryPreferencesRepositoryImpl(sharedPreferences = get()) }
     single<ThemePreferencesRepository> { ThemePreferencesRepositoryImpl(sharedPreferences = get()) }
-    single<PlayerRepository> { PlayerRepositoryImpl() }
+    single { MediaPlayer() }
+    single<PlayerRepository> { PlayerRepositoryImpl(mediaPlayer = get()) }
 }
