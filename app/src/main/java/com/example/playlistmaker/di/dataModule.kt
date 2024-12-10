@@ -30,5 +30,5 @@ val dataModule = module {
     single<SearchHistoryRepository> { SearchHistoryPreferencesRepositoryImpl(sharedPreferences = get()) }
     single<ThemePreferencesRepository> { ThemePreferencesRepositoryImpl(sharedPreferences = get()) }
     single { MediaPlayer() }
-    single<PlayerRepository> { PlayerRepositoryImpl(mediaPlayer = get()) }
+    single<PlayerRepository> { PlayerRepositoryImpl() }
 }

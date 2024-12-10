@@ -4,6 +4,8 @@ import com.example.playlistmaker.domain.repository.PlayerRepository
 
 class PlayerInteractorImpl(private val playerRepository: PlayerRepository) : PlayerInteractor {
 
+    private var onError: ((String) -> Unit)? = null
+
     override fun setTrackPreview(url: String) {
         playerRepository.setDataSource(url)
     }
@@ -34,5 +36,12 @@ class PlayerInteractorImpl(private val playerRepository: PlayerRepository) : Pla
 
     override fun setOnCompletionListener(listener: () -> Unit) {
         playerRepository.setOnCompletionListener(listener)
+    }
+
+    fun setOnErrorListener(listener: (String) -> Unit) {
+        onError = listener
+        if (playerRepository is com.example.playlistmaker.data.repository.PlayerRepositoryImpl) {
+            playerRepository.setOnErrorListener(listener)
+        }
     }
 }

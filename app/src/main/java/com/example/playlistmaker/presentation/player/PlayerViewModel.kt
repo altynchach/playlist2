@@ -1,5 +1,7 @@
 package com.example.playlistmaker.presentation.player
 
+import android.os.Handler
+import android.os.Looper
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -15,8 +17,21 @@ class PlayerViewModel(
     private val stateLiveData = MutableLiveData(PlayerScreenState())
     fun getState(): LiveData<PlayerScreenState> = stateLiveData
 
+    private val handler = Handler(Looper.getMainLooper())
     private var isUpdatingProgress = false
-    private var updateThread: Thread? = null
+    private val updateRunnable = object : Runnable {
+        override fun run() {
+            if (isUpdatingProgress) {
+                val currentPositionMs = playerInteractor.getCurrentPosition()
+                val minutes = TimeUnit.MILLISECONDS.toMinutes(currentPositionMs.toLong()) % 60
+                val seconds = TimeUnit.MILLISECONDS.toSeconds(currentPositionMs.toLong()) % 60
+                val currentTime = String.format(Locale.getDefault(), "%02d:%02d", minutes, seconds)
+                stateLiveData.value = stateLiveData.value?.copy(currentTimeFormatted = currentTime)
+
+                handler.postDelayed(this, 1000)
+            }
+        }
+    }
 
     init {
         playerInteractor.setOnCompletionListener {
@@ -64,29 +79,12 @@ class PlayerViewModel(
     private fun startUpdatingProgress() {
         stopUpdatingProgress()
         isUpdatingProgress = true
-        val runnable = Runnable {
-            while (isUpdatingProgress) {
-                val currentPositionMs = playerInteractor.getCurrentPosition()
-                val minutes = TimeUnit.MILLISECONDS.toMinutes(currentPositionMs.toLong()) % 60
-                val seconds = TimeUnit.MILLISECONDS.toSeconds(currentPositionMs.toLong()) % 60
-                val currentTime = String.format(Locale.getDefault(), "%02d:%02d", minutes, seconds)
-                stateLiveData.postValue(stateLiveData.value?.copy(currentTimeFormatted = currentTime))
-
-                try {
-                    Thread.sleep(1000)
-                } catch (e: InterruptedException) {
-                    break
-                }
-            }
-        }
-        updateThread = Thread(runnable)
-        updateThread?.start()
+        handler.post(updateRunnable)
     }
 
     private fun stopUpdatingProgress() {
         isUpdatingProgress = false
-        updateThread?.interrupt()
-        updateThread = null
+        handler.removeCallbacksAndMessages(null)
     }
 
     fun onPause() {
@@ -96,7 +94,7 @@ class PlayerViewModel(
     }
 
     fun onDestroy() {
-        playerInteractor.release()
         stopUpdatingProgress()
+        playerInteractor.release()
     }
 }
