@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:id="@+id/main"
     xmlns:tools="http://schemas.android.com/tools"
-    android:background="?attr/colorPrimaryVariant"
+    android:background="@color/white_black"
     android:orientation="vertical"
     tools:context=".presentation.player.PlayerActivity"
     android:theme="@style/Theme.PlaylistMaker">
