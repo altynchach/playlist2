@@ -8,7 +8,6 @@ import android.widget.Switch
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.example.playlistmaker.R
-import com.example.playlistmaker.presentation.states.SettingsScreenState
 import com.example.playlistmaker.presentation.utils.ThemeManager
 import org.koin.androidx.viewmodel.ext.android.viewModel
 

@@ -1,4 +1,4 @@
-package com.example.playlistmaker.presentation.states
+package com.example.playlistmaker.presentation.settings
 
 data class SettingsScreenState(
     val isDarkMode: Boolean = false

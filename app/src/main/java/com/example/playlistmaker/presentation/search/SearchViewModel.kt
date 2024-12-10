@@ -7,7 +7,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.playlistmaker.domain.interactor.SearchInteractor
 import com.example.playlistmaker.domain.models.Track
-import com.example.playlistmaker.presentation.states.SearchScreenState
 
 class SearchViewModel(private val searchInteractor: SearchInteractor) : ViewModel() {
 

@@ -12,11 +12,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.playlistmaker.R
 import com.example.playlistmaker.domain.models.Track
-import com.example.playlistmaker.presentation.adapters.TrackAdapter
+import com.example.playlistmaker.presentation.search.adapters.TrackAdapter
 import com.example.playlistmaker.presentation.player.PlayerActivity
-import com.example.playlistmaker.presentation.states.SearchScreenState
 import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class SearchActivity : AppCompatActivity() {

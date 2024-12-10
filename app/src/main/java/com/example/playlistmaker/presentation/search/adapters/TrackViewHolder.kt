@@ -1,4 +1,4 @@
-package com.example.playlistmaker.presentation.adapters
+package com.example.playlistmaker.presentation.search.adapters
 
 import android.view.View
 import android.widget.ImageView
