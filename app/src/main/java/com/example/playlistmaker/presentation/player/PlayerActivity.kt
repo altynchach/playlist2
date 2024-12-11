@@ -4,15 +4,14 @@ import android.os.Bundle
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.playlistmaker.R
 import com.example.playlistmaker.domain.models.Track
-import com.example.playlistmaker.presentation.states.PlayerScreenState
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -22,7 +21,7 @@ class PlayerActivity : AppCompatActivity() {
         const val NAME_TRACK = "name"
     }
 
-    private val viewModel: PlayerViewModel by viewModels { PlayerViewModel.Factory() }
+    private val viewModel: PlayerViewModel by viewModel()
 
     private lateinit var playButton: ImageButton
     private lateinit var currentTimeText: TextView
@@ -89,11 +88,7 @@ class PlayerActivity : AppCompatActivity() {
             .into(cover)
 
         currentTimeText.text = state.currentTimeFormatted
-        if (state.isPlaying) {
-            playButton.setImageResource(R.drawable.pause)
-        } else {
-            playButton.setImageResource(R.drawable.button_play)
-        }
+        playButton.setImageResource(if (state.isPlaying) R.drawable.pause else R.drawable.button_play)
     }
 
     override fun onPause() {

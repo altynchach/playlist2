@@ -1,13 +1,12 @@
 package com.example.playlistmaker.presentation.search
 
-import android.content.Context
 import android.os.Handler
 import android.os.Looper
-import androidx.lifecycle.*
-import com.example.playlistmaker.Creator
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import com.example.playlistmaker.domain.interactor.SearchInteractor
 import com.example.playlistmaker.domain.models.Track
-import com.example.playlistmaker.presentation.states.SearchScreenState
 
 class SearchViewModel(private val searchInteractor: SearchInteractor) : ViewModel() {
 
@@ -44,68 +43,53 @@ class SearchViewModel(private val searchInteractor: SearchInteractor) : ViewMode
                 )
             )
         } else {
-            updateState(
-                stateLiveData.value!!.copy(
-                    showHistory = false,
-                    history = emptyList()
-                )
-            )
+            updateState(stateLiveData.value!!.copy(showHistory = false, history = emptyList()))
             debounceSearch(query)
         }
     }
 
     private fun debounceSearch(query: String) {
         searchRunnable?.let { handler.removeCallbacks(it) }
-        searchRunnable = Runnable {
-            search(query)
-        }
+        searchRunnable = Runnable { search(query) }
         handler.postDelayed(searchRunnable!!, 2000)
     }
 
     private fun search(query: String) {
-        updateState(
-            stateLiveData.value!!.copy(
-                isLoading = true,
-                showNothingFound = false,
-                showError = false,
-                showResults = false,
-                results = emptyList()
-            )
-        )
+        updateState(stateLiveData.value!!.copy(
+            isLoading = true,
+            showNothingFound = false,
+            showError = false,
+            showResults = false,
+            results = emptyList()
+        ))
         searchInteractor.searchTracks(query,
             { tracks: List<Track> ->
                 if (tracks.isNotEmpty()) {
-                    updateState(
-                        stateLiveData.value!!.copy(
-                            isLoading = false,
-                            showResults = true,
-                            results = tracks,
-                            showNothingFound = false,
-                            showError = false
-                        )
-                    )
+                    updateState(stateLiveData.value!!.copy(
+                        isLoading = false,
+                        showResults = true,
+                        results = tracks,
+                        showNothingFound = false,
+                        showError = false
+                    ))
                 } else {
-                    updateState(
-                        stateLiveData.value!!.copy(
-                            isLoading = false,
-                            showNothingFound = true,
-                            showResults = false,
-                            results = emptyList(),
-                            showError = false
-                        )
-                    )
+                    updateState(stateLiveData.value!!.copy(
+                        isLoading = false,
+                        showNothingFound = true,
+                        showResults = false,
+                        results = emptyList(),
+                        showError = false
+                    ))
                 }
             },
             {
-                updateState(
-                    stateLiveData.value!!.copy(
-                        isLoading = false,
-                        showError = true,
-                        showResults = false,
-                        showNothingFound = false,
-                        results = emptyList()
-                    )
-                )
+                updateState(stateLiveData.value!!.copy(
+                    isLoading = false,
+                    showError = true,
+                    showResults = false,
+                    showNothingFound = false,
+                    results = emptyList()
+                ))
             }
         )
     }
@@ -113,12 +97,10 @@ class SearchViewModel(private val searchInteractor: SearchInteractor) : ViewMode
     fun onFocusChanged(hasFocus: Boolean) {
         if (hasFocus && currentQuery.isEmpty()) {
             val history = searchInteractor.getSearchHistory()
-            updateState(
-                stateLiveData.value!!.copy(
-                    showHistory = history.isNotEmpty(),
-                    history = history
-                )
-            )
+            updateState(stateLiveData.value!!.copy(
+                showHistory = history.isNotEmpty(),
+                history = history
+            ))
         } else {
             updateState(stateLiveData.value!!.copy(showHistory = false))
         }
@@ -127,12 +109,10 @@ class SearchViewModel(private val searchInteractor: SearchInteractor) : ViewMode
     fun clearHistory() {
         searchInteractor.clearSearchHistory()
         val history = searchInteractor.getSearchHistory()
-        updateState(
-            stateLiveData.value!!.copy(
-                showHistory = currentQuery.isEmpty() && history.isNotEmpty(),
-                history = history
-            )
-        )
+        updateState(stateLiveData.value!!.copy(
+            showHistory = currentQuery.isEmpty() && history.isNotEmpty(),
+            history = history
+        ))
     }
 
     fun saveTrackToHistory(track: Track) {
@@ -147,13 +127,5 @@ class SearchViewModel(private val searchInteractor: SearchInteractor) : ViewMode
 
     private fun updateState(newState: SearchScreenState) {
         stateLiveData.value = newState
-    }
-
-    class Factory(private val context: Context) : ViewModelProvider.Factory {
-        @Suppress("UNCHECKED_CAST")
-        override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            val interactor = Creator.provideSearchInteractor(context)
-            return SearchViewModel(interactor) as T
-        }
     }
 }
