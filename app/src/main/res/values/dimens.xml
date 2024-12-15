@@ -6,6 +6,8 @@
     <dimen name="header_text_size2">22sp</dimen>
     <dimen name="text_size">16sp</dimen>
     <dimen name="button_radius">16dp</dimen>
+    <dimen name="size_20">22dp</dimen>
+    <dimen name="size_22">22dp</dimen>
     <dimen name="size_44">44dp</dimen>
     <dimen name="size_140">140dp</dimen>
     <dimen name="track_height">61dp</dimen>

@@ -157,4 +157,43 @@
         <item name="android:layout_marginBottom">18dp</item>
     </style>
 
+    <style name="ImageViewStyle2">
+        <item name="android:layout_width">@dimen/button_radius</item>
+        <item name="android:layout_height">@dimen/button_radius</item>
+        <item name="android:scaleType">centerCrop</item>
+        <item name="android:foreground">?attr/selectableItemBackground</item>
+        <item name="android:tint">@color/white_black</item>
+
+    </style>
+
+    <style name="normalText" parent="TextAppearance.Design.Tab">
+        <item name="textAllCaps">false</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="fontFamily">@font/ys_display_medium</item>
+        <item name="fontWeight">500</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+
+    <style name="tabLayout" parent="Widget.Design.TabLayout">
+        <item name="tabTextAppearance">@color/white_black</item>
+        <item name="tabSelectedTextColor">@color/white_black</item>
+        <item name="tabBackground">@color/white</item>
+        <item name="tabIndicatorColor">@color/white_black</item>
+        <item name="tabIndicatorFullWidth">false</item>
+    </style>
+
+    <style name="LinearLayoutStyle">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">horizontal</item>
+    </style>
+
+    <style name="mySetTextColor">
+        <item name="android:textColor">@color/white_black</item>
+    </style>
+
+    <style name="mySetBackColor">
+        <item name="android:background">@color/white</item>
+    </style>
+
 </resources>
