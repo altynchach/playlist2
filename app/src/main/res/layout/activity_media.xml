@@ -1,41 +1,72 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    style="@style/mySetBackColor"
+    style="@style/SettingsBackgroundColorStyle"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:layout_height="match_parent">
 
-    <LinearLayout
-        style="@style/LinearLayoutStyle"
-        android:layout_marginStart="@dimen/size_20"
-        android:layout_marginTop="@dimen/size_20"
-        tools:ignore="UseCompoundDrawables">
+    <ImageView
+        android:id="@+id/mediatekaBackButton"
+        style="@style/BackButtonSettingsStyle"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:scaleType="centerInside"
+        android:src="@drawable/settings_back"
+        android:layout_marginVertical="@dimen/padding4"
+        android:layout_marginStart="@dimen/padding4"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/mediatekaTitle"/>
 
-        <ImageView
-            android:id="@+id/iv_back"
-            style="@style/ImageViewStyle2"
-            android:layout_gravity="center"
-            android:src="@drawable/button_background" />
+    <TextView
+        android:id="@+id/mediatekaTitle"
+        style="@style/MainTextStyle"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="@dimen/padding4"
+        android:paddingStart="@dimen/padding12"
+        android:paddingTop="10dp"
+        android:paddingBottom="@dimen/padding12"
+        android:text="@string/library_text"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toEndOf="@id/mediatekaBackButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="@id/mediatekaBackButton"
+        />
 
-        <TextView
-            style="@style/mySetTextColor"
+    <com.google.android.material.tabs.TabLayout
+        android:id = "@+id/tabLayout"
+        style="@style/tabLayoutStyle"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/mediatekaTitle"
+        app:tabMode="fixed"
+        app:tabIndicatorHeight="@dimen/size_2dp"
+        app:tabTextAppearance="@style/MineCustomTabText"
+        android:layout_marginStart="@dimen/button_radius"
+        android:layout_marginEnd="@dimen/button_radius"
+        >
+
+        <com.google.android.material.tabs.TabItem
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginStart="@dimen/size_22"
-            android:fontFamily="@font/ys_display_medium"
-            android:text="@string/button_media"
-            android:textFontWeight="500"
-            android:textSize="@dimen/header_text_size2" />
+            android:text="@string/likedTracks"
+            />
 
-    </LinearLayout>
+        <com.google.android.material.tabs.TabItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/playlists"/>
 
-    <androidx.fragment.app.FragmentContainerView
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/fragment_container_view"
+    </com.google.android.material.tabs.TabLayout>
+
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/mediatekaViewPager2"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="16dp"/>
-
-</LinearLayout>
+        android:layout_height="0dp"
+        app:layout_constraintTop_toBottomOf="@id/tabLayout"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        />
+</androidx.constraintlayout.widget.ConstraintLayout>
