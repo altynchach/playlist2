@@ -1,19 +1,32 @@
 package com.example.playlistmaker.presentation.medialib
 
 import android.os.Bundle
+import android.widget.ImageView
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.viewpager2.widget.ViewPager2
 import com.example.playlistmaker.R
+import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
-import kotlinx.android.synthetic.main.activity_media.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MediaActivity : AppCompatActivity() {
 
     private val viewModel: MediaViewModel by viewModel()
 
+    private lateinit var mediatekaBackButton: ImageView
+    private lateinit var mediatekaTitle: TextView
+    private lateinit var tabLayout: TabLayout
+    private lateinit var mediatekaViewPager2: ViewPager2
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_media)
+
+        mediatekaBackButton = findViewById(R.id.mediatekaBackButton)
+        mediatekaTitle = findViewById(R.id.mediatekaTitle)
+        tabLayout = findViewById(R.id.tabLayout)
+        mediatekaViewPager2 = findViewById(R.id.mediatekaViewPager2)
 
         mediatekaBackButton.setOnClickListener {
             onBackPressedDispatcher.onBackPressed()
@@ -34,7 +47,7 @@ class MediaActivity : AppCompatActivity() {
         }
 
         mediatekaViewPager2.registerOnPageChangeCallback(
-            object : androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback() {
+            object : ViewPager2.OnPageChangeCallback() {
                 override fun onPageSelected(position: Int) {
                     super.onPageSelected(position)
                     viewModel.setSelectedTab(position)
