@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    style="@style/SettingsBackgroundColorStyle"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <Button
+        android:id="@+id/addNewPlaylist"
+        style="@style/ResetButtonSearch"
+        android:text="@string/addNewPlaylist"
+        android:layout_marginTop="@dimen/margin_top"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/mediatekaIsEmpty"
+        />
+
+    <ImageView
+        android:id="@+id/mediatekaIsEmpty"
+        style="@style/NothingFoundImage"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/addNewPlaylist"
+        android:layout_marginTop="@dimen/track_size_46"
+        />
+
+    <TextView
+        android:id="@+id/noCreatedPlaylists"
+        android:text="@string/noPlaylists"
+        app:layout_constraintTop_toBottomOf="@id/mediatekaIsEmpty"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="@dimen/button_radius"
+        style="@style/TextSearchProblem"
+        android:layout_marginHorizontal="@dimen/margin_top"
+
+        />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
