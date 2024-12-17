@@ -1,9 +1,9 @@
 package com.example.playlistmaker.di
 
 import com.example.playlistmaker.presentation.main.MainViewModel
-import com.example.playlistmaker.presentation.medialib.LikedTracksViewModel
-import com.example.playlistmaker.presentation.medialib.MediaViewModel
-import com.example.playlistmaker.presentation.medialib.PlaylistsViewModel
+import com.example.playlistmaker.presentation.medialib.view.LikedTracksViewModel
+import com.example.playlistmaker.presentation.medialib.view.MediaViewModel
+import com.example.playlistmaker.presentation.medialib.view.PlaylistsViewModel
 import com.example.playlistmaker.presentation.player.PlayerViewModel
 import com.example.playlistmaker.presentation.search.SearchViewModel
 import com.example.playlistmaker.presentation.settings.SettingsViewModel

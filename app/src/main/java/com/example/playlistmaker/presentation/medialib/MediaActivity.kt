@@ -6,6 +6,8 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.viewpager2.widget.ViewPager2
 import com.example.playlistmaker.R
+import com.example.playlistmaker.presentation.medialib.adapter.MediatekaViewPagerAdapter
+import com.example.playlistmaker.presentation.medialib.view.MediaViewModel
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import org.koin.androidx.viewmodel.ext.android.viewModel

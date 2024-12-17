@@ -1,10 +1,10 @@
-package com.example.playlistmaker.presentation.medialib
+package com.example.playlistmaker.presentation.medialib.view
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 
-class LikedTracksViewModel : ViewModel() {
+class PlaylistsViewModel : ViewModel() {
     private val _state = MutableLiveData<Unit>()
     val state: LiveData<Unit> = _state
 

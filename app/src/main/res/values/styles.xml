@@ -170,7 +170,7 @@
     </style>
 
     <style name="BackButtonSettingsStyle">
-        <item name="android:tint">@color/white_black</item>
+        <item name="android:tint">@color/search_text</item>
     </style>
 
     <style name="MainTextStyle">

@@ -26,5 +26,6 @@
     <dimen name="size_2dp">2dp</dimen>
     <dimen name="size_106dp">106dp</dimen>
     <dimen name="size334">334dp</dimen>
+    <dimen name="size_44">44dp</dimen>
 
 </resources>
