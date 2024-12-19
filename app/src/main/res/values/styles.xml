@@ -205,6 +205,12 @@
         <item name="android:fontFamily">@font/ys_display_medium</item>
     </style>
 
+    <style name="NavigationView">
+        <item name="itemIconTint">@drawable/bottom_nav_icon_selector</item>
+        <item name="itemTextColor">@drawable/bottom_nav_icon_selector</item>
+        <item name="android:background">@color/white</item>
+    </style>
+
     <style name="ResetButtonSearch">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>

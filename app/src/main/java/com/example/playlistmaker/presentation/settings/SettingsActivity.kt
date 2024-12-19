@@ -17,7 +17,7 @@ class SettingsActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_settings)
+        setContentView(R.layout.fragment_settings)
 
         val arrow = findViewById<ImageView>(R.id.back_button)
         arrow.setOnClickListener {

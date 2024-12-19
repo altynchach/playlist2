@@ -23,7 +23,7 @@ class MediaActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_media)
+        setContentView(R.layout.fragment_media)
 
         mediatekaBackButton = findViewById(R.id.mediatekaBackButton)
         mediatekaTitle = findViewById(R.id.mediatekaTitle)

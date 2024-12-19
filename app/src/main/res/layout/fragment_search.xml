@@ -25,13 +25,6 @@
             android:padding="0dp"
             tools:ignore="UselessParent">
 
-            <ImageView
-                android:id="@+id/back_button2"
-                style="@style/BackButtonStyle"
-                android:layout_marginStart="16dp"
-                android:adjustViewBounds="true"
-                android:src="@drawable/settings_back"
-                tools:ignore="ContentDescription" />
 
             <TextView
                 android:id="@+id/action_bar_search"

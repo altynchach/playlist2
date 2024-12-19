@@ -115,6 +115,7 @@
 
             <ImageButton
                 android:id="@+id/addToPlaylist"
+                android:text="@string/addNewPlaylist"
                 android:layout_width="51dp"
                 android:layout_height="51dp"
                 android:background="@drawable/round_button"

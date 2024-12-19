@@ -45,7 +45,7 @@ class SearchActivity : AppCompatActivity() {
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_search)
+        setContentView(R.layout.fragment_search)
 
         inputText = findViewById(R.id.inputEditText)
         recyclerView = findViewById(R.id.recyclerView)

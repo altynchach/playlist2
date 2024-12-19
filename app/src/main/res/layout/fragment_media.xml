@@ -5,33 +5,21 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <ImageView
-        android:id="@+id/mediatekaBackButton"
-        style="@style/BackButtonSettingsStyle"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:scaleType="centerInside"
-        android:src="@drawable/settings_back"
-        android:layout_marginVertical="@dimen/padding4"
-        android:layout_marginStart="@dimen/padding4"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/mediatekaTitle"/>
 
     <TextView
         android:id="@+id/mediatekaTitle"
         style="@style/MainTextStyle"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/padding4"
         android:paddingStart="@dimen/padding12"
         android:paddingTop="10dp"
+        android:paddingEnd="84dp"
         android:paddingBottom="@dimen/padding12"
         android:text="@string/library_text"
+        app:layout_constraintBottom_toTopOf="@id/tabLayout"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toEndOf="@id/mediatekaBackButton"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="@id/mediatekaBackButton"
         />
 
     <com.google.android.material.tabs.TabLayout

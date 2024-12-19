@@ -30,7 +30,6 @@ class MainActivity : AppCompatActivity() {
 
         val libraryButton = findViewById<Button>(R.id.button_library)
         libraryButton.setOnClickListener {
-            // При клике запускаем MediaActivity
             startActivity(Intent(this, MediaActivity::class.java))
         }
     }
