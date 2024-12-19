@@ -22,4 +22,5 @@
         android:name="com.example.playlistmaker.presentation.settings.SettingsFragment"
         android:label="@string/settings_text"
         tools:layout="@layout/fragment_settings" />
+
 </navigation>
