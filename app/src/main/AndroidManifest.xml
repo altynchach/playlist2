@@ -16,18 +16,6 @@
         android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar"
         tools:targetApi="31">
         <activity
-            android:name=".presentation.player.PlayerActivity"
-            android:exported="false" />
-        <activity
-            android:name=".presentation.search.SearchFragment"
-            android:exported="false" />
-        <activity
-            android:name=".presentation.medialib.LibraryFragment"
-            android:exported="false" />
-        <activity
-            android:name=".presentation.settings.SettingsFragment"
-            android:exported="false" />
-        <activity
             android:name=".presentation.main.RootActivity"
             android:exported="true">
             <intent-filter>

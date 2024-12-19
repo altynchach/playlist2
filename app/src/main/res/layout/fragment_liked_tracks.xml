@@ -5,7 +5,7 @@
     style="@style/SettingsBackgroundColorStyle"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context="com.example.playlistmaker.presentation.medialib.MediaActivity">
+    tools:context="com.example.playlistmaker.presentation.medialib.LibraryFragment">
 
     <ImageView
         android:id="@+id/mediatekaIsEmpty"

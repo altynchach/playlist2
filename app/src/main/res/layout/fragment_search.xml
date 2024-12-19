@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/white_black"
-    tools:context=".presentation.search.SearchActivity">
+    tools:context=".presentation.search.SearchFragment">
 
     <GridLayout
         android:layout_width="match_parent"
