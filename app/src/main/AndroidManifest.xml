@@ -19,20 +19,19 @@
             android:name=".presentation.player.PlayerActivity"
             android:exported="false" />
         <activity
-            android:name=".presentation.search.SearchActivity"
+            android:name=".presentation.search.SearchFragment"
             android:exported="false" />
         <activity
-            android:name=".presentation.medialib.MediaActivity"
+            android:name=".presentation.medialib.LibraryFragment"
             android:exported="false" />
         <activity
-            android:name=".presentation.settings.SettingsActivity"
+            android:name=".presentation.settings.SettingsFragment"
             android:exported="false" />
         <activity
-            android:name=".presentation.main.MainActivity"
+            android:name=".presentation.main.RootActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
