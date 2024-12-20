@@ -1,4 +1,3 @@
-// com/example/playlistmaker/presentation/search/SearchFragment.kt
 package com.example.playlistmaker.presentation.search
 
 import android.annotation.SuppressLint
@@ -23,7 +22,8 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 class SearchFragment : Fragment() {
 
     companion object {
-        const val NAME_TRACK = "name"
+        const val NAME_TRACK = "TRACK_DATA"
+        const val SEARCH_QUERY_KEY = "SEARCH_QUERY"
     }
 
     private val viewModel: SearchViewModel by viewModel()
@@ -44,9 +44,7 @@ class SearchFragment : Fragment() {
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
-    ): View {
-        return inflater.inflate(R.layout.fragment_search, container, false)
-    }
+    ): View = inflater.inflate(R.layout.fragment_search, container, false)
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -99,9 +97,7 @@ class SearchFragment : Fragment() {
             if (event.action == MotionEvent.ACTION_UP) {
                 val drawableEnd = 2
                 val drawable = inputText.compoundDrawables[drawableEnd]
-                if (drawable != null &&
-                    event.rawX >= (inputText.right - drawable.bounds.width())
-                ) {
+                if (drawable != null && event.rawX >= (inputText.right - drawable.bounds.width())) {
                     inputText.text.clear()
                     hideKeyboard(v)
                     return@setOnTouchListener true
@@ -115,7 +111,7 @@ class SearchFragment : Fragment() {
         }
 
         if (savedInstanceState != null) {
-            searchText = savedInstanceState.getString("SEARCH_QUERY", "")
+            searchText = savedInstanceState.getString(SEARCH_QUERY_KEY, "")
             inputText.setText(searchText)
         }
 
@@ -128,7 +124,7 @@ class SearchFragment : Fragment() {
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putString("SEARCH_QUERY", searchText)
+        outState.putString(SEARCH_QUERY_KEY, searchText)
     }
 
     private fun hideKeyboard(view: View) {
@@ -167,7 +163,8 @@ class SearchFragment : Fragment() {
     }
 
     private fun openPlayerActivity(track: Track) {
-        val displayIntent = Intent(requireContext(), PlayerActivity::class.java)
+        val ctx = context ?: return
+        val displayIntent = Intent(ctx, PlayerActivity::class.java)
         val strTrack = Gson().toJson(track)
         displayIntent.putExtra(NAME_TRACK, strTrack)
         startActivity(displayIntent)

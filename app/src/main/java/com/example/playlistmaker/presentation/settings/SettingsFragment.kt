@@ -1,4 +1,3 @@
-// com/example/playlistmaker/presentation/settings/SettingsFragment.kt
 package com.example.playlistmaker.presentation.settings
 
 import android.content.Intent
