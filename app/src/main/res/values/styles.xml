@@ -83,8 +83,7 @@
     <style name="header_page">
         <item name="android:textColor">@color/search_text</item>
         <item name="android:textSize">@dimen/header_text_size2</item>
-        <item name="android:fontFamily">@font/ys_text_medium</item>
-        <item name="android:textStyle">bold</item>
+        <item name="android:fontFamily">@font/ys_display_medium</item>
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
     </style>
@@ -141,7 +140,7 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textSize">13sp</item>
         <item name="android:textFontWeight">400</item>
-        <item name="fontFamily">@font/ys_display_regular</item>
+        <item name="android:fontFamily">@font/ys_display_regular</item>
         <item name="android:textColor">?attr/colorOnPrimary</item>
         <item name="android:layout_marginBottom">18dp</item>
         <item name="layout_constrainedWidth">true</item>
@@ -171,13 +170,6 @@
 
     <style name="BackButtonSettingsStyle">
         <item name="android:tint">@color/search_text</item>
-    </style>
-
-    <style name="MainTextStyle">
-        <item name="android:textColor">@color/search_text</item>
-        <item name="android:textSize">@dimen/header_text_size2</item>
-        <item name="fontFamily">@font/ys_display_medium</item>
-        <item name="android:textFontWeight">500</item>
     </style>
 
     <style name="tabLayoutStyle">
