@@ -1,3 +1,4 @@
+// com/example/playlistmaker/presentation/medialib/LibraryFragment.kt
 package com.example.playlistmaker.presentation.medialib
 
 import android.os.Bundle
@@ -22,7 +23,7 @@ class LibraryFragment : Fragment() {
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         return inflater.inflate(R.layout.fragment_library, container, false)
     }
 
@@ -41,7 +42,6 @@ class LibraryFragment : Fragment() {
             }
         }.attach()
 
-        // Observe ViewModel if needed
         viewModel.selectedTab.observe(viewLifecycleOwner) { selectedIndex ->
             mediatekaViewPager2.currentItem = selectedIndex
         }

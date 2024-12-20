@@ -1,3 +1,4 @@
+// com/example/playlistmaker/presentation/search/SearchFragment.kt
 package com.example.playlistmaker.presentation.search
 
 import android.annotation.SuppressLint
@@ -43,7 +44,7 @@ class SearchFragment : Fragment() {
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         return inflater.inflate(R.layout.fragment_search, container, false)
     }
 

@@ -14,7 +14,7 @@ class RootActivity : AppCompatActivity() {
         setContentView(R.layout.root_activity)
 
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.rootFragmentContainerView)
-                as? NavHostFragment ?: throw IllegalStateException("NavHostFragment not found")
+                as NavHostFragment
         val navController = navHostFragment.navController
 
         val bottomNavView = findViewById<BottomNavigationView>(R.id.bottomNavigationView)

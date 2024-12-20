@@ -37,7 +37,7 @@ class PlayerActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.fragment_player)
+        setContentView(R.layout.activity_player)
 
         val backButton = findViewById<ImageButton>(R.id.buttonBack)
         playButton = findViewById(R.id.buttonPlay)

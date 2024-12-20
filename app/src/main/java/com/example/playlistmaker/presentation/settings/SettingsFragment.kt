@@ -1,3 +1,4 @@
+// com/example/playlistmaker/presentation/settings/SettingsFragment.kt
 package com.example.playlistmaker.presentation.settings
 
 import android.content.Intent
@@ -21,8 +22,8 @@ class SettingsFragment : Fragment() {
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+        savedInstanceState: Bundle?,
+    ): View {
         return inflater.inflate(R.layout.fragment_settings, container, false)
     }
 
