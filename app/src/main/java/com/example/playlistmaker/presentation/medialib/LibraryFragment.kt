@@ -1,4 +1,3 @@
-// com/example/playlistmaker/presentation/medialib/LibraryFragment.kt
 package com.example.playlistmaker.presentation.medialib
 
 import android.os.Bundle
