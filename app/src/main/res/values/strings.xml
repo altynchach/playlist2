@@ -35,4 +35,6 @@
     <string name="mediatekaIsEmpty">Ваша медиатека пуста</string>
     <string name="noPlaylists">Вы не создали\nни одного плейлиста</string>
     <string name="addNewPlaylist">Новый плейлист</string>
+    <string name="practicum_offer_url">https://yandex.ru/legal/practicum_offer/</string>
+
 </resources>
