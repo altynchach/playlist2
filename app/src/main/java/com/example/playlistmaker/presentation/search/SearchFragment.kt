@@ -1,6 +1,7 @@
 package com.example.playlistmaker.presentation.search
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -12,6 +13,7 @@ import android.widget.*
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.playlistmaker.R
 import com.example.playlistmaker.domain.models.Track
 import com.example.playlistmaker.presentation.player.PlayerActivity
@@ -29,14 +31,14 @@ class SearchFragment : Fragment() {
     private val viewModel: SearchViewModel by viewModel()
 
     private lateinit var inputText: EditText
-    private lateinit var recyclerView: androidx.recyclerview.widget.RecyclerView
+    private lateinit var recyclerView: RecyclerView
     private lateinit var trackAdapter: TrackAdapter
     private lateinit var nothingFound: LinearLayout
     private lateinit var connectionProblem: LinearLayout
     private lateinit var reloadButton: Button
     private lateinit var progressBarLayout: FrameLayout
     private lateinit var searchHistoryLayout: LinearLayout
-    private lateinit var historyRecyclerView: androidx.recyclerview.widget.RecyclerView
+    private lateinit var historyRecyclerView: RecyclerView
     private lateinit var clearHistoryButton: Button
 
     private var lastClickTime: Long = 0
@@ -128,7 +130,7 @@ class SearchFragment : Fragment() {
     }
 
     private fun hideKeyboard(view: View) {
-        val imm = requireContext().getSystemService(android.content.Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.hideSoftInputFromWindow(view.windowToken, 0)
     }
 
