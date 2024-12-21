@@ -1,9 +1,10 @@
 package com.example.playlistmaker.presentation.medialib
 
 import android.os.Bundle
-import android.widget.ImageView
-import android.widget.TextView
-import androidx.appcompat.app.AppCompatActivity
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import androidx.viewpager2.widget.ViewPager2
 import com.example.playlistmaker.R
 import com.example.playlistmaker.presentation.medialib.adapter.MediatekaViewPagerAdapter
@@ -12,29 +13,25 @@ import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class MediaActivity : AppCompatActivity() {
+class LibraryFragment : Fragment() {
 
     private val viewModel: MediaViewModel by viewModel()
 
-    private lateinit var mediatekaBackButton: ImageView
-    private lateinit var mediatekaTitle: TextView
     private lateinit var tabLayout: TabLayout
     private lateinit var mediatekaViewPager2: ViewPager2
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_media)
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
+    ): View {
+        return inflater.inflate(R.layout.fragment_library, container, false)
+    }
 
-        mediatekaBackButton = findViewById(R.id.mediatekaBackButton)
-        mediatekaTitle = findViewById(R.id.mediatekaTitle)
-        tabLayout = findViewById(R.id.tabLayout)
-        mediatekaViewPager2 = findViewById(R.id.mediatekaViewPager2)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        tabLayout = view.findViewById(R.id.tabLayout)
+        mediatekaViewPager2 = view.findViewById(R.id.mediatekaViewPager2)
 
-        mediatekaBackButton.setOnClickListener {
-            onBackPressedDispatcher.onBackPressed()
-        }
-
-        val adapter = MediatekaViewPagerAdapter(this)
+        val adapter = MediatekaViewPagerAdapter(requireActivity())
         mediatekaViewPager2.adapter = adapter
 
         TabLayoutMediator(tabLayout, mediatekaViewPager2) { tab, position ->
@@ -44,7 +41,7 @@ class MediaActivity : AppCompatActivity() {
             }
         }.attach()
 
-        viewModel.selectedTab.observe(this) { selectedIndex ->
+        viewModel.selectedTab.observe(viewLifecycleOwner) { selectedIndex ->
             mediatekaViewPager2.currentItem = selectedIndex
         }
 
