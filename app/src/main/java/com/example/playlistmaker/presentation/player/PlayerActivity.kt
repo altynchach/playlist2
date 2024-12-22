@@ -1,6 +1,7 @@
 package com.example.playlistmaker.presentation.player
 
 import android.os.Bundle
+import android.util.Log
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
@@ -10,7 +11,6 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.playlistmaker.R
 import com.example.playlistmaker.domain.models.Track
 import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -18,7 +18,7 @@ import java.util.Locale
 class PlayerActivity : AppCompatActivity() {
 
     companion object {
-        const val NAME_TRACK = "name"
+        const val NAME_TRACK = "TRACK_DATA"
     }
 
     private val viewModel: PlayerViewModel by viewModel()
@@ -54,8 +54,26 @@ class PlayerActivity : AppCompatActivity() {
 
         backButton.setOnClickListener { finish() }
 
-        val type = object : TypeToken<Track>() {}.type
-        val track: Track = Gson().fromJson(intent.getStringExtra(NAME_TRACK), type)
+        val json = intent.getStringExtra(NAME_TRACK)
+        Log.d("PlayerActivity", "Received JSON: $json")
+
+        if (json.isNullOrEmpty()) {
+            finish()
+            return
+        }
+
+        val track = try {
+            Gson().fromJson(json, Track::class.java)
+        } catch (e: Exception) {
+            Log.e("PlayerActivity", "Error parsing track: ${e.message}", e)
+            null
+        }
+
+        if (track == null) {
+            finish()
+            return
+        }
+
         viewModel.setTrack(track)
 
         playButton.setOnClickListener {
@@ -70,15 +88,27 @@ class PlayerActivity : AppCompatActivity() {
     private fun renderState(state: PlayerScreenState) {
         val track = state.track ?: return
 
-        title.text = track.trackName
-        author.text = track.artistName
-        durationSong.text = SimpleDateFormat("mm:ss", Locale.getDefault()).format(track.trackTime)
+        title.text = track.trackName ?: ""
+        author.text = track.artistName ?: ""
+        durationSong.text = track.trackTime?.let {
+            SimpleDateFormat("mm:ss", Locale.getDefault()).format(it)
+        } ?: ""
+
         albumSong.text = track.collectionName ?: ""
-        yearSong.text = track.releaseDate?.substring(0,4) ?: ""
+
+        yearSong.text = track.releaseDate?.let {
+            if (it.length >= 4) it.substring(0,4) else ""
+        } ?: ""
+
         genreSong.text = track.primaryGenreName ?: ""
         countrySong.text = track.country ?: ""
 
-        val imgSource = track.artworkUrl100.replaceAfterLast('/', "512x512bb.jpg")
+        val artworkUrl = track.artworkUrl100 ?: ""
+        val imgSource = if (artworkUrl.contains("/")) {
+            artworkUrl.replaceAfterLast('/', "512x512bb.jpg")
+        } else {
+            artworkUrl
+        }
 
         Glide.with(this)
             .load(imgSource)
@@ -88,7 +118,9 @@ class PlayerActivity : AppCompatActivity() {
             .into(cover)
 
         currentTimeText.text = state.currentTimeFormatted
-        playButton.setImageResource(if (state.isPlaying) R.drawable.pause else R.drawable.button_play)
+        playButton.setImageResource(
+            if (state.isPlaying) R.drawable.pause else R.drawable.button_play
+        )
     }
 
     override fun onPause() {

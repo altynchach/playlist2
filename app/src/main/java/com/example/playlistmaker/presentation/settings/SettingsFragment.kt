@@ -6,32 +6,34 @@ import android.os.Bundle
 import android.widget.ImageView
 import android.widget.Switch
 import android.widget.TextView
+import androidx.fragment.app.Fragment
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import com.example.playlistmaker.R
 import com.example.playlistmaker.presentation.utils.ThemeManager
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class SettingsActivity : AppCompatActivity() {
+class SettingsFragment : Fragment() {
 
     private val viewModel: SettingsViewModel by viewModel()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_settings)
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?,
+    ): View {
+        return inflater.inflate(R.layout.fragment_settings, container, false)
+    }
 
-        val arrow = findViewById<ImageView>(R.id.back_button)
-        arrow.setOnClickListener {
-            finish()
-        }
-
-        val themeSwitch = findViewById<Switch>(R.id.switch_theme)
-
-        val shareAppButton = findViewById<TextView>(R.id.tvShareApp)
-        val shareAppImage = findViewById<ImageView>(R.id.iv_share_app)
-        val supportButton = findViewById<TextView>(R.id.tvSupport)
-        val supportImage = findViewById<ImageView>(R.id.ivSupport)
-        val userAgreementButton = findViewById<TextView>(R.id.tvUserAgreement)
-        val userAgreementImage = findViewById<ImageView>(R.id.ivUserAgreement)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        val themeSwitch = view.findViewById<Switch>(R.id.switch_theme)
+        val shareAppButton = view.findViewById<TextView>(R.id.tvShareApp)
+        val shareAppImage = view.findViewById<ImageView>(R.id.iv_share_app)
+        val supportButton = view.findViewById<TextView>(R.id.tvSupport)
+        val supportImage = view.findViewById<ImageView>(R.id.ivSupport)
+        val userAgreementButton = view.findViewById<TextView>(R.id.tvUserAgreement)
+        val userAgreementImage = view.findViewById<ImageView>(R.id.ivUserAgreement)
 
         shareAppButton.setOnClickListener { shareApp() }
         shareAppImage.setOnClickListener { shareApp() }
@@ -42,21 +44,20 @@ class SettingsActivity : AppCompatActivity() {
         userAgreementButton.setOnClickListener { openUserAgreement() }
         userAgreementImage.setOnClickListener { openUserAgreement() }
 
-        viewModel.state.observe(this) { state ->
-            renderState(state)
+        viewModel.state.observe(viewLifecycleOwner) { state ->
+            renderState(state, themeSwitch)
         }
 
         themeSwitch.setOnCheckedChangeListener { _, isChecked ->
             viewModel.onThemeSwitchChanged(isChecked)
             ThemeManager.applyTheme(isChecked)
-            delegate.applyDayNight()
+            (requireActivity() as AppCompatActivity).delegate.applyDayNight()
         }
 
         viewModel.init()
     }
 
-    private fun renderState(state: SettingsScreenState) {
-        val themeSwitch = findViewById<Switch>(R.id.switch_theme)
+    private fun renderState(state: SettingsScreenState, themeSwitch: Switch) {
         themeSwitch.isChecked = state.isDarkMode
     }
 
