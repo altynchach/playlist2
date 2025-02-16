@@ -12,6 +12,7 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.playlistmaker.R
@@ -19,6 +20,9 @@ import com.example.playlistmaker.domain.models.Track
 import com.example.playlistmaker.presentation.player.PlayerActivity
 import com.example.playlistmaker.presentation.search.adapters.TrackAdapter
 import com.google.gson.Gson
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class SearchFragment : Fragment() {
@@ -40,12 +44,15 @@ class SearchFragment : Fragment() {
     private lateinit var searchHistoryLayout: LinearLayout
     private lateinit var historyRecyclerView: RecyclerView
     private lateinit var clearHistoryButton: Button
+    // private var lastClickTime: Long = 0
 
-    private var lastClickTime: Long = 0
     private var searchText: String = ""
 
+    private var clickJob: Job? = null
+
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View = inflater.inflate(R.layout.fragment_search, container, false)
 
     @SuppressLint("ClickableViewAccessibility")
@@ -73,12 +80,25 @@ class SearchFragment : Fragment() {
         }
 
         trackAdapter.setOnTrackClickListener { track ->
+            if (clickJob?.isActive == true) {
+                return@setOnTrackClickListener
+            }
+            clickJob = viewLifecycleOwner.lifecycleScope.launch {
+                viewModel.saveTrackToHistory(track)
+                openPlayerActivity(track)
+
+                delay(2000)
+            }
+
+            // СТАРЫЙ КОД (не удаляем, но не используем):
+            /*
             val currentTime = System.currentTimeMillis()
             if (currentTime - lastClickTime > 2000) {
                 lastClickTime = currentTime
                 viewModel.saveTrackToHistory(track)
                 openPlayerActivity(track)
             }
+            */
         }
 
         historyAdapter.setOnTrackClickListener { track ->
