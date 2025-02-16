@@ -90,15 +90,6 @@ class SearchFragment : Fragment() {
                 delay(2000)
             }
 
-            // СТАРЫЙ КОД
-            /*
-            val currentTime = System.currentTimeMillis()
-            if (currentTime - lastClickTime > 2000) {
-                lastClickTime = currentTime
-                viewModel.saveTrackToHistory(track)
-                openPlayerActivity(track)
-            }
-            */
         }
 
         historyAdapter.setOnTrackClickListener { track ->
