@@ -8,6 +8,7 @@ import com.example.playlistmaker.domain.interactor.PlayerInteractor
 import com.example.playlistmaker.domain.models.Track
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import java.util.Locale
 import java.util.concurrent.TimeUnit
@@ -23,7 +24,9 @@ class PlayerViewModel(
 
     init {
         playerInteractor.setOnCompletionListener {
-            stopPlayback()
+            viewModelScope.launch {
+                stopPlayback()
+            }
         }
     }
 
@@ -52,7 +55,7 @@ class PlayerViewModel(
     private fun pausePlayback() {
         playerInteractor.pause()
         stateLiveData.value = stateLiveData.value?.copy(isPlaying = false)
-        stopUpdatingProgress(false)
+        stopUpdatingProgress(isStop = false)
     }
 
     private fun stopPlayback() {
@@ -61,13 +64,13 @@ class PlayerViewModel(
             isPlaying = false,
             currentTimeFormatted = "00:00"
         )
-        stopUpdatingProgress(true)
+        stopUpdatingProgress(isStop = true)
     }
 
     private fun startUpdatingProgress() {
         updateJob?.cancel()
         updateJob = viewModelScope.launch {
-            while (stateLiveData.value?.isPlaying == true) {
+            while (isActive && stateLiveData.value?.isPlaying == true) {
                 val currentPositionMs = playerInteractor.getCurrentPosition()
                 val minutes = TimeUnit.MILLISECONDS.toMinutes(currentPositionMs.toLong()) % 60
                 val seconds = TimeUnit.MILLISECONDS.toSeconds(currentPositionMs.toLong()) % 60
@@ -77,7 +80,8 @@ class PlayerViewModel(
                 if (oldState != null) {
                     stateLiveData.value = oldState.copy(currentTimeFormatted = currentTime)
                 }
-                delay(300)
+
+                delay(300) // обновляем прогресс каждые 300 мс
             }
         }
     }
