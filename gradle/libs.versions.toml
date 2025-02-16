@@ -24,6 +24,8 @@ retrofit = "2.11.0"
 converterGson = "2.11.0"
 gson = "2.10.1"
 retrofitVersion = "2.11.0"
+roomCommon = "2.6.1"
+roomKtx = "2.6.1"
 
 [libraries]
 androidx-activity-v191 = { module = "androidx.activity:activity", version.ref = "activityVersion" }
@@ -50,6 +52,8 @@ gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
 material-v1110 = { module = "com.google.android.material:material", version.ref = "materialVersion" }
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
 retrofit-v290 = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofitVersion" }
+androidx-room-common = { group = "androidx.room", name = "room-common", version.ref = "roomCommon" }
+androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "roomKtx" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
