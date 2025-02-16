@@ -46,7 +46,6 @@
 
             <EditText
                 android:id="@+id/inputEditText"
-                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
 
@@ -63,7 +62,8 @@
                 android:textColor="@color/color_area"
                 android:textColorHint="@color/icon_search"
                 android:textCursorDrawable="@drawable/cursor_color"
-                tools:ignore="TouchTargetSizeCheck" />
+                tools:ignore="TouchTargetSizeCheck"
+                android:layout_width="0dp"/>
         </LinearLayout>
 
         <LinearLayout

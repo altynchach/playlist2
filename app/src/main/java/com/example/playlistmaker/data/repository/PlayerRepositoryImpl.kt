@@ -11,7 +11,6 @@ class PlayerRepositoryImpl( private val mediaPlayer: MediaPlayer ) : PlayerRepos
     private var isPrepared = false
     private var shouldPlay = false
 
-
     override fun setDataSource(url: String) {
         mediaPlayer.reset()
         isPrepared = false
@@ -55,13 +54,21 @@ class PlayerRepositoryImpl( private val mediaPlayer: MediaPlayer ) : PlayerRepos
     }
 
     override fun stop() {
-        if (mediaPlayer.isPlaying) {
-            mediaPlayer.stop()
-        }
-        mediaPlayer.prepareAsync()
-        isPrepared = false
-        mediaPlayer.setOnPreparedListener {
-            isPrepared = true
+        try {
+            if (mediaPlayer.isPlaying) {
+                mediaPlayer.stop()
+                mediaPlayer.prepareAsync()
+                isPrepared = false
+                mediaPlayer.setOnPreparedListener {
+                    isPrepared = true
+                }
+            } else {
+                mediaPlayer.seekTo(0)
+            }
+        } catch (e: IOException) {
+            onErrorListener?.invoke("Failed to stop: ${e.message}")
+        } catch (e: IllegalStateException) {
+            onErrorListener?.invoke("Failed to stop, state error: ${e.message}")
         }
     }
 
@@ -82,4 +89,3 @@ class PlayerRepositoryImpl( private val mediaPlayer: MediaPlayer ) : PlayerRepos
         onErrorListener = listener
     }
 }
-

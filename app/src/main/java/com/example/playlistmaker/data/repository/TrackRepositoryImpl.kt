@@ -5,31 +5,24 @@ import com.example.playlistmaker.data.network.ITunesApiService
 import com.example.playlistmaker.data.dto.TracksResponse
 import com.example.playlistmaker.domain.models.Track
 import com.example.playlistmaker.domain.repository.TrackRepository
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.io.IOException
 
 class TrackRepositoryImpl(private val apiService: ITunesApiService) : TrackRepository {
-    override fun searchTracks(
-        query: String,
-        onSuccess: (List<Track>) -> Unit,
-        onFailure: () -> Unit
-    ) {
-        apiService.search(query).enqueue(object : Callback<TracksResponse> {
-            override fun onResponse(call: Call<TracksResponse>, response: Response<TracksResponse>) {
-                if (response.isSuccessful && response.body()?.results != null) {
-                    val trackDtos = response.body()!!.results
-                    val tracks = trackDtos.map { TrackMapper.mapDtoToDomain(it) }
-                    onSuccess(tracks)
-                } else {
-                    onFailure()
-                }
-            }
 
-            override fun onFailure(call: Call<TracksResponse>, t: Throwable) {
-                onFailure()
-            }
-        })
+    override fun searchTracksFlow(query: String): Flow<List<Track>> = flow {
+        try {
+            val response = apiService.searchSuspend(query)
+            val tracks = response.results.map { TrackMapper.mapDtoToDomain(it) }
+            emit(tracks)
+        } catch (e: IOException) {
+            emit(emptyList())
+        } catch (e: Exception) {
+            emit(emptyList())
+        }
     }
 }
-
