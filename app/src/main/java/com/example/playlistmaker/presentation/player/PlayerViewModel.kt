@@ -1,12 +1,14 @@
 package com.example.playlistmaker.presentation.player
 
-import android.os.Handler
-import android.os.Looper
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.playlistmaker.domain.interactor.PlayerInteractor
 import com.example.playlistmaker.domain.models.Track
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import java.util.Locale
 import java.util.concurrent.TimeUnit
 
@@ -17,21 +19,7 @@ class PlayerViewModel(
     private val stateLiveData = MutableLiveData(PlayerScreenState())
     fun getState(): LiveData<PlayerScreenState> = stateLiveData
 
-    private val handler = Handler(Looper.getMainLooper())
-    private var isUpdatingProgress = false
-    private val updateRunnable = object : Runnable {
-        override fun run() {
-            if (isUpdatingProgress) {
-                val currentPositionMs = playerInteractor.getCurrentPosition()
-                val minutes = TimeUnit.MILLISECONDS.toMinutes(currentPositionMs.toLong()) % 60
-                val seconds = TimeUnit.MILLISECONDS.toSeconds(currentPositionMs.toLong()) % 60
-                val currentTime = String.format(Locale.getDefault(), "%02d:%02d", minutes, seconds)
-                stateLiveData.value = stateLiveData.value?.copy(currentTimeFormatted = currentTime)
-
-                handler.postDelayed(this, 1000)
-            }
-        }
-    }
+    private var updateJob: Job? = null
 
     init {
         playerInteractor.setOnCompletionListener {
@@ -64,7 +52,7 @@ class PlayerViewModel(
     private fun pausePlayback() {
         playerInteractor.pause()
         stateLiveData.value = stateLiveData.value?.copy(isPlaying = false)
-        stopUpdatingProgress()
+        stopUpdatingProgress(false)
     }
 
     private fun stopPlayback() {
@@ -73,18 +61,36 @@ class PlayerViewModel(
             isPlaying = false,
             currentTimeFormatted = "00:00"
         )
-        stopUpdatingProgress()
+        stopUpdatingProgress(true)
     }
 
     private fun startUpdatingProgress() {
-        stopUpdatingProgress()
-        isUpdatingProgress = true
-        handler.post(updateRunnable)
+        updateJob?.cancel()
+        updateJob = viewModelScope.launch {
+            while (stateLiveData.value?.isPlaying == true) {
+                val currentPositionMs = playerInteractor.getCurrentPosition()
+                val minutes = TimeUnit.MILLISECONDS.toMinutes(currentPositionMs.toLong()) % 60
+                val seconds = TimeUnit.MILLISECONDS.toSeconds(currentPositionMs.toLong()) % 60
+                val currentTime = String.format(Locale.getDefault(), "%02d:%02d", minutes, seconds)
+
+                val oldState = stateLiveData.value
+                if (oldState != null) {
+                    stateLiveData.value = oldState.copy(currentTimeFormatted = currentTime)
+                }
+                delay(300)
+            }
+        }
     }
 
-    private fun stopUpdatingProgress() {
-        isUpdatingProgress = false
-        handler.removeCallbacksAndMessages(null)
+    private fun stopUpdatingProgress(isStop: Boolean) {
+        updateJob?.cancel()
+        updateJob = null
+        if (isStop) {
+            val oldState = stateLiveData.value
+            if (oldState != null) {
+                stateLiveData.value = oldState.copy(currentTimeFormatted = "00:00")
+            }
+        }
     }
 
     fun onPause() {
@@ -94,7 +100,7 @@ class PlayerViewModel(
     }
 
     fun onDestroy() {
-        stopUpdatingProgress()
+        stopUpdatingProgress(true)
         playerInteractor.release()
     }
 }
