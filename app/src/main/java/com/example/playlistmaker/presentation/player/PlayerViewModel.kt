@@ -13,13 +13,6 @@ import kotlinx.coroutines.launch
 import java.util.Locale
 import java.util.concurrent.TimeUnit
 
-data class PlayerScreenState(
-    val track: Track? = null,
-    val isPlaying: Boolean = false,
-    val currentTimeFormatted: String = "00:00",
-    val isFavorite: Boolean = false
-)
-
 class PlayerViewModel(
     private val playerInteractor: PlayerInteractor,
     private val favoritesInteractor: FavoritesInteractor

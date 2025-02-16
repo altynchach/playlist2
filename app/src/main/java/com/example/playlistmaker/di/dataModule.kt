@@ -36,7 +36,10 @@ val dataModule = module {
     }
 
     single<TrackRepository> {
-        TrackRepositoryImpl(apiService = get())
+        TrackRepositoryImpl(
+            apiService = get(),
+            favoritesRepository = get()
+        )
     }
 
     single<SearchHistoryRepository> {
