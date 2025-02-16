@@ -44,6 +44,7 @@ class SearchFragment : Fragment() {
     private lateinit var searchHistoryLayout: LinearLayout
     private lateinit var historyRecyclerView: RecyclerView
     private lateinit var clearHistoryButton: Button
+
     // private var lastClickTime: Long = 0
 
     private var searchText: String = ""
@@ -86,11 +87,10 @@ class SearchFragment : Fragment() {
             clickJob = viewLifecycleOwner.lifecycleScope.launch {
                 viewModel.saveTrackToHistory(track)
                 openPlayerActivity(track)
-
                 delay(2000)
             }
 
-            // СТАРЫЙ КОД (не удаляем, но не используем):
+            // СТАРЫЙ КОД
             /*
             val currentTime = System.currentTimeMillis()
             if (currentTime - lastClickTime > 2000) {
