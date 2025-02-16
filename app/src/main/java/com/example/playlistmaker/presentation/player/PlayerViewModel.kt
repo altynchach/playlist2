@@ -4,17 +4,25 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.playlistmaker.domain.interactor.FavoritesInteractor
 import com.example.playlistmaker.domain.interactor.PlayerInteractor
 import com.example.playlistmaker.domain.models.Track
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.isActive
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import java.util.Locale
 import java.util.concurrent.TimeUnit
 
+data class PlayerScreenState(
+    val track: Track? = null,
+    val isPlaying: Boolean = false,
+    val currentTimeFormatted: String = "00:00",
+    val isFavorite: Boolean = false
+)
+
 class PlayerViewModel(
-    private val playerInteractor: PlayerInteractor
+    private val playerInteractor: PlayerInteractor,
+    private val favoritesInteractor: FavoritesInteractor
 ) : ViewModel() {
 
     private val stateLiveData = MutableLiveData(PlayerScreenState())
@@ -32,8 +40,15 @@ class PlayerViewModel(
 
     fun setTrack(track: Track) {
         stateLiveData.value = stateLiveData.value?.copy(track = track)
+
         track.previewUrl?.let {
             playerInteractor.setTrackPreview(it)
+        }
+
+        viewModelScope.launch {
+            val favFlow = favoritesInteractor.isFavorite(track.trackId)
+            val isFav = favFlow.first()
+            updateState(isFavorite = isFav)
         }
     }
 
@@ -48,40 +63,40 @@ class PlayerViewModel(
 
     private fun startPlayback() {
         playerInteractor.play()
-        stateLiveData.value = stateLiveData.value?.copy(isPlaying = true)
+        updateState(isPlaying = true)
         startUpdatingProgress()
     }
 
     private fun pausePlayback() {
         playerInteractor.pause()
-        stateLiveData.value = stateLiveData.value?.copy(isPlaying = false)
-        stopUpdatingProgress(isStop = false)
+        updateState(isPlaying = false)
+        stopUpdatingProgress(false)
     }
 
     private fun stopPlayback() {
         playerInteractor.stop()
-        stateLiveData.value = stateLiveData.value?.copy(
+        updateState(
             isPlaying = false,
             currentTimeFormatted = "00:00"
         )
-        stopUpdatingProgress(isStop = true)
+        stopUpdatingProgress(true)
     }
 
     private fun startUpdatingProgress() {
         updateJob?.cancel()
         updateJob = viewModelScope.launch {
-            while (isActive && stateLiveData.value?.isPlaying == true) {
+            while (true) {
+                val currentState = stateLiveData.value ?: break
+                if (!currentState.isPlaying) break
+
                 val currentPositionMs = playerInteractor.getCurrentPosition()
                 val minutes = TimeUnit.MILLISECONDS.toMinutes(currentPositionMs.toLong()) % 60
                 val seconds = TimeUnit.MILLISECONDS.toSeconds(currentPositionMs.toLong()) % 60
                 val currentTime = String.format(Locale.getDefault(), "%02d:%02d", minutes, seconds)
 
-                val oldState = stateLiveData.value
-                if (oldState != null) {
-                    stateLiveData.value = oldState.copy(currentTimeFormatted = currentTime)
-                }
+                updateState(currentTimeFormatted = currentTime)
 
-                delay(300) // обновляем прогресс каждые 300 мс
+                kotlinx.coroutines.delay(300)
             }
         }
     }
@@ -90,10 +105,7 @@ class PlayerViewModel(
         updateJob?.cancel()
         updateJob = null
         if (isStop) {
-            val oldState = stateLiveData.value
-            if (oldState != null) {
-                stateLiveData.value = oldState.copy(currentTimeFormatted = "00:00")
-            }
+            updateState(currentTimeFormatted = "00:00")
         }
     }
 
@@ -106,5 +118,33 @@ class PlayerViewModel(
     fun onDestroy() {
         stopUpdatingProgress(true)
         playerInteractor.release()
+    }
+
+    fun onLikeButtonClicked() {
+        val currentState = stateLiveData.value ?: return
+        val track = currentState.track ?: return
+        viewModelScope.launch {
+            if (currentState.isFavorite) {
+                favoritesInteractor.removeFavorite(track.trackId)
+                updateState(isFavorite = false)
+            } else {
+                favoritesInteractor.addFavorite(track)
+                updateState(isFavorite = true)
+            }
+        }
+    }
+
+    private fun updateState(
+        isPlaying: Boolean? = null,
+        currentTimeFormatted: String? = null,
+        isFavorite: Boolean? = null
+    ) {
+        val oldState = stateLiveData.value ?: return
+        val newState = oldState.copy(
+            isPlaying = isPlaying ?: oldState.isPlaying,
+            currentTimeFormatted = currentTimeFormatted ?: oldState.currentTimeFormatted,
+            isFavorite = isFavorite ?: oldState.isFavorite
+        )
+        stateLiveData.value = newState
     }
 }
