@@ -19,6 +19,7 @@
         />
 
     <TextView
+        android:id="@+id/mediatekaIsEmptyText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/mediatekaIsEmpty"
@@ -28,5 +29,15 @@
         android:layout_marginTop="@dimen/button_radius"
         style="@style/TextSearchProblem"
         />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/liked_tracks_recycler"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginStart="@dimen/padding12"
+        android:layout_marginTop="@dimen/padding12"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

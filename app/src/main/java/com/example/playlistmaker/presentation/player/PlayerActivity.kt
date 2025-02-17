@@ -35,6 +35,9 @@ class PlayerActivity : AppCompatActivity() {
     private lateinit var countrySong: TextView
     private lateinit var cover: ImageView
 
+    // Кнопка "Нравится" (addToLikes)
+    private lateinit var likeButton: ImageButton
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_player)
@@ -42,6 +45,7 @@ class PlayerActivity : AppCompatActivity() {
         val backButton = findViewById<ImageButton>(R.id.buttonBack)
         playButton = findViewById(R.id.buttonPlay)
         currentTimeText = findViewById(R.id.current_time)
+        likeButton = findViewById(R.id.addToLikes)
 
         title = findViewById(R.id.title)
         author = findViewById(R.id.author)
@@ -80,6 +84,11 @@ class PlayerActivity : AppCompatActivity() {
             viewModel.onPlayPauseClicked()
         }
 
+        likeButton.setOnClickListener {
+            // Тап по кнопке "Нравится"
+            viewModel.onLikeButtonClicked()
+        }
+
         viewModel.getState().observe(this) { state ->
             renderState(state)
         }
@@ -90,9 +99,10 @@ class PlayerActivity : AppCompatActivity() {
 
         title.text = track.trackName ?: ""
         author.text = track.artistName ?: ""
-        durationSong.text = track.trackTime?.let {
-            SimpleDateFormat("mm:ss", Locale.getDefault()).format(it)
-        } ?: ""
+        durationSong.text = track.trackTime.let {
+            val format = SimpleDateFormat("mm:ss", Locale.getDefault())
+            format.format(it)
+        }
 
         albumSong.text = track.collectionName ?: ""
 
@@ -121,6 +131,12 @@ class PlayerActivity : AppCompatActivity() {
         playButton.setImageResource(
             if (state.isPlaying) R.drawable.pause else R.drawable.button_play
         )
+
+        if (state.isFavorite) {
+            likeButton.setImageResource(R.drawable.like_button_active)
+        } else {
+            likeButton.setImageResource(R.drawable.add_to_likes)
+        }
     }
 
     override fun onPause() {

@@ -14,8 +14,8 @@ val presentationModule = module {
     viewModel { MainViewModel() }
     viewModel { SearchViewModel(searchInteractor = get()) }
     viewModel { SettingsViewModel(themeInteractor = get()) }
-    viewModel { PlayerViewModel(playerInteractor = get()) }
+    viewModel { PlayerViewModel(playerInteractor = get(), favoritesInteractor = get()) }
     viewModel { MediaViewModel() }
-    viewModel { LikedTracksViewModel() }
+    viewModel { LikedTracksViewModel(favoritesInteractor = get()) }
     viewModel { PlaylistsViewModel() }
 }
