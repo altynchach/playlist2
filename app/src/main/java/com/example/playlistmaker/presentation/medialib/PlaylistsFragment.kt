@@ -1,7 +1,5 @@
 package com.example.playlistmaker.presentation.medialib
 
-import android.app.Activity
-import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -9,16 +7,13 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.activity.result.ActivityResult
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.playlistmaker.R
-import com.example.playlistmaker.presentation.medialib.view.PlaylistsViewModel
-import com.example.playlistmaker.domain.models.Playlist
 import com.example.playlistmaker.presentation.medialib.view.PlaylistsScreenState
-import com.google.android.material.snackbar.Snackbar
+import com.example.playlistmaker.presentation.medialib.view.PlaylistsViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class PlaylistsFragment : Fragment() {
@@ -35,7 +30,7 @@ class PlaylistsFragment : Fragment() {
 
     companion object {
         fun newInstance(): PlaylistsFragment = PlaylistsFragment()
-        const val REQUEST_CREATE_PLAYLIST = 777 // Для навигации
+        const val REQUEST_CREATE_PLAYLIST = 777
         const val PLAYLIST_CREATED_KEY = "PLAYLIST_CREATED_KEY"
         const val PLAYLIST_NAME_KEY = "PLAYLIST_NAME_KEY"
     }
@@ -76,12 +71,12 @@ class PlaylistsFragment : Fragment() {
         val bundle = activity?.intent?.extras
         val created = bundle?.getBoolean(PLAYLIST_CREATED_KEY, false) ?: false
         if (created) {
-            val name = bundle.getString(PLAYLIST_NAME_KEY, "")
+            val name = bundle?.getString(PLAYLIST_NAME_KEY, "")?.orEmpty() ?: ""
             if (name.isNotEmpty()) {
                 showPlaylistCreatedNotification(name)
             }
-            bundle.remove(PLAYLIST_CREATED_KEY)
-            bundle.remove(PLAYLIST_NAME_KEY)
+            bundle?.remove(PLAYLIST_CREATED_KEY)
+            bundle?.remove(PLAYLIST_NAME_KEY)
         }
     }
 

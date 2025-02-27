@@ -33,7 +33,7 @@ class PlayerActivity : AppCompatActivity() {
     }
 
     private val viewModel: PlayerViewModel by viewModel()
-    private val playlistsViewModel: PlaylistsViewModel by sharedViewModel()
+    private val playlistsViewModel: PlaylistsViewModel by viewModel()
 
     private lateinit var playButton: ImageButton
     private lateinit var currentTimeText: TextView
@@ -79,7 +79,7 @@ class PlayerActivity : AppCompatActivity() {
         overlay = findViewById(R.id.overlay)
         val bottomSheet = findViewById<View>(R.id.playlists_bottom_sheet)
         playlistsRecyclerBS = findViewById(R.id.playlistsRecyclerBS)
-        newPlaylistBS = findViewById(R.id.newPlaylistBS) as Button
+        newPlaylistBS = findViewById(R.id.newPlaylistBS)
         bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet).apply {
             state = BottomSheetBehavior.STATE_HIDDEN
         }

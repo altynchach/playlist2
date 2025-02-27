@@ -18,7 +18,7 @@ class PlaylistsAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PlaylistViewHolder {
         val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.item_playlist, parent, false)
+            .inflate(R.layout.item_track, parent, false) // проверить
         return PlaylistViewHolder(view, onClick)
     }
 
