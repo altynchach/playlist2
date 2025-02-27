@@ -16,7 +16,7 @@
         android:scaleType="centerInside"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/back" />
+        app:srcCompat="@drawable/settings_back" />
 
     <TextView
         style="@style/MainTextStyle"

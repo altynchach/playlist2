@@ -1,32 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="padding_standard">15dp</dimen>
-    <dimen name="margin_standard">9dp</dimen>
-    <dimen name="padding4">4dp</dimen>
-    <dimen name="header_text_size">26sp</dimen>
-    <dimen name="padding12">12dp</dimen>
-    <dimen name="header_text_size2">22sp</dimen>
-    <dimen name="text_size">16sp</dimen>
     <dimen name="button_radius">16dp</dimen>
-    <dimen name="size_140">140dp</dimen>
-    <dimen name="track_height">61dp</dimen>
-    <dimen name="icon_padding">8dp</dimen>
-    <dimen name="track_padding">13dp</dimen>
     <dimen name="corner_radius">8dp</dimen>
+    <dimen name="error_button_radius">54dp</dimen>
+    <dimen name="error_button_text">14sp</dimen>
+    <dimen name="error_search_text">19sp</dimen>
+    <dimen name="header_text_size">26sp</dimen>
+    <dimen name="header_text_size2">22sp</dimen>
+    <dimen name="icon_padding">8dp</dimen>
+    <dimen name="layout_width_50dp">50dp</dimen>
+    <dimen name="margin_standard">9dp</dimen>
     <dimen name="margin_top">24dp</dimen>
+    <dimen name="padding12">12dp</dimen>
+    <dimen name="padding4">4dp</dimen>
+    <dimen name="padding_standard">15dp</dimen>
+    <dimen name="size1">1dp</dimen>
+    <dimen name="size14">14dp</dimen>
+    <dimen name="size32">32dp</dimen>
+    <dimen name="size334">334dp</dimen>
+    <dimen name="size_106dp">106dp</dimen>
+    <dimen name="size_140">140dp</dimen>
+    <dimen name="size_2dp">2dp</dimen>
+    <dimen name="size_44">44dp</dimen>
+    <dimen name="text_size">16sp</dimen>
+    <dimen name="track_height">61dp</dimen>
+    <dimen name="track_padding">13dp</dimen>
+    <dimen name="track_size_13">13sp</dimen>
+    <dimen name="track_size_16">16sp</dimen>
+    <dimen name="track_size_40">40dp</dimen>
     <dimen name="track_size_45">45dp</dimen>
     <dimen name="track_size_46">46dp</dimen>
-    <dimen name="track_size_40">40dp</dimen>
-    <dimen name="layout_width_50dp">50dp</dimen>
-    <dimen name="size1">1dp</dimen>
-    <dimen name="track_size_13">13sp</dimen>
-    <dimen name="error_button_text">14sp</dimen>
-    <dimen name="track_size_16">16sp</dimen>
-    <dimen name="error_button_radius">54dp</dimen>
-    <dimen name="error_search_text">19sp</dimen>
-    <dimen name="size_2dp">2dp</dimen>
-    <dimen name="size_106dp">106dp</dimen>
-    <dimen name="size334">334dp</dimen>
-    <dimen name="size_44">44dp</dimen>
-
 </resources>
+

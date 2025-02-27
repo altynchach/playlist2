@@ -2,7 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:paddingBottom="@dimen/padding8"
+    android:paddingBottom="@dimen/icon_padding"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
@@ -19,9 +19,9 @@
         android:id="@+id/playlistNameBS"
         style="@style/SongSearchListName"
         android:layout_width="wrap_content"
-        android:layout_marginStart="@dimen/padding8"
+        android:layout_marginStart="@dimen/icon_padding"
         android:layout_marginTop="@dimen/size14"
-        android:layout_marginEnd="@dimen/padding44"
+        android:layout_marginEnd="@dimen/size_44"
         app:layout_constraintStart_toEndOf="@id/playlistImageBS"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="Best Songs 2024" />
@@ -31,8 +31,8 @@
         style="@style/SongSearchListAuthor"
         app:layout_constraintStart_toEndOf="@id/playlistImageBS"
         app:layout_constraintTop_toBottomOf="@id/playlistNameBS"
-        android:layout_marginEnd="@dimen/padding44"
-        android:layout_marginStart="@dimen/padding8"
+        android:layout_marginEnd="@dimen/size_44"
+        android:layout_marginStart="@dimen/icon_padding"
         tools:text="97 треков" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
