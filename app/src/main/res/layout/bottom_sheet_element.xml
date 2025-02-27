@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:paddingBottom="@dimen/padding8"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <ImageView
+        android:id="@+id/playlistImageBS"
+        style="@style/SongSearchListImage"
+        android:layout_marginStart="@dimen/padding12"
+        android:scaleType="fitXY"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:src="@drawable/support" />
+
+    <TextView
+        android:id="@+id/playlistNameBS"
+        style="@style/SongSearchListName"
+        android:layout_width="wrap_content"
+        android:layout_marginStart="@dimen/padding8"
+        android:layout_marginTop="@dimen/size14"
+        android:layout_marginEnd="@dimen/padding44"
+        app:layout_constraintStart_toEndOf="@id/playlistImageBS"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Best Songs 2024" />
+
+    <TextView
+        android:id="@+id/numberOfTracksBS"
+        style="@style/SongSearchListAuthor"
+        app:layout_constraintStart_toEndOf="@id/playlistImageBS"
+        app:layout_constraintTop_toBottomOf="@id/playlistNameBS"
+        android:layout_marginEnd="@dimen/padding44"
+        android:layout_marginStart="@dimen/padding8"
+        tools:text="97 треков" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -6,7 +6,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <Button
-        android:id="@+id/addNewPlaylist"
+        android:id="@+id/newPlaylist"
         style="@style/ResetButtonSearch"
         android:text="@string/addNewPlaylist"
         android:layout_marginTop="@dimen/margin_top"
@@ -21,7 +21,7 @@
         style="@style/NothingFoundImage"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/addNewPlaylist"
+        app:layout_constraintTop_toBottomOf="@id/newPlaylist"
         android:layout_marginTop="@dimen/track_size_46"
         />
 
@@ -36,5 +36,32 @@
         android:layout_marginHorizontal="@dimen/margin_top"
 
         />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id = "@+id/createdPlaylists"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="@dimen/padding16"
+        android:layout_marginHorizontal="@dimen/padding16"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@id/addNewPlaylist"
+        />
+
+    <TextView
+        android:id="@+id/playlistCreatedNotify"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        tools:text="Плейлист Best Songs создан"
+        android:textColor="@color/white"
+        android:background="@color/black_main"
+        android:padding="@dimen/padding16"
+        android:gravity="center"
+        android:textSize="@dimen/text_size_14"
+        android:visibility="gone"
+        android:layout_marginHorizontal="@dimen/padding8"
+        android:layout_marginBottom="@dimen/padding16"
+        app:layout_constraintBottom_toBottomOf="parent"
+        />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
