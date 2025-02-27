@@ -1,19 +1,29 @@
 package com.example.playlistmaker.presentation.player
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.playlistmaker.R
 import com.example.playlistmaker.domain.models.Track
+import com.example.playlistmaker.presentation.medialib.CreatePlaylistFragment
+import com.example.playlistmaker.presentation.medialib.PlaylistsAdapter
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.gson.Gson
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.text.SimpleDateFormat
 import java.util.Locale
+import androidx.recyclerview.widget.RecyclerView
+import com.example.playlistmaker.presentation.medialib.view.PlaylistsViewModel
+import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 
 class PlayerActivity : AppCompatActivity() {
 
@@ -22,6 +32,8 @@ class PlayerActivity : AppCompatActivity() {
     }
 
     private val viewModel: PlayerViewModel by viewModel()
+    // Шерим ViewModel для плейлистов, чтобы получать поток плейлистов?
+    private val playlistsViewModel: PlaylistsViewModel by sharedViewModel()
 
     private lateinit var playButton: ImageButton
     private lateinit var currentTimeText: TextView
@@ -35,8 +47,15 @@ class PlayerActivity : AppCompatActivity() {
     private lateinit var countrySong: TextView
     private lateinit var cover: ImageView
 
-    // Кнопка "Нравится" (addToLikes)
     private lateinit var likeButton: ImageButton
+    private lateinit var addToPlaylistButton: ImageButton
+
+    // НОВОЕ:
+    private lateinit var bottomSheetBehavior: BottomSheetBehavior<*>
+    private lateinit var overlay: View
+    private lateinit var playlistsRecyclerBS: RecyclerView
+    private lateinit var newPlaylistBS: ImageButton
+    private lateinit var playlistsAdapterBS: PlaylistsAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,6 +65,7 @@ class PlayerActivity : AppCompatActivity() {
         playButton = findViewById(R.id.buttonPlay)
         currentTimeText = findViewById(R.id.current_time)
         likeButton = findViewById(R.id.addToLikes)
+        addToPlaylistButton = findViewById(R.id.addToPlaylist)
 
         title = findViewById(R.id.title)
         author = findViewById(R.id.author)
@@ -56,11 +76,64 @@ class PlayerActivity : AppCompatActivity() {
         countrySong = findViewById(R.id.countrySong)
         cover = findViewById(R.id.cover)
 
+        overlay = findViewById(R.id.overlay)
+        val bottomSheet = findViewById<View>(R.id.playlists_bottom_sheet)
+        playlistsRecyclerBS = findViewById(R.id.playlistsRecyclerBS)
+        newPlaylistBS = findViewById(R.id.newPlaylistBS) as ImageButton
+        bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet).apply {
+            state = BottomSheetBehavior.STATE_HIDDEN
+        }
+
+        bottomSheetBehavior.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
+            override fun onStateChanged(bottomSheet: View, newState: Int) {
+                when (newState) {
+                    BottomSheetBehavior.STATE_HIDDEN -> {
+                        overlay.visibility = View.GONE
+                    }
+                    else -> {
+                        overlay.visibility = View.VISIBLE
+                    }
+                }
+            }
+            override fun onSlide(bottomSheet: View, slideOffset: Float) {}
+        })
+
+        playlistsAdapterBS = PlaylistsAdapter { playlist ->
+            val track = viewModel.getState().value?.track ?: return@PlaylistsAdapter
+            viewModel.addTrackToPlaylist(playlist.playlistId, track.trackId) { added, playlistName ->
+                if (added) {
+                    Toast.makeText(
+                        this,
+                        getString(R.string.added_to_playlist, playlistName),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
+                } else {
+                    Toast.makeText(
+                        this,
+                        getString(R.string.already_in_playlist, playlistName),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+        }
+        playlistsRecyclerBS.layoutManager = LinearLayoutManager(this)
+        playlistsRecyclerBS.adapter = playlistsAdapterBS
+
+        newPlaylistBS.setOnClickListener {
+            bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
+            val fragment = CreatePlaylistFragment.newInstance()
+            fragment.show(supportFragmentManager, "CreatePlaylistDialog")
+        }
+
+        // Загрузка плейлистов из playlistsViewModel
+        playlistsViewModel.state.observe(this) { playlistsState ->
+            playlistsAdapterBS.updateList(playlistsState.playlists)
+        }
+
         backButton.setOnClickListener { finish() }
 
         val json = intent.getStringExtra(NAME_TRACK)
-        Log.d("PlayerActivity", "Received JSON: $json")
-
         if (json.isNullOrEmpty()) {
             finish()
             return
@@ -69,11 +142,6 @@ class PlayerActivity : AppCompatActivity() {
         val track = try {
             Gson().fromJson(json, Track::class.java)
         } catch (e: Exception) {
-            Log.e("PlayerActivity", "Error parsing track: ${e.message}", e)
-            null
-        }
-
-        if (track == null) {
             finish()
             return
         }
@@ -85,8 +153,12 @@ class PlayerActivity : AppCompatActivity() {
         }
 
         likeButton.setOnClickListener {
-            // Тап по кнопке "Нравится"
             viewModel.onLikeButtonClicked()
+        }
+
+        addToPlaylistButton.setOnClickListener {
+            bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+            playlistsViewModel.loadPlaylists() // подгружаем список
         }
 
         viewModel.getState().observe(this) { state ->
@@ -97,19 +169,11 @@ class PlayerActivity : AppCompatActivity() {
     private fun renderState(state: PlayerScreenState) {
         val track = state.track ?: return
 
-        title.text = track.trackName ?: ""
-        author.text = track.artistName ?: ""
-        durationSong.text = track.trackTime.let {
-            val format = SimpleDateFormat("mm:ss", Locale.getDefault())
-            format.format(it)
-        }
-
+        title.text = track.trackName
+        author.text = track.artistName
+        durationSong.text = SimpleDateFormat("mm:ss", Locale.getDefault()).format(track.trackTime)
         albumSong.text = track.collectionName ?: ""
-
-        yearSong.text = track.releaseDate?.let {
-            if (it.length >= 4) it.substring(0,4) else ""
-        } ?: ""
-
+        yearSong.text = track.releaseDate?.take(4)
         genreSong.text = track.primaryGenreName ?: ""
         countrySong.text = track.country ?: ""
 

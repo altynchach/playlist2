@@ -46,6 +46,7 @@ android {
 }
 
 dependencies {
+    implementation(libs.androidx.ui.test.android)
     val room_version = "2.6.1"
     val mapstructVersion = "1.6.0"
     implementation("androidx.room:room-runtime:$room_version")

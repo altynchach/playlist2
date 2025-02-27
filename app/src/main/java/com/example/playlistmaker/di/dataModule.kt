@@ -4,13 +4,17 @@ import android.media.MediaPlayer
 import androidx.room.Room
 import com.example.playlistmaker.data.favorites.db.PlaylistMakerDatabase
 import com.example.playlistmaker.data.network.ITunesApiService
+import com.example.playlistmaker.data.playlists.PlaylistRepositoryImpl
 import com.example.playlistmaker.data.preferences.SearchHistoryPreferencesRepositoryImpl
 import com.example.playlistmaker.data.preferences.ThemePreferencesRepositoryImpl
 import com.example.playlistmaker.data.repository.FavoritesRepositoryImpl
 import com.example.playlistmaker.data.repository.PlayerRepositoryImpl
 import com.example.playlistmaker.data.repository.TrackRepositoryImpl
+import com.example.playlistmaker.domain.interactor.PlaylistInteractor
+import com.example.playlistmaker.domain.interactor.PlaylistInteractorImpl
 import com.example.playlistmaker.domain.repository.FavoritesRepository
 import com.example.playlistmaker.domain.repository.PlayerRepository
+import com.example.playlistmaker.domain.repository.PlaylistRepository
 import com.example.playlistmaker.domain.repository.SearchHistoryRepository
 import com.example.playlistmaker.domain.repository.ThemePreferencesRepository
 import com.example.playlistmaker.domain.repository.TrackRepository
@@ -73,4 +77,17 @@ val dataModule = module {
     single<FavoritesRepository> {
         FavoritesRepositoryImpl(dao = get())
     }
+
+    single {
+        get<PlaylistMakerDatabase>().playlistDao()
+    }
+
+    single<PlaylistRepository> {
+        PlaylistRepositoryImpl(playlistDao = get())
+    }
+
+    single<PlaylistInteractor> {
+        PlaylistInteractorImpl(repository = get())
+    }
+
 }

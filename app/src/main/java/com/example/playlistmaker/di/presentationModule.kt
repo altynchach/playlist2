@@ -17,5 +17,5 @@ val presentationModule = module {
     viewModel { PlayerViewModel(playerInteractor = get(), favoritesInteractor = get()) }
     viewModel { MediaViewModel() }
     viewModel { LikedTracksViewModel(favoritesInteractor = get()) }
-    viewModel { PlaylistsViewModel() }
+    viewModel { PlaylistsViewModel(playlistInteractor = get()) }
 }
