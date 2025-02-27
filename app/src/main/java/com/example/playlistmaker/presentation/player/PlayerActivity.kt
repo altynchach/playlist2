@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.Button
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
@@ -32,7 +33,6 @@ class PlayerActivity : AppCompatActivity() {
     }
 
     private val viewModel: PlayerViewModel by viewModel()
-    // Шерим ViewModel для плейлистов, чтобы получать поток плейлистов?
     private val playlistsViewModel: PlaylistsViewModel by sharedViewModel()
 
     private lateinit var playButton: ImageButton
@@ -79,7 +79,7 @@ class PlayerActivity : AppCompatActivity() {
         overlay = findViewById(R.id.overlay)
         val bottomSheet = findViewById<View>(R.id.playlists_bottom_sheet)
         playlistsRecyclerBS = findViewById(R.id.playlistsRecyclerBS)
-        newPlaylistBS = findViewById(R.id.newPlaylistBS) as ImageButton
+        newPlaylistBS = findViewById(R.id.newPlaylistBS) as Button
         bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet).apply {
             state = BottomSheetBehavior.STATE_HIDDEN
         }
