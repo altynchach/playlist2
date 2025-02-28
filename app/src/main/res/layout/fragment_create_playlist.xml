@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".mediateka.ui.FragmentCreatePlaylist">
+    tools:context=".presentation.medialib.CreatePlaylistFragment">
 
     <ImageView
         android:id="@+id/backFromCreatePlaylist"
@@ -19,7 +19,7 @@
         app:srcCompat="@drawable/settings_back" />
 
     <TextView
-        style="@style/MainTextStyle"
+        style="@style/header_page"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/padding4"
@@ -53,7 +53,7 @@
         app:cursorColor="@color/blue"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="@dimen/padding16"
+        android:layout_marginHorizontal="@dimen/button_radius"
         android:layout_marginTop="@dimen/size32"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
