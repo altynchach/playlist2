@@ -8,9 +8,8 @@
     android:layout_height="match_parent"
     android:background="@color/white_black"
     android:orientation="vertical"
-    tools:context=".presentation.player.PlayerActivity"
-    android:theme="@style/Theme.PlaylistMaker">
-
+    android:theme="@style/Theme.PlaylistMaker"
+    tools:context=".presentation.player.PlayerActivity">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -82,13 +81,13 @@
                     android:layout_height="0dp"
                     android:layout_marginTop="30dp"
                     android:layout_marginBottom="24dp"
-                    android:scaleType="centerCrop"
                     android:contentDescription="@string/description"
+                    android:scaleType="centerCrop"
                     app:layout_constraintDimensionRatio="h,1:1"
+                    app:layout_constraintBottom_toTopOf="@+id/title"
                     app:layout_constraintEnd_toStartOf="@id/rightBorder"
                     app:layout_constraintStart_toEndOf="@id/leftBorder"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintBottom_toTopOf="@+id/title"
                     app:layout_constraintTag="imageViewTag"
                     app:srcCompat="@drawable/placeholder_max" />
 
@@ -224,42 +223,42 @@
 
                 <TextView
                     android:id="@+id/duration"
-                    app:layout_constraintTag="durationTag"
                     style="@style/TextOnPlayerLeft"
                     android:text="@string/duration"
+                    app:layout_constraintTag="durationTag"
                     app:layout_constraintBottom_toTopOf="@id/album"
                     app:layout_constraintStart_toStartOf="@id/leftBorderBottom" />
 
                 <TextView
                     android:id="@+id/album"
-                    app:layout_constraintTag="albumTag"
                     style="@style/TextOnPlayerLeft"
                     android:text="@string/album"
+                    app:layout_constraintTag="albumTag"
                     app:layout_constraintBottom_toTopOf="@id/year"
                     app:layout_constraintStart_toStartOf="@id/leftBorderBottom" />
 
                 <TextView
                     android:id="@+id/year"
-                    app:layout_constraintTag="yearTag"
                     style="@style/TextOnPlayerLeft"
                     android:text="@string/year"
+                    app:layout_constraintTag="yearTag"
                     app:layout_constraintBottom_toTopOf="@id/genre"
                     app:layout_constraintStart_toStartOf="@id/leftBorderBottom" />
 
                 <TextView
                     android:id="@+id/genre"
-                    app:layout_constraintTag="genreTag"
                     style="@style/TextOnPlayerLeft"
                     android:text="@string/genre"
+                    app:layout_constraintTag="genreTag"
                     app:layout_constraintBottom_toTopOf="@id/country"
                     app:layout_constraintStart_toStartOf="@id/leftBorderBottom" />
 
                 <TextView
                     android:id="@+id/country"
-                    app:layout_constraintTag="@string/counrtytag"
                     style="@style/TextOnPlayerLeft"
                     android:layout_marginBottom="28dp"
                     android:text="@string/country"
+                    app:layout_constraintTag="@string/counrtytag"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="@id/leftBorderBottom" />
 
@@ -267,6 +266,7 @@
         </ScrollView>
     </androidx.constraintlayout.widget.ConstraintLayout>
 
+    <!-- Полупрозрачная подложка (overlay) -->
     <View
         android:id="@+id/overlay"
         android:layout_width="match_parent"
@@ -277,24 +277,24 @@
     <LinearLayout
         android:id="@+id/playlists_bottom_sheet"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:background="#99000000"
-    app:behavior_hideable="true"
-    app:behavior_peekHeight="0dp"
-    app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
+        android:background="@color/white"
+        app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
+        app:behavior_hideable="true"
+        app:behavior_peekHeight="0dp">
 
-    <Button
-        android:id="@+id/newPlaylistBS"
-        style="@style/ResetButtonSearch"
-        android:layout_margin="@dimen/button_radius"
-        android:text="@string/addNewPlaylist" />
+        <Button
+            android:id="@+id/newPlaylistBS"
+            style="@style/ResetButtonSearch"
+            android:layout_margin="@dimen/button_radius"
+            android:text="@string/addNewPlaylist" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/playlistsRecyclerBS"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/playlistsRecyclerBS"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
 
-</LinearLayout>
+    </LinearLayout>
 
-    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
