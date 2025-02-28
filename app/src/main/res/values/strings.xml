@@ -58,4 +58,5 @@
     <string name="edit_playlist">Редактировать плейлист</string>
     <string name="playlist_updated">Плейлист обновлён</string>
     <string name="playlist_deleted">Плейлист удалён</string>
+    <string name="add_in_playlist">Добавить в плейлист</string>
 </resources>

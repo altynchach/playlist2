@@ -17,7 +17,9 @@
     <dimen name="size1">1dp</dimen>
     <dimen name="size14">14dp</dimen>
     <dimen name="size24">24dp</dimen>
+    <dimen name="size28">28dp</dimen>
     <dimen name="size32">32dp</dimen>
+    <dimen name="size38dp">38dp</dimen>
     <dimen name="size334">334dp</dimen>
     <dimen name="size_106dp">106dp</dimen>
     <dimen name="size_140">140dp</dimen>
@@ -25,6 +27,7 @@
     <dimen name="size_44">44dp</dimen>
     <dimen name="text_size">16sp</dimen>
     <dimen name="text_size_11">11sp</dimen>
+    <dimen name="text_size_13">13sp</dimen>
     <dimen name="text_size_14">14sp</dimen>
     <dimen name="track_height">61dp</dimen>
     <dimen name="track_padding">13dp</dimen>
