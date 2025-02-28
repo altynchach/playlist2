@@ -17,14 +17,14 @@ import com.example.playlistmaker.R
 import com.example.playlistmaker.domain.models.Track
 import com.example.playlistmaker.presentation.medialib.CreatePlaylistFragment
 import com.example.playlistmaker.presentation.medialib.PlaylistsAdapter
+import com.example.playlistmaker.presentation.medialib.view.PlaylistsViewModel
+import com.example.playlistmaker.presentation.search.adapters.TrackAdapter
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.gson.Gson
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.text.SimpleDateFormat
 import java.util.Locale
 import androidx.recyclerview.widget.RecyclerView
-import com.example.playlistmaker.presentation.medialib.view.PlaylistsViewModel
-import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 
 class PlayerActivity : AppCompatActivity() {
 
@@ -50,11 +50,12 @@ class PlayerActivity : AppCompatActivity() {
     private lateinit var likeButton: ImageButton
     private lateinit var addToPlaylistButton: ImageButton
 
-    // НОВОЕ:
+    // заменяем тип c ImageButton -> Button, т.к. в верстке это обычная Button
+    private lateinit var newPlaylistBS: Button
+
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<*>
     private lateinit var overlay: View
     private lateinit var playlistsRecyclerBS: RecyclerView
-    private lateinit var newPlaylistBS: ImageButton
     private lateinit var playlistsAdapterBS: PlaylistsAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -79,7 +80,9 @@ class PlayerActivity : AppCompatActivity() {
         overlay = findViewById(R.id.overlay)
         val bottomSheet = findViewById<View>(R.id.playlists_bottom_sheet)
         playlistsRecyclerBS = findViewById(R.id.playlistsRecyclerBS)
+        // Внимание: теперь это Button
         newPlaylistBS = findViewById(R.id.newPlaylistBS)
+
         bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet).apply {
             state = BottomSheetBehavior.STATE_HIDDEN
         }
@@ -87,12 +90,8 @@ class PlayerActivity : AppCompatActivity() {
         bottomSheetBehavior.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
             override fun onStateChanged(bottomSheet: View, newState: Int) {
                 when (newState) {
-                    BottomSheetBehavior.STATE_HIDDEN -> {
-                        overlay.visibility = View.GONE
-                    }
-                    else -> {
-                        overlay.visibility = View.VISIBLE
-                    }
+                    BottomSheetBehavior.STATE_HIDDEN -> overlay.visibility = View.GONE
+                    else -> overlay.visibility = View.VISIBLE
                 }
             }
             override fun onSlide(bottomSheet: View, slideOffset: Float) {}
@@ -126,7 +125,6 @@ class PlayerActivity : AppCompatActivity() {
             fragment.show(supportFragmentManager, "CreatePlaylistDialog")
         }
 
-        // Загрузка плейлистов из playlistsViewModel
         playlistsViewModel.state.observe(this) { playlistsState ->
             playlistsAdapterBS.updateList(playlistsState.playlists)
         }
@@ -138,14 +136,12 @@ class PlayerActivity : AppCompatActivity() {
             finish()
             return
         }
-
         val track = try {
             Gson().fromJson(json, Track::class.java)
         } catch (e: Exception) {
             finish()
             return
         }
-
         viewModel.setTrack(track)
 
         playButton.setOnClickListener {
@@ -158,7 +154,7 @@ class PlayerActivity : AppCompatActivity() {
 
         addToPlaylistButton.setOnClickListener {
             bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
-            playlistsViewModel.loadPlaylists() // подгружаем список
+            playlistsViewModel.loadPlaylists()
         }
 
         viewModel.getState().observe(this) { state ->
@@ -177,19 +173,16 @@ class PlayerActivity : AppCompatActivity() {
         genreSong.text = track.primaryGenreName ?: ""
         countrySong.text = track.country ?: ""
 
-        val artworkUrl = track.artworkUrl100 ?: ""
-        val imgSource = if (artworkUrl.contains("/")) {
-            artworkUrl.replaceAfterLast('/', "512x512bb.jpg")
-        } else {
-            artworkUrl
+        val artworkUrl = track.artworkUrl100
+        if (!artworkUrl.isNullOrEmpty()) {
+            val imgSource = artworkUrl.replaceAfterLast('/', "512x512bb.jpg")
+            Glide.with(this)
+                .load(imgSource)
+                .centerInside()
+                .transform(RoundedCorners(8))
+                .placeholder(R.drawable.placeholder_max)
+                .into(cover)
         }
-
-        Glide.with(this)
-            .load(imgSource)
-            .centerInside()
-            .transform(RoundedCorners(8))
-            .placeholder(R.drawable.placeholder_max)
-            .into(cover)
 
         currentTimeText.text = state.currentTimeFormatted
         playButton.setImageResource(

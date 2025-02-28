@@ -1,6 +1,8 @@
 package com.example.playlistmaker.di
 
+import com.example.playlistmaker.domain.interactor.*
 import com.example.playlistmaker.presentation.main.MainViewModel
+import com.example.playlistmaker.presentation.medialib.view.CreatePlaylistViewModel
 import com.example.playlistmaker.presentation.medialib.view.LikedTracksViewModel
 import com.example.playlistmaker.presentation.medialib.view.MediaViewModel
 import com.example.playlistmaker.presentation.medialib.view.PlaylistsViewModel
@@ -11,15 +13,27 @@ import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
 val presentationModule = module {
+
     viewModel { MainViewModel() }
+
     viewModel { SearchViewModel(searchInteractor = get()) }
     viewModel { SettingsViewModel(themeInteractor = get()) }
-    viewModel { PlayerViewModel(
-        playerInteractor = get(),
-        favoritesInteractor = get(),
-        playlistInteractor = get())
+
+    viewModel {
+        PlayerViewModel(
+            playerInteractor = get(),
+            favoritesInteractor = get(),
+            playlistInteractor = get()
+        )
     }
+
     viewModel { MediaViewModel() }
     viewModel { LikedTracksViewModel(favoritesInteractor = get()) }
     viewModel { PlaylistsViewModel(playlistInteractor = get()) }
+
+    viewModel {
+        CreatePlaylistViewModel(
+            playlistInteractor = get()
+        )
+    }
 }
