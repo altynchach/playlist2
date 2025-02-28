@@ -82,7 +82,6 @@ class PlaylistsFragment : Fragment() {
 
     private fun renderState(state: PlaylistsScreenState) {
         if (state.playlists.isEmpty()) {
-            // Пусто
             mediatekaIsEmpty.visibility = View.VISIBLE
             noCreatedPlaylists.visibility = View.VISIBLE
             createdPlaylists.visibility = View.GONE

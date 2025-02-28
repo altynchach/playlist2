@@ -67,7 +67,9 @@ val dataModule = module {
             get(),
             PlaylistMakerDatabase::class.java,
             "playlist_maker_db"
-        ).build()
+        )
+            .fallbackToDestructiveMigration()
+            .build()
     }
 
     single {
