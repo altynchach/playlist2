@@ -30,7 +30,6 @@
             app:layout_constraintTop_toTopOf="parent"
             />
 
-        <!-- Заголовок -->
         <TextView
             android:id="@+id/title"
             style="@style/header_page"
