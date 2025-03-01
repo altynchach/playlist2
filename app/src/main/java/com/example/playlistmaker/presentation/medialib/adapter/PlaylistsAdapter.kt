@@ -65,3 +65,59 @@ class PlaylistsAdapter(
         }
     }
 }
+
+class BottomSheetPlaylistsAdapter(
+    private val onClick: (Playlist) -> Unit
+) : RecyclerView.Adapter<BottomSheetPlaylistsAdapter.PlaylistBSViewHolder>() {
+
+    private val playlists = ArrayList<Playlist>()
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PlaylistBSViewHolder {
+        val view = LayoutInflater.from(parent.context)
+            .inflate(R.layout.bottom_sheet_element, parent, false)
+        return PlaylistBSViewHolder(view, onClick)
+    }
+
+    override fun onBindViewHolder(holder: PlaylistBSViewHolder, position: Int) {
+        holder.bind(playlists[position])
+    }
+
+    override fun getItemCount(): Int = playlists.size
+
+    fun updateList(newList: List<Playlist>) {
+        playlists.clear()
+        playlists.addAll(newList)
+        notifyDataSetChanged()
+    }
+
+    class PlaylistBSViewHolder(
+        itemView: View,
+        private val onClick: (Playlist) -> Unit
+    ) : RecyclerView.ViewHolder(itemView) {
+
+        private val playlistImage: ImageView = itemView.findViewById(R.id.playlistImageBS)
+        private val playlistName: TextView = itemView.findViewById(R.id.playlistNameBS)
+        private val numberOfTracks: TextView = itemView.findViewById(R.id.numberOfTracksBS)
+
+        fun bind(playlist: Playlist) {
+            playlistName.text = playlist.name
+            val ctx = itemView.context
+            val tracksCount = ctx.getString(R.string.playlist_tracks_count, playlist.trackCount)
+            numberOfTracks.text = tracksCount
+
+            val coverPath = playlist.coverFilePath
+            if (!coverPath.isNullOrBlank()) {
+                Glide.with(itemView)
+                    .load(coverPath)
+                    .placeholder(R.drawable.placeholder)
+                    .into(playlistImage)
+            } else {
+                playlistImage.setImageResource(R.drawable.placeholder)
+            }
+
+            itemView.setOnClickListener {
+                onClick(playlist)
+            }
+        }
+    }
+}

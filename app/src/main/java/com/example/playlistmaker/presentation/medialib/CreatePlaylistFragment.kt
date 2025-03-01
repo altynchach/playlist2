@@ -12,7 +12,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
-import android.widget.*
+import android.widget.Button
+import android.widget.ImageView
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.DialogFragment
@@ -44,6 +46,7 @@ class CreatePlaylistFragment : DialogFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        // Указываем что используем fullscreen-стиль.
         setStyle(STYLE_NORMAL, R.style.ThemeOverlay_FullScreenDialog)
     }
 
@@ -137,10 +140,12 @@ class CreatePlaylistFragment : DialogFragment() {
 
     override fun onResume() {
         super.onResume()
+        // Делаем диалог на весь экран
         dialog?.window?.setLayout(
             ViewGroup.LayoutParams.MATCH_PARENT,
             ViewGroup.LayoutParams.MATCH_PARENT
         )
+        // Чтобы клавиатура сдвигала окно вверх по мере ввода
         dialog?.window?.setSoftInputMode(
             WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE
         )
