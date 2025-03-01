@@ -3,6 +3,7 @@ package com.example.playlistmaker.presentation.player
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.Button
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.LinearLayout
@@ -11,12 +12,13 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.playlistmaker.R
 import com.example.playlistmaker.domain.models.Track
 import com.example.playlistmaker.presentation.medialib.CreatePlaylistFragment
-import com.example.playlistmaker.presentation.medialib.adapter.PlaylistsAdapter
+import com.example.playlistmaker.presentation.medialib.adapter.BottomSheetPlaylistsAdapter
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.gson.Gson
 import kotlinx.coroutines.launch
@@ -48,16 +50,13 @@ class PlayerActivity : AppCompatActivity() {
     private lateinit var cover: ImageView
 
     // BottomSheet для добавления в плейлист
-    private lateinit var bottomSheetBehavior: BottomSheetBehavior<*>
-    private lateinit var bottomSheet: androidx.constraintlayout.widget.ConstraintLayout
-    // Но в макете это не ConstraintLayout, а LinearLayout, так что:
-    private lateinit var bottomSheetLinear: LinearLayout
-    private lateinit var addNewPlaylistButton: ImageButton
-    // У нас в разметке Button, а не ImageButton, так что точнее:
-    private lateinit var addNewPlaylistPlayer: android.widget.Button
+    private lateinit var bottomSheetBehavior: BottomSheetBehavior<LinearLayout>
+    private lateinit var bottomSheetLayout: LinearLayout
+    private lateinit var playlistRecyclerBSPlayer: RecyclerView
+    private lateinit var addNewPlaylistPlayer: Button
 
-    private lateinit var playlistRecyclerBS: androidx.recyclerview.widget.RecyclerView
-    private lateinit var adapter: PlaylistsAdapter
+    // ВАЖНО: меняем адаптер на BottomSheetPlaylistsAdapter
+    private lateinit var bottomSheetAdapter: BottomSheetPlaylistsAdapter
 
     private var track: Track? = null
 
@@ -81,18 +80,15 @@ class PlayerActivity : AppCompatActivity() {
         countrySong = findViewById(R.id.countrySong)
         cover = findViewById(R.id.cover)
 
-        // Кнопки
         backButton.setOnClickListener { finish() }
         playButton.setOnClickListener { viewModel.onPlayPauseClicked() }
         likeButton.setOnClickListener { viewModel.onLikeButtonClicked() }
         addToPlaylistButton.setOnClickListener {
-            // Показать BottomSheet
             bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
         }
 
-        // Настраиваем BottomSheet
-        val bsLayout = findViewById<LinearLayout>(R.id.standard_bottom_sheet_player)
-        bottomSheetBehavior = BottomSheetBehavior.from(bsLayout).apply {
+        bottomSheetLayout = findViewById(R.id.standard_bottom_sheet_player)
+        bottomSheetBehavior = BottomSheetBehavior.from(bottomSheetLayout).apply {
             state = BottomSheetBehavior.STATE_HIDDEN
         }
         bottomSheetBehavior.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
@@ -100,12 +96,12 @@ class PlayerActivity : AppCompatActivity() {
             override fun onSlide(bottomSheet: View, slideOffset: Float) {}
         })
 
-        // RecyclerView и кнопка «Новый плейлист» внутри BottomSheet
-        playlistRecyclerBS = findViewById(R.id.playlistRecyclerBSPlayer)
+        playlistRecyclerBSPlayer = findViewById(R.id.playlistRecyclerBSPlayer)
         addNewPlaylistPlayer = findViewById(R.id.addNewPlaylistPlayer)
 
-        adapter = PlaylistsAdapter { playlist ->
-            val currentTrack = track ?: return@PlaylistsAdapter
+        bottomSheetAdapter = BottomSheetPlaylistsAdapter { playlist ->
+            val currentTrack = track ?: return@BottomSheetPlaylistsAdapter
+
             lifecycleScope.launch {
                 viewModel.addTrackToPlaylist(playlist.playlistId, currentTrack.trackId) { added, playlistName ->
                     if (added) {
@@ -114,6 +110,7 @@ class PlayerActivity : AppCompatActivity() {
                             getString(R.string.added_to_playlist, playlistName),
                             Toast.LENGTH_SHORT
                         ).show()
+                        // Сворачиваем шторку
                         bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
                     } else {
                         Toast.makeText(
@@ -125,22 +122,19 @@ class PlayerActivity : AppCompatActivity() {
                 }
             }
         }
-        playlistRecyclerBS.layoutManager = LinearLayoutManager(this)
-        playlistRecyclerBS.adapter = adapter
+        playlistRecyclerBSPlayer.layoutManager = LinearLayoutManager(this)
+        playlistRecyclerBSPlayer.adapter = bottomSheetAdapter
 
         addNewPlaylistPlayer.setOnClickListener {
             bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
-            // Открываем CreatePlaylistFragment (диалог)
             val fragment = CreatePlaylistFragment.newInstance()
             fragment.show(supportFragmentManager, "CreatePlaylistDialog")
         }
 
-        // Подписываемся на изменения state
         viewModel.getState().observe(this) { state ->
             renderState(state)
         }
 
-        // Забираем Track из Intent
         val json = intent.getStringExtra(NAME_TRACK)
         Log.d("PlayerActivity", "Received JSON: $json")
 
@@ -159,15 +153,14 @@ class PlayerActivity : AppCompatActivity() {
             finish()
             return
         }
-        // Передаём во VM
+
         viewModel.setTrack(track!!)
     }
 
     override fun onResume() {
         super.onResume()
-        // При возвращении (например, после создания нового плейлиста), подгрузим список плейлистов
         viewModel.loadPlaylistsForPlayerScreen { playlists ->
-            adapter.updateList(playlists)
+            bottomSheetAdapter.updateList(playlists)
         }
     }
 
