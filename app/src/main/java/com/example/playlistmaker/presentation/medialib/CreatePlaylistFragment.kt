@@ -14,6 +14,7 @@ import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.Button
 import android.widget.ImageView
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.DialogFragment
@@ -23,7 +24,6 @@ import com.google.android.material.textfield.TextInputEditText
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.io.File
 import java.io.FileOutputStream
-import java.io.InputStream
 
 class CreatePlaylistFragment : DialogFragment() {
 
@@ -84,9 +84,18 @@ class CreatePlaylistFragment : DialogFragment() {
         }
 
         createPlaylistButton.setOnClickListener {
-            val name = editTextNamePlaylist.text.toString()
-            val description = editTextDescriptionPlaylist.text.toString()
+            val name = editTextNamePlaylist.text.toString().trim()
+            val description = editTextDescriptionPlaylist.text.toString().trim()
+
             viewModel.savePlaylist(name, description)
+
+            Toast.makeText(
+                requireContext(),
+                getString(R.string.playlist_created_notify, name),
+                Toast.LENGTH_SHORT
+            ).show()
+
+            dismissAllowingStateLoss()
         }
 
         addPlaylistImage.setOnClickListener {
@@ -96,22 +105,11 @@ class CreatePlaylistFragment : DialogFragment() {
         viewModel.state.observe(viewLifecycleOwner) { state ->
             createPlaylistButton.isEnabled = state.isCreateButtonEnabled
             state.coverFilePath?.let {
-                // Показать обложку в ImageView
                 addPlaylistImage.setImageURI(Uri.parse(it))
-            }
-            if (state.isPlaylistCreated) {
-                val parentActivity = requireActivity()
-                val data = parentActivity.intent.extras ?: Bundle()
-                data.putBoolean(PlaylistsFragment.PLAYLIST_CREATED_KEY, true)
-                data.putString(PlaylistsFragment.PLAYLIST_NAME_KEY, state.createdPlaylistName)
-                parentActivity.intent.putExtras(data)
-
-                dismissAllowingStateLoss()
             }
         }
     }
 
-    // Чтобы при сворачивании/разворачивании фрагмента сохранялись введённые данные
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putString("COVER_PATH", coverPath)
@@ -142,12 +140,10 @@ class CreatePlaylistFragment : DialogFragment() {
 
     override fun onResume() {
         super.onResume()
-        // Растягиваем фрагмент на весь экран
         dialog?.window?.setLayout(
             ViewGroup.LayoutParams.MATCH_PARENT,
             ViewGroup.LayoutParams.MATCH_PARENT
         )
-        // Указываем, что при появлении клавиатуры нужно "поднимать" контент
         dialog?.window?.setSoftInputMode(
             WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE
         )
@@ -165,15 +161,14 @@ class CreatePlaylistFragment : DialogFragment() {
 
     private fun copyUriToInternalStorage(uri: Uri): String? {
         try {
-            // Сначала вычисляем inSampleSize
-            val sampledBitmap = decodeSampledBitmapFromUri(uri, 1024, 1024)
-            if (sampledBitmap != null) {
+            val bitmap = decodeSampledBitmapFromUri(uri, 1024, 1024)
+            if (bitmap != null) {
                 val fileName = getFileNameFromUri(uri) ?: System.currentTimeMillis().toString()
                 val file = File(requireContext().filesDir, fileName)
-                FileOutputStream(file).use { output ->
-                    sampledBitmap.compress(Bitmap.CompressFormat.JPEG, 90, output)
+                FileOutputStream(file).use { out ->
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 90, out)
                 }
-                sampledBitmap.recycle()
+                bitmap.recycle()
                 return file.absolutePath
             }
         } catch (e: Exception) {
@@ -183,43 +178,35 @@ class CreatePlaylistFragment : DialogFragment() {
     }
 
     private fun decodeSampledBitmapFromUri(uri: Uri, reqWidth: Int, reqHeight: Int): Bitmap? {
-        // 1) Считываем размеры (inJustDecodeBounds = true)
         val options = BitmapFactory.Options()
         options.inJustDecodeBounds = true
-        requireContext().contentResolver.openInputStream(uri)?.use { stream ->
-            BitmapFactory.decodeStream(stream, null, options)
+        requireContext().contentResolver.openInputStream(uri)?.use { s ->
+            BitmapFactory.decodeStream(s, null, options)
         }
-
         val (width, height) = options.outWidth to options.outHeight
         var inSampleSize = 1
-
         if (height > reqHeight || width > reqWidth) {
             var halfHeight = height / 2
             var halfWidth = width / 2
             while ((halfHeight / inSampleSize) >= reqHeight &&
-                (halfWidth / inSampleSize) >= reqWidth
-            ) {
+                (halfWidth / inSampleSize) >= reqWidth) {
                 inSampleSize *= 2
             }
         }
-
         options.inSampleSize = inSampleSize
         options.inJustDecodeBounds = false
-
-        // 2) Декодируем уже с inSampleSize
-        return requireContext().contentResolver.openInputStream(uri)?.use { stream2 ->
-            BitmapFactory.decodeStream(stream2, null, options)
+        return requireContext().contentResolver.openInputStream(uri)?.use { s2 ->
+            BitmapFactory.decodeStream(s2, null, options)
         }
     }
 
     private fun getFileNameFromUri(uri: Uri): String? {
         var fileName: String? = null
         val returnCursor = requireContext().contentResolver.query(uri, null, null, null, null)
-        if (returnCursor != null) {
-            val nameIndex = returnCursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
-            returnCursor.moveToFirst()
-            fileName = returnCursor.getString(nameIndex)
-            returnCursor.close()
+        returnCursor?.use { cursor ->
+            val nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+            cursor.moveToFirst()
+            fileName = cursor.getString(nameIndex)
         }
         return fileName
     }

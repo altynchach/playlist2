@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#252222"
@@ -39,7 +39,6 @@
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/settings_back" />
 
-
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/leftLine24"
             android:layout_width="wrap_content"
@@ -60,11 +59,11 @@
             android:layout_height="0dp"
             android:layout_marginTop="30dp"
             android:src="@drawable/support"
-            app:layout_constraintBottom_toTopOf="@id/horizGuideline"
             app:layout_constraintDimensionRatio="w,1:1"
             app:layout_constraintEnd_toStartOf="@id/rightLine24"
             app:layout_constraintStart_toStartOf="@id/leftLine24"
             app:layout_constraintTop_toBottomOf="@id/backFromTrackInfo"
+            app:layout_constraintBottom_toTopOf="@id/horizGuideline"
             />
 
         <TextView
@@ -129,6 +128,13 @@
             app:layout_constraintStart_toStartOf="@id/playButtonTrackInfo"
             app:layout_constraintTop_toBottomOf="@id/playButtonTrackInfo" />
 
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/horizGuideline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_end="438dp" />
+
         <TextView
             android:id="@+id/songLengthTitleTrackInfo"
             style="@style/TitleTrackInfo"
@@ -146,13 +152,6 @@
             app:layout_constraintTop_toBottomOf="@id/songCurrentTimeTrackInfo"
             tools:text="5:35" />
 
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/horizGuideline"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            app:layout_constraintGuide_end="438dp" />
-
         <TextView
             android:id="@+id/songAlbumTitleTrackInfo"
             style="@style/TitleTrackInfo"
@@ -163,10 +162,7 @@
         <TextView
             android:id="@+id/songAlbumTrackInfo"
             style="@style/TitleTrackInfoValue"
-
-
             app:layout_constraintEnd_toEndOf="parent"
-
             app:layout_constraintStart_toEndOf="@id/songLengthTitleTrackInfo"
             app:layout_constraintTop_toBottomOf="@id/songLengthTrackInfo"
             tools:text="Yesterday (Remastered 2009)" />
@@ -176,7 +172,6 @@
             style="@style/TitleTrackInfo"
             android:text="@string/year"
             app:layout_constraintStart_toStartOf="parent"
-
             app:layout_constraintTop_toBottomOf="@id/songAlbumTitleTrackInfo" />
 
         <TextView
@@ -220,19 +215,17 @@
             app:layout_constraintStart_toEndOf="@id/songLengthTitleTrackInfo"
             app:layout_constraintTop_toBottomOf="@id/songGenreTrackInfo"
             tools:text="Великобритания" />
-
-
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <LinearLayout
         android:id="@+id/standard_bottom_sheet"
         style="@style/BottomSheetStyle"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@drawable/rounded_bottom_sheet"
+        android:layout_height="wrap_content"
         android:orientation="vertical"
+        android:background="@drawable/rounded_bottom_sheet"
         app:behavior_hideable="true"
-        app:behavior_peekHeight="505dp"
+        app:behavior_peekHeight="0dp"
         app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
 
         <View

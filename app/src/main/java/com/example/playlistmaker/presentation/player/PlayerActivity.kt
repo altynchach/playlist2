@@ -80,7 +80,6 @@ class PlayerActivity : AppCompatActivity() {
         overlay = findViewById(R.id.overlay)
         val bottomSheet = findViewById<View>(R.id.playlists_bottom_sheet)
         playlistsRecyclerBS = findViewById(R.id.playlistsRecyclerBS)
-        // Внимание: теперь это Button
         newPlaylistBS = findViewById(R.id.newPlaylistBS)
 
         bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet).apply {

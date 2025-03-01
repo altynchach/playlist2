@@ -7,5 +7,6 @@ data class TrackInfoScreenState(
     val isPlaying: Boolean = false,
     val currentTimeFormatted: String = "00:00",
     val isFavorite: Boolean = false,
+    // Например, общее время трека
     val durationFormatted: String = "00:00"
 )

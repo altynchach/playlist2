@@ -6,9 +6,9 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.example.playlistmaker.R
 import com.example.playlistmaker.domain.models.Playlist
-import com.bumptech.glide.Glide
 
 class PlaylistsAdapter(
     private val onClick: (Playlist) -> Unit
@@ -18,7 +18,7 @@ class PlaylistsAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PlaylistViewHolder {
         val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.playlist_element, parent, false)     //     проверить
+            .inflate(R.layout.playlist_element, parent, false)
         return PlaylistViewHolder(view, onClick)
     }
 
@@ -26,7 +26,7 @@ class PlaylistsAdapter(
         holder.bind(playlists[position])
     }
 
-    override fun getItemCount(): Int = playlists.size
+    override fun getItemCount() = playlists.size
 
     fun updateList(newList: List<Playlist>) {
         playlists.clear()
@@ -45,17 +45,18 @@ class PlaylistsAdapter(
 
         fun bind(playlist: Playlist) {
             playlistName.text = playlist.name
-            val tracksCount = itemView.context.getString(R.string.playlist_tracks_count, playlist.trackCount)
+            val ctx = itemView.context
+            val tracksCount = ctx.getString(R.string.playlist_tracks_count, playlist.trackCount)
             numberOfTracks.text = tracksCount
 
             val coverPath = playlist.coverFilePath
             if (!coverPath.isNullOrBlank()) {
                 Glide.with(itemView)
                     .load(coverPath)
-                    .placeholder(R.drawable.playlist_placeholder)
+                    .placeholder(R.drawable.placeholder)
                     .into(playlistImage)
             } else {
-                playlistImage.setImageResource(R.drawable.playlist_placeholder)
+                playlistImage.setImageResource(R.drawable.placeholder)
             }
 
             itemView.setOnClickListener {

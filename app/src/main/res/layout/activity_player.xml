@@ -8,8 +8,8 @@
     android:layout_height="match_parent"
     android:background="@color/white_black"
     android:orientation="vertical"
-    android:theme="@style/Theme.PlaylistMaker"
-    tools:context=".presentation.player.PlayerActivity">
+    tools:context=".presentation.player.PlayerActivity"
+    android:theme="@style/Theme.PlaylistMaker">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"

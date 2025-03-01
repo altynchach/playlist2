@@ -38,8 +38,9 @@ class TrackInfoFragment : Fragment() {
     private lateinit var addToFavorTrackInfo: ImageButton
     private lateinit var playButtonTrackInfo: ImageButton
     private lateinit var likeSongTrackInfo: ImageButton
-    private lateinit var songCurrentTimeTrackInfo: TextView
+    private lateinit var mainTrackInfoImage: ImageView
 
+    private lateinit var songCurrentTimeTrackInfo: TextView
     private lateinit var songNameTrackInfo: TextView
     private lateinit var authorNameTrackInfo: TextView
     private lateinit var songLengthTrackInfo: TextView
@@ -47,7 +48,6 @@ class TrackInfoFragment : Fragment() {
     private lateinit var songYearTrackInfo: TextView
     private lateinit var songGenreTrackInfo: TextView
     private lateinit var songCountryTrackInfo: TextView
-    private lateinit var mainTrackInfoImage: ImageView
 
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<*>
     private lateinit var bottomSheet: LinearLayout
@@ -74,11 +74,12 @@ class TrackInfoFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         backFromTrackInfo = view.findViewById(R.id.backFromTrackInfo)
-        addToFavorTrackInfo = view.findViewById(R.id.addToFavorTrackInfo)
+        addToFavorTrackInfo = view.findViewById(R.id.addToFavorTrackInfo) // «Добавить в плейлист»
         playButtonTrackInfo = view.findViewById(R.id.playButtonTrackInfo)
         likeSongTrackInfo = view.findViewById(R.id.likeSongTrackInfo)
-        songCurrentTimeTrackInfo = view.findViewById(R.id.songCurrentTimeTrackInfo)
+        mainTrackInfoImage = view.findViewById(R.id.mainTrackInfoImage)
 
+        songCurrentTimeTrackInfo = view.findViewById(R.id.songCurrentTimeTrackInfo)
         songNameTrackInfo = view.findViewById(R.id.songNameTrackInfo)
         authorNameTrackInfo = view.findViewById(R.id.authorNameTrackInfo)
         songLengthTrackInfo = view.findViewById(R.id.songLengthTrackInfo)
@@ -86,7 +87,6 @@ class TrackInfoFragment : Fragment() {
         songYearTrackInfo = view.findViewById(R.id.songYearTrackInfo)
         songGenreTrackInfo = view.findViewById(R.id.songGenreTrackInfo)
         songCountryTrackInfo = view.findViewById(R.id.songCountryTrackInfo)
-        mainTrackInfoImage = view.findViewById(R.id.mainTrackInfoImage)
 
         bottomSheet = view.findViewById(R.id.standard_bottom_sheet)
         addNewPlaylist = view.findViewById(R.id.addNewPlaylist)
@@ -95,8 +95,7 @@ class TrackInfoFragment : Fragment() {
         bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet).apply {
             state = BottomSheetBehavior.STATE_HIDDEN
         }
-        bottomSheetBehavior.addBottomSheetCallback(object :
-            BottomSheetBehavior.BottomSheetCallback() {
+        bottomSheetBehavior.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
             override fun onStateChanged(bottomSheet: View, newState: Int) {
             }
             override fun onSlide(bottomSheet: View, slideOffset: Float) {}
@@ -130,25 +129,33 @@ class TrackInfoFragment : Fragment() {
             val fragment = CreatePlaylistFragment.newInstance()
             fragment.show(parentFragmentManager, "CreatePlaylistDialog")
         }
+
         viewModel.playlists.observe(viewLifecycleOwner) { playlists ->
             adapter.updateList(playlists)
         }
+
+        // Наблюдаем за основным состоянием трека
         viewModel.getState().observe(viewLifecycleOwner) { state ->
             renderState(state)
         }
+
+        // Сразу грузим списки плейлистов
         viewModel.loadPlaylists()
 
+        // Обработчики нажатий
         backFromTrackInfo.setOnClickListener {
+            // Закрыть экран (фрагмент)
             requireActivity().onBackPressedDispatcher.onBackPressed()
         }
-
+        // «Добавить в плейлист»
         addToFavorTrackInfo.setOnClickListener {
             bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
         }
-
+        // Play / Pause
         playButtonTrackInfo.setOnClickListener {
             viewModel.onPlayPauseClicked()
         }
+        // Like
         likeSongTrackInfo.setOnClickListener {
             viewModel.onLikeButtonClicked()
         }
@@ -156,7 +163,8 @@ class TrackInfoFragment : Fragment() {
 
     private fun renderState(state: TrackInfoScreenState) {
         val track = state.track ?: return
-        // Заполняем UI
+
+        // Заполняем поля
         songNameTrackInfo.text = track.trackName
         authorNameTrackInfo.text = track.artistName
         songAlbumTrackInfo.text = track.collectionName ?: ""
@@ -166,16 +174,21 @@ class TrackInfoFragment : Fragment() {
         songLengthTrackInfo.text = state.durationFormatted
         songCurrentTimeTrackInfo.text = state.currentTimeFormatted
 
+        // Пример: подстановка обложки. Используйте Glide, если нужно
+        // ...
+
+        // Меняем иконку play/pause
         if (state.isPlaying) {
             playButtonTrackInfo.setImageResource(R.drawable.pause)
         } else {
-            playButtonTrackInfo.setImageResource(R.drawable.button_play)
+            playButtonTrackInfo.setImageResource(R.drawable.play_song_button_mediateka)
         }
+
+        // Меняем иконку лайка
         if (state.isFavorite) {
             likeSongTrackInfo.setImageResource(R.drawable.like_button_active)
         } else {
             likeSongTrackInfo.setImageResource(R.drawable.like_mediateka)
         }
     }
-
 }
