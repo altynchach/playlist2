@@ -245,7 +245,7 @@
             android:textSize="19sp"
             android:textStyle="bold"
             style="@style/BottomSheetTitleStyle"
-            android:text="Добавить в плейлист" />
+            android:text="@string/add_in_playlist" />
 
         <Button
             android:id="@+id/addNewPlaylist"
