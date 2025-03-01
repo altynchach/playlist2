@@ -52,6 +52,8 @@ class PlaylistsFragment : Fragment() {
         playlistCreatedNotify = view.findViewById(R.id.playlistCreatedNotify)
 
         adapter = PlaylistsAdapter { playlist ->
+            // Здесь можно открыть детали конкретного плейлиста,
+            // если понадобится по ТЗ.
         }
         createdPlaylists.layoutManager = GridLayoutManager(requireContext(), 2)
         createdPlaylists.adapter = adapter
@@ -68,6 +70,7 @@ class PlaylistsFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         viewModel.loadPlaylists()
+
         val bundle = activity?.intent?.extras
         val created = bundle?.getBoolean(PLAYLIST_CREATED_KEY, false) ?: false
         if (created) {
@@ -89,16 +92,13 @@ class PlaylistsFragment : Fragment() {
             mediatekaIsEmpty.visibility = View.GONE
             noCreatedPlaylists.visibility = View.GONE
             createdPlaylists.visibility = View.VISIBLE
-
             adapter.updateList(state.playlists)
         }
     }
 
     private fun openCreatePlaylistScreen() {
-
-        val navController = parentFragment?.parentFragmentManager ?: requireActivity().supportFragmentManager
         val fragment = CreatePlaylistFragment.newInstance()
-        fragment.show(navController, "CreatePlaylistDialog")
+        fragment.show(parentFragmentManager, "CreatePlaylistDialog")
     }
 
     private fun showPlaylistCreatedNotification(name: String) {

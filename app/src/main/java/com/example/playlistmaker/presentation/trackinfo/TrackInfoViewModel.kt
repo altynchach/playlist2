@@ -9,8 +9,8 @@ import com.example.playlistmaker.domain.interactor.PlaylistInteractor
 import com.example.playlistmaker.domain.interactor.PlayerInteractor
 import com.example.playlistmaker.domain.models.Playlist
 import com.example.playlistmaker.domain.models.Track
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import java.util.Locale
 import java.util.concurrent.TimeUnit
@@ -33,7 +33,6 @@ class TrackInfoViewModel(
     val playlists: LiveData<List<Playlist>> get() = _playlists
 
     init {
-        // Когда трек доигрывает
         playerInteractor.setOnCompletionListener {
             viewModelScope.launch { stopPlayback() }
         }
@@ -55,7 +54,7 @@ class TrackInfoViewModel(
         track.previewUrl?.let {
             playerInteractor.setTrackPreview(it)
         }
-        // Узнать, лайкнут ли
+
         viewModelScope.launch {
             val fav = favoritesInteractor.isFavorite(track.trackId).first()
             updateState(isFavorite = fav)
@@ -103,7 +102,6 @@ class TrackInfoViewModel(
         }
     }
 
-    // Добавление трека
     suspend fun addTrackToPlaylist(playlistId: Long, track: Track): AddTrackResult {
         val list = playlists.value.orEmpty()
         val found = list.find { it.playlistId == playlistId } ?: return AddTrackResult(false, "")
@@ -112,7 +110,6 @@ class TrackInfoViewModel(
         return AddTrackResult(added, name)
     }
 
-    // Таймер
     private var updateJob: kotlinx.coroutines.Job? = null
     private fun startUpdatingProgress() {
         updateJob?.cancel()

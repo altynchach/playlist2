@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -10,25 +10,22 @@
     tools:context=".presentation.medialib.PlaylistsFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
-        android:id = "@+id/constraintLayout"
+        android:id="@+id/constraintLayout"
         style="@style/SettingsBackgroundColorStyle"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context="com.practicum.playlistmaker.player.ui.TrackInfoFragment">
 
         <FrameLayout
-            android:id = "@+id/darkFrame"
+            android:id="@+id/darkFrame"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
             android:background="#66000000"
             android:visibility="invisible"
-            />
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <ImageView
             android:id="@+id/backFromTrackInfo"
@@ -41,7 +38,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/settings_back" />
-
 
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/leftLine24"
@@ -67,10 +63,7 @@
             app:layout_constraintDimensionRatio="w,1:1"
             app:layout_constraintEnd_toStartOf="@id/rightLine24"
             app:layout_constraintStart_toStartOf="@id/leftLine24"
-            app:layout_constraintTop_toBottomOf="@id/backFromTrackInfo"
-
-
-            />
+            app:layout_constraintTop_toBottomOf="@id/backFromTrackInfo" />
 
         <TextView
             android:id="@+id/songNameTrackInfo"
@@ -92,9 +85,9 @@
             app:layout_constraintEnd_toStartOf="@id/rightLine24"
             app:layout_constraintStart_toEndOf="@id/leftLine24"
             app:layout_constraintTop_toBottomOf="@id/songNameTrackInfo"
-            tools:context = ".player.ui.TrackInfoFragment"
             tools:text="The Beatles" />
 
+        <!-- Кнопка "Добавить в плейлист" -->
         <ImageButton
             android:id="@+id/addToFavorTrackInfo"
             style="@style/AddToFavorStyle"
@@ -102,9 +95,9 @@
             android:contentDescription="TODO"
             android:src="@drawable/plus_mediateka"
             app:layout_constraintEnd_toStartOf="@id/playButtonTrackInfo"
-            app:layout_constraintHorizontal_chainStyle="spread_inside"
             app:layout_constraintStart_toStartOf="@id/leftLine24"
-            app:layout_constraintTop_toBottomOf="@id/authorNameTrackInfo" />
+            app:layout_constraintTop_toBottomOf="@id/authorNameTrackInfo"
+            app:layout_constraintHorizontal_chainStyle="spread_inside" />
 
         <ImageButton
             android:id="@+id/playButtonTrackInfo"
@@ -116,6 +109,7 @@
             app:layout_constraintStart_toEndOf="@id/addToFavorTrackInfo"
             app:layout_constraintTop_toBottomOf="@id/authorNameTrackInfo" />
 
+        <!-- Кнопка Like -->
         <ImageButton
             android:id="@+id/likeSongTrackInfo"
             style="@style/AddToFavorStyle"
@@ -168,10 +162,7 @@
         <TextView
             android:id="@+id/songAlbumTrackInfo"
             style="@style/TitleTrackInfoValue"
-
-
             app:layout_constraintEnd_toEndOf="parent"
-
             app:layout_constraintStart_toEndOf="@id/songLengthTitleTrackInfo"
             app:layout_constraintTop_toBottomOf="@id/songLengthTrackInfo"
             tools:text="Yesterday (Remastered 2009)" />
@@ -181,7 +172,6 @@
             style="@style/TitleTrackInfo"
             android:text="@string/year"
             app:layout_constraintStart_toStartOf="parent"
-
             app:layout_constraintTop_toBottomOf="@id/songAlbumTitleTrackInfo" />
 
         <TextView
@@ -226,16 +216,16 @@
             app:layout_constraintTop_toBottomOf="@id/songGenreTrackInfo"
             tools:text="Великобритания" />
 
-
     </androidx.constraintlayout.widget.ConstraintLayout>
 
+    <!-- Нижняя шторка (Bottom Sheet) для выбора плейлиста -->
     <LinearLayout
         android:id="@+id/standard_bottom_sheet"
+        style="@style/BottomSheetStyle"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/rounded_bottom_sheet"
-        style="@style/BottomSheetStyle"
         android:orientation="vertical"
+        android:background="@drawable/rounded_bottom_sheet"
         app:behavior_hideable="true"
         app:behavior_peekHeight="505dp"
         app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
@@ -245,8 +235,8 @@
             android:layout_height="4dp"
             android:layout_gravity="center"
             android:layout_marginTop="@dimen/button_radius"
-            style="@style/BottomSheetViewStyle"
-            android:background="@drawable/rounded_view" />
+            android:background="@drawable/rounded_view"
+            style="@style/BottomSheetViewStyle" />
 
         <TextView
             android:layout_width="match_parent"
@@ -255,26 +245,24 @@
             android:gravity="center"
             android:paddingTop="@dimen/button_radius"
             android:paddingBottom="@dimen/padding12"
-            style="@style/BottomSheetTitleStyle"
-            android:text="Добавить в плейлист"
             android:textSize="19sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            style="@style/BottomSheetTitleStyle"
+            android:text="Добавить в плейлист" />
 
         <Button
             android:id="@+id/addNewPlaylist"
+            style="@style/ResetButtonSearch"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            style="@style/ResetButtonSearch"
             android:layout_marginTop="@dimen/button_radius"
-            android:text="@string/newPlaylist"
-            />
+            android:text="@string/newPlaylist" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/playlistRecyclerBS"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginTop="@dimen/size24"
-            />
+            android:layout_marginTop="@dimen/size24" />
 
     </LinearLayout>
 

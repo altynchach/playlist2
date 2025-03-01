@@ -12,9 +12,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
-import android.widget.Button
-import android.widget.ImageView
-import android.widget.Toast
+import android.widget.*
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.DialogFragment
@@ -88,7 +86,6 @@ class CreatePlaylistFragment : DialogFragment() {
             val description = editTextDescriptionPlaylist.text.toString().trim()
 
             viewModel.savePlaylist(name, description)
-
             Toast.makeText(
                 requireContext(),
                 getString(R.string.playlist_created_notify, name),
@@ -186,10 +183,7 @@ class CreatePlaylistFragment : DialogFragment() {
         val (width, height) = options.outWidth to options.outHeight
         var inSampleSize = 1
         if (height > reqHeight || width > reqWidth) {
-            var halfHeight = height / 2
-            var halfWidth = width / 2
-            while ((halfHeight / inSampleSize) >= reqHeight &&
-                (halfWidth / inSampleSize) >= reqWidth) {
+            while ((height / inSampleSize) >= reqHeight && (width / inSampleSize) >= reqWidth) {
                 inSampleSize *= 2
             }
         }

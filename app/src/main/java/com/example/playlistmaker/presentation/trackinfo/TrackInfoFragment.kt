@@ -35,7 +35,7 @@ class TrackInfoFragment : Fragment() {
     private val viewModel: TrackInfoViewModel by viewModel()
 
     private lateinit var backFromTrackInfo: ImageView
-    private lateinit var addToFavorTrackInfo: ImageButton
+    private lateinit var addToFavorTrackInfo: ImageButton  // «Добавить в плейлист»
     private lateinit var playButtonTrackInfo: ImageButton
     private lateinit var likeSongTrackInfo: ImageButton
     private lateinit var mainTrackInfoImage: ImageView
@@ -74,7 +74,7 @@ class TrackInfoFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         backFromTrackInfo = view.findViewById(R.id.backFromTrackInfo)
-        addToFavorTrackInfo = view.findViewById(R.id.addToFavorTrackInfo) // «Добавить в плейлист»
+        addToFavorTrackInfo = view.findViewById(R.id.addToFavorTrackInfo)
         playButtonTrackInfo = view.findViewById(R.id.playButtonTrackInfo)
         likeSongTrackInfo = view.findViewById(R.id.likeSongTrackInfo)
         mainTrackInfoImage = view.findViewById(R.id.mainTrackInfoImage)
@@ -96,8 +96,7 @@ class TrackInfoFragment : Fragment() {
             state = BottomSheetBehavior.STATE_HIDDEN
         }
         bottomSheetBehavior.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
-            override fun onStateChanged(bottomSheet: View, newState: Int) {
-            }
+            override fun onStateChanged(bottomSheet: View, newState: Int) {}
             override fun onSlide(bottomSheet: View, slideOffset: Float) {}
         })
 
@@ -146,11 +145,9 @@ class TrackInfoFragment : Fragment() {
         addToFavorTrackInfo.setOnClickListener {
             bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
         }
-        // Play / Pause
         playButtonTrackInfo.setOnClickListener {
             viewModel.onPlayPauseClicked()
         }
-        // Like
         likeSongTrackInfo.setOnClickListener {
             viewModel.onLikeButtonClicked()
         }
@@ -168,17 +165,12 @@ class TrackInfoFragment : Fragment() {
         songLengthTrackInfo.text = state.durationFormatted
         songCurrentTimeTrackInfo.text = state.currentTimeFormatted
 
-        // Пример: подстановка обложки. Используйте Glide, если нужно
-        // ...
-
-        // Меняем иконку play/pause
         if (state.isPlaying) {
             playButtonTrackInfo.setImageResource(R.drawable.pause)
         } else {
             playButtonTrackInfo.setImageResource(R.drawable.play_song_button_mediateka)
         }
 
-        // Меняем иконку лайка
         if (state.isFavorite) {
             likeSongTrackInfo.setImageResource(R.drawable.like_button_active)
         } else {

@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:paddingBottom="@dimen/icon_padding"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:paddingBottom="@dimen/icon_padding"
+    tools:context=".presentation.player.PlayerActivity">
 
     <ImageView
         android:id="@+id/playlistImageBS"
@@ -29,10 +31,10 @@
     <TextView
         android:id="@+id/numberOfTracksBS"
         style="@style/SongSearchListAuthor"
+        android:layout_marginStart="@dimen/icon_padding"
+        android:layout_marginEnd="@dimen/size_44"
         app:layout_constraintStart_toEndOf="@id/playlistImageBS"
         app:layout_constraintTop_toBottomOf="@id/playlistNameBS"
-        android:layout_marginEnd="@dimen/size_44"
-        android:layout_marginStart="@dimen/icon_padding"
         tools:text="97 треков" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
