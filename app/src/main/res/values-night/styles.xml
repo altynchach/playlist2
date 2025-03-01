@@ -112,7 +112,7 @@
     </style>
 
     <style name="BackButtonSettingsStyle">
-        <item name="android:tint">@color/search_text</item>
+        <item name="android:tint">@color/like_bg_color</item>
     </style>
 
     <style name="TextSearchProblem">

@@ -64,57 +64,59 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="@dimen/corner_radius"
-            android:layout_marginTop="@dimen/size32"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/addPlaylistImage">
+            android:layout_marginTop="32dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/addPlaylistImage">
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/editTextNamePlaylist"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/editTextNamePlaylist"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:layout_marginHorizontal="@dimen/button_radius"
             android:layout_marginTop="@dimen/button_radius"
             android:hint="@string/playlistName"
             android:maxLines="1" />
-        </com.google.android.material.textfield.TextInputLayout>
+    </com.google.android.material.textfield.TextInputLayout>
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/addPlaylistDescription"
-            style="@style/editText"
-            android:layout_width="0dp"
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/addPlaylistDescription"
+        style="@style/editText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/corner_radius"
+        android:layout_marginTop="@dimen/corner_radius"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/addPlaylistName">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/editTextDescriptionPlaylist"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="@dimen/corner_radius"
-            android:layout_marginTop="@dimen/corner_radius"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/addPlaylistName">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/editTextDescriptionPlaylist"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="@dimen/button_radius"
-                android:layout_marginTop="@dimen/button_radius"
-                android:hint="@string/playlistDescription"
-                android:maxLines="1"
-                />
-        </com.google.android.material.textfield.TextInputLayout>
+            android:layout_marginHorizontal="@dimen/button_radius"
+            android:layout_marginTop="@dimen/button_radius"
+            android:hint="@string/playlistDescription"
+            android:maxLines="1" />
+    </com.google.android.material.textfield.TextInputLayout>
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/createPlaylistButton"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="@dimen/corner_radius"
-            android:layout_marginTop="@dimen/size24"
+            android:layout_marginTop="16dp"
             android:layout_marginBottom="@dimen/size32"
             android:background="@drawable/tap_button_selector"
             android:text="@string/create"
             android:textAllCaps="false"
             android:textColor="@color/white"
             android:textSize="16sp"
-            app:layout_constraintTop_toBottomOf="@id/addPlaylistDescription"
+
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
-</androidx.core.widget.NestedScrollView>
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/addPlaylistDescription"
+            />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.core.widget.NestedScrollView>
