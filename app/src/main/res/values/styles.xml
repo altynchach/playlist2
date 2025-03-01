@@ -81,7 +81,7 @@
     </style>
 
     <style name="header_page">
-        <item name="android:textColor">@color/search_text</item>
+        <item name="android:textColor">@color/black_main</item>
         <item name="android:textSize">@dimen/header_text_size2</item>
         <item name="android:fontFamily">@font/ys_display_medium</item>
         <item name="android:layout_width">wrap_content</item>
@@ -232,7 +232,7 @@
     </style>
 
     <style name="BackButtonSettingsStyle">
-        <item name="android:tint">@color/like_bg_color</item>
+        <item name="android:tint">@color/black_main</item>
     </style>
 
     <style name="tabLayoutStyle">
@@ -284,6 +284,8 @@
     <style name="editText" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
         <item name="android:textColorHint">@drawable/text_selector</item>
         <item name="boxStrokeColor">@drawable/edit_text_selector</item>
+
+
     </style>
 
     <style name="EditTextStyle">

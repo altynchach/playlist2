@@ -18,6 +18,7 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.DialogFragment
+import com.bumptech.glide.Glide
 import com.example.playlistmaker.R
 import com.example.playlistmaker.presentation.medialib.view.CreatePlaylistViewModel
 import com.google.android.material.textfield.TextInputEditText
@@ -155,6 +156,10 @@ class CreatePlaylistFragment : DialogFragment() {
                 coverPath = filePath
                 viewModel.onCoverPicked(filePath)
                 hasUnsavedData = true
+                addPlaylistImage.scaleType = ImageView.ScaleType.CENTER_CROP
+                Glide.with(this)
+                    .load(filePath)
+                    .into(addPlaylistImage)
             }
         }
 

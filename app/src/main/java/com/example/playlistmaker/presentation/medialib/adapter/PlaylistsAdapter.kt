@@ -49,7 +49,12 @@ class PlaylistsAdapter(
         fun bind(playlist: Playlist) {
             playlistName.text = playlist.name
             val ctx = itemView.context
-            val tracksCount = ctx.getString(R.string.playlist_tracks_count, playlist.trackCount)
+
+            val tracksCount = ctx.resources.getQuantityString(
+                R.plurals.playlist_tracks_count,
+                playlist.trackCount,
+                playlist.trackCount
+            )
             numberOfTracks.text = tracksCount
 
             val coverPath = playlist.coverFilePath
