@@ -10,7 +10,6 @@
     android:theme="@style/Theme.PlaylistMaker"
     tools:context=".presentation.player.PlayerActivity">
 
-    <!-- Основной вертикальный контейнер (кнопка Back, скролл с инфой о треке) -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
