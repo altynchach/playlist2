@@ -16,7 +16,7 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.playlistmaker.R
 import com.example.playlistmaker.domain.models.Track
 import com.example.playlistmaker.presentation.medialib.CreatePlaylistFragment
-import com.example.playlistmaker.presentation.medialib.PlaylistsAdapter
+import com.example.playlistmaker.presentation.medialib.adapter.PlaylistsAdapter
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.gson.Gson
 import kotlinx.coroutines.launch

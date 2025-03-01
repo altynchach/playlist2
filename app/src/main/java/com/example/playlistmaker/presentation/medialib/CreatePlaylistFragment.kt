@@ -44,7 +44,7 @@ class CreatePlaylistFragment : DialogFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        dialog?.setCanceledOnTouchOutside(false)
+        setStyle(STYLE_NORMAL, R.style.ThemeOverlay_FullScreenDialog)
     }
 
     override fun onCreateView(

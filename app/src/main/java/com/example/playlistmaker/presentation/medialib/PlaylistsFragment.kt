@@ -12,6 +12,7 @@ import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.playlistmaker.R
+import com.example.playlistmaker.presentation.medialib.adapter.PlaylistsAdapter
 import com.example.playlistmaker.presentation.medialib.view.PlaylistsScreenState
 import com.example.playlistmaker.presentation.medialib.view.PlaylistsViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel

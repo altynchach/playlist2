@@ -346,4 +346,12 @@
         <item name="android:textColor">@color/black_main</item>
     </style>
 
+    <style name="ThemeOverlay.FullScreenDialog" parent="Theme.MaterialComponents.Light.DarkActionBar">
+        <item name="android:windowIsTranslucent">false</item>
+        <item name="android:windowIsFloating">false</item>
+        <item name="android:windowCloseOnTouchOutside">false</item>
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:background">?attr/colorSurface</item>
+    </style>
+
 </resources>
