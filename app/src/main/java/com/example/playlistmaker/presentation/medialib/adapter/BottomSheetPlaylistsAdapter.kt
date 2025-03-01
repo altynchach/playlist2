@@ -11,19 +11,19 @@ import com.bumptech.glide.Glide
 import com.example.playlistmaker.R
 import com.example.playlistmaker.domain.models.Playlist
 
-class PlaylistsAdapter(
+class BottomSheetPlaylistsAdapter(
     private val onClick: (Playlist) -> Unit
-) : RecyclerView.Adapter<PlaylistsAdapter.PlaylistViewHolder>() {
+) : RecyclerView.Adapter<BottomSheetPlaylistsAdapter.PlaylistBSViewHolder>() {
 
     private val playlists = ArrayList<Playlist>()
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PlaylistViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PlaylistBSViewHolder {
         val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.playlist_element, parent, false)
-        return PlaylistViewHolder(view, onClick)
+            .inflate(R.layout.bottom_sheet_element, parent, false)
+        return PlaylistBSViewHolder(view, onClick)
     }
 
-    override fun onBindViewHolder(holder: PlaylistViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: PlaylistBSViewHolder, position: Int) {
         holder.bind(playlists[position])
     }
 
@@ -37,14 +37,14 @@ class PlaylistsAdapter(
         diffResult.dispatchUpdatesTo(this)
     }
 
-    class PlaylistViewHolder(
+    class PlaylistBSViewHolder(
         itemView: View,
         private val onClick: (Playlist) -> Unit
     ) : RecyclerView.ViewHolder(itemView) {
 
-        private val playlistImage: ImageView = itemView.findViewById(R.id.playlistImage)
-        private val playlistName: TextView = itemView.findViewById(R.id.playlistName)
-        private val numberOfTracks: TextView = itemView.findViewById(R.id.numberOfTracks)
+        private val playlistImage: ImageView = itemView.findViewById(R.id.playlistImageBS)
+        private val playlistName: TextView = itemView.findViewById(R.id.playlistNameBS)
+        private val numberOfTracks: TextView = itemView.findViewById(R.id.numberOfTracksBS)
 
         fun bind(playlist: Playlist) {
             playlistName.text = playlist.name

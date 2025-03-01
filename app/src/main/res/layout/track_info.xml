@@ -87,7 +87,6 @@
             app:layout_constraintTop_toBottomOf="@id/songNameTrackInfo"
             tools:text="The Beatles" />
 
-        <!-- Кнопка "Добавить в плейлист" -->
         <ImageButton
             android:id="@+id/addToFavorTrackInfo"
             style="@style/AddToFavorStyle"
@@ -109,7 +108,6 @@
             app:layout_constraintStart_toEndOf="@id/addToFavorTrackInfo"
             app:layout_constraintTop_toBottomOf="@id/authorNameTrackInfo" />
 
-        <!-- Кнопка Like -->
         <ImageButton
             android:id="@+id/likeSongTrackInfo"
             style="@style/AddToFavorStyle"
@@ -218,7 +216,6 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <!-- Нижняя шторка (Bottom Sheet) для выбора плейлиста -->
     <LinearLayout
         android:id="@+id/standard_bottom_sheet"
         style="@style/BottomSheetStyle"

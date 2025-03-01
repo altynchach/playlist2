@@ -8,15 +8,15 @@ import android.widget.*
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.playlistmaker.R
 import com.example.playlistmaker.domain.models.Track
 import com.example.playlistmaker.presentation.medialib.CreatePlaylistFragment
-import com.example.playlistmaker.presentation.medialib.adapter.PlaylistsAdapter
+import com.example.playlistmaker.presentation.medialib.adapter.BottomSheetPlaylistsAdapter
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.gson.Gson
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import androidx.recyclerview.widget.RecyclerView
 
 class TrackInfoFragment : Fragment() {
 
@@ -64,7 +64,8 @@ class TrackInfoFragment : Fragment() {
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View {
         return inflater.inflate(R.layout.track_info, container, false)
@@ -92,6 +93,7 @@ class TrackInfoFragment : Fragment() {
         addNewPlaylist = view.findViewById(R.id.addNewPlaylist)
         playlistRecyclerBS = view.findViewById(R.id.playlistRecyclerBS)
 
+        // Настраиваем BottomSheet
         bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet).apply {
             state = BottomSheetBehavior.STATE_HIDDEN
         }
@@ -100,8 +102,9 @@ class TrackInfoFragment : Fragment() {
             override fun onSlide(bottomSheet: View, slideOffset: Float) {}
         })
 
-        val adapter = PlaylistsAdapter { playlist ->
-            val track = viewModel.getState().value?.track ?: return@PlaylistsAdapter
+        val adapter = BottomSheetPlaylistsAdapter { playlist ->
+            val track = viewModel.getState().value?.track ?: return@BottomSheetPlaylistsAdapter
+
             lifecycleScope.launch {
                 val result = viewModel.addTrackToPlaylist(playlist.playlistId, track)
                 if (result.added) {
@@ -138,7 +141,6 @@ class TrackInfoFragment : Fragment() {
         }
 
         viewModel.loadPlaylists()
-
         backFromTrackInfo.setOnClickListener {
             requireActivity().onBackPressedDispatcher.onBackPressed()
         }
