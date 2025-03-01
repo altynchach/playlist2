@@ -53,8 +53,6 @@ class PlaylistsFragment : Fragment() {
         playlistCreatedNotify = view.findViewById(R.id.playlistCreatedNotify)
 
         adapter = PlaylistsAdapter { playlist ->
-            // Здесь можно открыть детали конкретного плейлиста,
-            // если понадобится по ТЗ.
         }
         createdPlaylists.layoutManager = GridLayoutManager(requireContext(), 2)
         createdPlaylists.adapter = adapter

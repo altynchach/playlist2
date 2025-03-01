@@ -49,13 +49,11 @@ class PlayerActivity : AppCompatActivity() {
     private lateinit var countrySong: TextView
     private lateinit var cover: ImageView
 
-    // BottomSheet для добавления в плейлист
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<LinearLayout>
     private lateinit var bottomSheetLayout: LinearLayout
     private lateinit var playlistRecyclerBSPlayer: RecyclerView
     private lateinit var addNewPlaylistPlayer: Button
 
-    // ВАЖНО: меняем адаптер на BottomSheetPlaylistsAdapter
     private lateinit var bottomSheetAdapter: BottomSheetPlaylistsAdapter
 
     private var track: Track? = null
@@ -64,7 +62,6 @@ class PlayerActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_player)
 
-        // Инициализация вёрстки
         backButton = findViewById(R.id.buttonBack)
         playButton = findViewById(R.id.buttonPlay)
         currentTimeText = findViewById(R.id.current_time)

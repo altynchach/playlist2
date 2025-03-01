@@ -122,7 +122,6 @@ class PlayerViewModel(
         }
     }
 
-    // Подгрузить плейлисты. Вызываем из onResume() в Activity
     fun loadPlaylistsForPlayerScreen(callback: (List<Playlist>) -> Unit) {
         viewModelScope.launch {
             val playlists = playlistInteractor.getAllPlaylists().first()
