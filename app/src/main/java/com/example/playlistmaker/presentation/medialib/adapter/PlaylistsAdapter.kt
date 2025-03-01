@@ -5,6 +5,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.playlistmaker.R
@@ -26,12 +27,14 @@ class PlaylistsAdapter(
         holder.bind(playlists[position])
     }
 
-    override fun getItemCount() = playlists.size
+    override fun getItemCount(): Int = playlists.size
 
     fun updateList(newList: List<Playlist>) {
+        val diffCallback = PlaylistDiffCallback(playlists, newList)
+        val diffResult = DiffUtil.calculateDiff(diffCallback)
         playlists.clear()
         playlists.addAll(newList)
-        notifyDataSetChanged()
+        diffResult.dispatchUpdatesTo(this)  // Точечные обновления
     }
 
     class PlaylistViewHolder(
@@ -66,6 +69,8 @@ class PlaylistsAdapter(
     }
 }
 
+
+@Suppress("unused")
 class BottomSheetPlaylistsAdapter(
     private val onClick: (Playlist) -> Unit
 ) : RecyclerView.Adapter<BottomSheetPlaylistsAdapter.PlaylistBSViewHolder>() {
@@ -84,10 +89,13 @@ class BottomSheetPlaylistsAdapter(
 
     override fun getItemCount(): Int = playlists.size
 
+    @Suppress("unused")
     fun updateList(newList: List<Playlist>) {
+        val diffCallback = PlaylistDiffCallback(playlists, newList)
+        val diffResult = DiffUtil.calculateDiff(diffCallback)
         playlists.clear()
         playlists.addAll(newList)
-        notifyDataSetChanged()
+        diffResult.dispatchUpdatesTo(this)
     }
 
     class PlaylistBSViewHolder(
@@ -119,5 +127,28 @@ class BottomSheetPlaylistsAdapter(
                 onClick(playlist)
             }
         }
+    }
+}
+
+class PlaylistDiffCallback(
+    private val oldList: List<Playlist>,
+    private val newList: List<Playlist>
+) : DiffUtil.Callback() {
+
+    override fun getOldListSize(): Int = oldList.size
+    override fun getNewListSize(): Int = newList.size
+
+    override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+        val oldPlaylist = oldList[oldItemPosition]
+        val newPlaylist = newList[newItemPosition]
+        return oldPlaylist.playlistId == newPlaylist.playlistId
+    }
+
+    override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+        val o = oldList[oldItemPosition]
+        val n = newList[newItemPosition]
+        return o.name == n.name &&
+                o.trackCount == n.trackCount &&
+                o.coverFilePath == n.coverFilePath
     }
 }
