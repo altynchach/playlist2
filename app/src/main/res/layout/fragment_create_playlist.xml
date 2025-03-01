@@ -118,9 +118,9 @@
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/createPlaylistButton"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="@dimen/corner_radius"
+        android:layout_width="373dp"
+        android:layout_height="44dp"
+        android:layout_marginHorizontal="@dimen/button_radius"
         android:layout_marginBottom="32dp"
         android:background="@drawable/tap_button_selector"
         android:text="@string/create"
