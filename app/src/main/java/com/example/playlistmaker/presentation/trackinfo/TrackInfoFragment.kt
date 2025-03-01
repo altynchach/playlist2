@@ -134,20 +134,15 @@ class TrackInfoFragment : Fragment() {
             adapter.updateList(playlists)
         }
 
-        // Наблюдаем за основным состоянием трека
         viewModel.getState().observe(viewLifecycleOwner) { state ->
             renderState(state)
         }
 
-        // Сразу грузим списки плейлистов
         viewModel.loadPlaylists()
 
-        // Обработчики нажатий
         backFromTrackInfo.setOnClickListener {
-            // Закрыть экран (фрагмент)
             requireActivity().onBackPressedDispatcher.onBackPressed()
         }
-        // «Добавить в плейлист»
         addToFavorTrackInfo.setOnClickListener {
             bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
         }
@@ -164,7 +159,6 @@ class TrackInfoFragment : Fragment() {
     private fun renderState(state: TrackInfoScreenState) {
         val track = state.track ?: return
 
-        // Заполняем поля
         songNameTrackInfo.text = track.trackName
         authorNameTrackInfo.text = track.artistName
         songAlbumTrackInfo.text = track.collectionName ?: ""

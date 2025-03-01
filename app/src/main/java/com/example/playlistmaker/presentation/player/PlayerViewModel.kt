@@ -129,10 +129,8 @@ class PlayerViewModel(
         }
     }
 
-    // НОВОЕ: Добавление трека в плейлист
     fun addTrackToPlaylist(playlistId: Long, trackId: Long, callback: (added: Boolean, playlistName: String) -> Unit) {
         viewModelScope.launch {
-            // Сначала получим название плейлиста
             val playlist = playlistInteractor.getAllPlaylists().first().find { it.playlistId == playlistId }
             val name = playlist?.name ?: ""
             if (playlist == null) {
