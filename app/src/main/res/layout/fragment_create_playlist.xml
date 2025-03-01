@@ -73,9 +73,9 @@
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/addPlaylistName"
                 style="@style/editText"
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="@dimen/corner_radius"
+                android:layout_marginHorizontal="32dp"
                 android:layout_marginTop="32dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -85,8 +85,6 @@
                     android:id="@+id/editTextNamePlaylist"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="@dimen/button_radius"
-                    android:layout_marginTop="@dimen/button_radius"
                     android:hint="@string/playlistName"
                     android:maxLines="1" />
             </com.google.android.material.textfield.TextInputLayout>
@@ -94,10 +92,10 @@
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/addPlaylistDescription"
                 style="@style/editText"
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="@dimen/corner_radius"
-                android:layout_marginTop="@dimen/corner_radius"
+                android:layout_marginHorizontal="32dp"
+                android:layout_marginTop="17dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/addPlaylistName">
@@ -106,8 +104,6 @@
                     android:id="@+id/editTextDescriptionPlaylist"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="@dimen/button_radius"
-                    android:layout_marginTop="@dimen/button_radius"
                     android:hint="@string/playlistDescription"
                     android:maxLines="1" />
             </com.google.android.material.textfield.TextInputLayout>
