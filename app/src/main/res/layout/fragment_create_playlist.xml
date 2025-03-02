@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-
+    android:background="@color/white_black"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".presentation.medialib.CreatePlaylistFragment"
@@ -31,6 +30,7 @@
             <ImageView
                 android:id="@+id/backFromCreatePlaylist"
                 style="@style/BackButtonSettingsStyle"
+                android:backgroundTint="@android:color/transparent"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
                 android:layout_marginStart="@dimen/padding4"
@@ -45,6 +45,7 @@
             <TextView
                 android:id="@+id/title"
                 style="@style/header_page"
+                android:backgroundTint="@android:color/transparent"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
@@ -56,6 +57,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 />
 
+
             <ImageView
                 android:id="@+id/addPlaylistImage"
                 android:layout_width="0dp"
@@ -63,22 +65,27 @@
                 android:layout_marginHorizontal="@dimen/size24"
                 android:layout_marginTop="@dimen/size24"
                 android:background="@drawable/rounded_gapped_rectangle"
+                android:importantForAccessibility="no"
                 android:scaleType="centerInside"
                 android:src="@drawable/playlist_placeholder"
                 app:layout_constraintDimensionRatio="w,1:1"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/backFromCreatePlaylist" />
+                app:layout_constraintTop_toBottomOf="@id/backFromCreatePlaylist"
+                tools:ignore="ImageContrastCheck" />
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/addPlaylistName"
                 style="@style/editText"
+                android:backgroundTint="@android:color/transparent"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="32dp"
                 android:layout_marginTop="32dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
+                app:cursorColor="@color/blue"
+                app:hintTextColor="@color/blue"
                 app:layout_constraintTop_toBottomOf="@id/addPlaylistImage">
 
                 <com.google.android.material.textfield.TextInputEditText
@@ -92,12 +99,15 @@
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/addPlaylistDescription"
                 style="@style/editText"
+                android:backgroundTint="@android:color/transparent"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="32dp"
                 android:layout_marginTop="17dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
+                app:cursorColor="@color/blue"
+                app:hintTextColor="@color/blue"
                 app:layout_constraintTop_toBottomOf="@id/addPlaylistName">
 
                 <com.google.android.material.textfield.TextInputEditText
@@ -106,6 +116,7 @@
                     android:layout_height="wrap_content"
                     android:hint="@string/playlistDescription"
                     android:maxLines="1" />
+
             </com.google.android.material.textfield.TextInputLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
@@ -123,9 +134,9 @@
         android:textAllCaps="false"
         android:textColor="@color/white"
         android:textSize="16sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:ignore="TouchTargetSizeCheck" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

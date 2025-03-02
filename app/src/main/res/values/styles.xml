@@ -229,6 +229,7 @@
 
     <style name="SettingsBackgroundColorStyle">
         <item name="android:background">@color/white_black</item>
+        <item name="boxBackgroundColor">@color/text_field_bg_dark</item>
     </style>
 
     <style name="BackButtonSettingsStyle">
@@ -282,10 +283,8 @@
     </style>
 
     <style name="editText" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
-        <item name="android:textColorHint">@drawable/text_selector</item>
         <item name="boxStrokeColor">@drawable/edit_text_selector</item>
-
-
+        <item name="android:textColorHint">@drawable/text_selector</item>
     </style>
 
     <style name="EditTextStyle">
@@ -309,7 +308,7 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:fontFamily">@font/ys_display_regular</item>
         <item name="android:gravity">start|center_vertical</item>
-        <item name="android:textColor">@color/black_main</item>
+        <item name="android:textColor">@color/color_bback</item>
         <item name="android:maxLines">1</item>
         <item name="android:ellipsize">end</item>
         <item name="android:textSize">@dimen/track_size_16</item>

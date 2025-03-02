@@ -23,4 +23,6 @@
     <color name="divider_color">#E6E8EB</color>
     <color name="like_fill_color">#F56B6C</color>
     <color name="like_bg_color">#FFFFFF</color>
+    <color name="text_field_bg_dark">#1A1B22</color>
+
 </resources>
