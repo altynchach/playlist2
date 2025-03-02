@@ -212,6 +212,10 @@ class CreatePlaylistFragment : DialogFragment() {
         return fileName
     }
 
+    override fun onCancel(dialog: DialogInterface) {
+        handleClose()
+    }
+
     private fun handleClose() {
         val name = editTextNamePlaylist.text?.toString().orEmpty()
         val description = editTextDescriptionPlaylist.text?.toString().orEmpty()
@@ -231,14 +235,10 @@ class CreatePlaylistFragment : DialogFragment() {
                 dismissAllowingStateLoss()
             }
             .setNegativeButton(R.string.cancel) { dialog, _ ->
+                // Просто закрываем диалог подтверждения, остаёмся на экране
                 dialog.dismiss()
             }
             .create()
             .show()
-    }
-
-    override fun onCancel(dialog: DialogInterface) {
-        super.onCancel(dialog)
-        handleClose()
     }
 }
