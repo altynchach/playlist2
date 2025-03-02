@@ -57,7 +57,6 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 />
 
-
             <ImageView
                 android:id="@+id/addPlaylistImage"
                 android:layout_width="0dp"
@@ -80,7 +79,7 @@
                 android:backgroundTint="@android:color/transparent"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="32dp"
+                android:layout_marginHorizontal="24dp"
                 android:layout_marginTop="32dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -93,6 +92,7 @@
                     android:id="@+id/editTextNamePlaylist"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:textColor="@color/black_main"
                     android:maxLines="1" />
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -102,18 +102,19 @@
                 android:backgroundTint="@android:color/transparent"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="32dp"
+                android:layout_marginHorizontal="24dp"
                 android:layout_marginTop="17dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:cursorColor="@color/blue"
                 app:hintTextColor="@color/blue"
-                app:layout_constraintTop_toBottomOf="@id/addPlaylistName">
+                app:layout_constraintTop_toBottomOf="@id/addPlaylistName" >
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/editTextDescriptionPlaylist"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:textColor="@color/black_main"
                     android:hint="@string/playlistDescription"
                     android:maxLines="1" />
 
