@@ -86,13 +86,13 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:cursorColor="@color/blue"
                 app:hintTextColor="@color/blue"
+                android:hint="@string/playlistName"
                 app:layout_constraintTop_toBottomOf="@id/addPlaylistImage">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/editTextNamePlaylist"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="@string/playlistName"
                     android:maxLines="1" />
             </com.google.android.material.textfield.TextInputLayout>
 

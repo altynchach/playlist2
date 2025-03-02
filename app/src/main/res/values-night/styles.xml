@@ -161,8 +161,8 @@
 
     <style name="editText" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
         <item name="boxBackgroundColor">@color/text_field_bg_dark</item>
-        <item name="boxStrokeColor">@drawable/edit_text_selector</item>
-        <item name="android:textColorHint">@drawable/text_selector</item>
+        <item name="boxStrokeColor">@drawable/edit_text_selector_night</item>
+        <item name="android:textColorHint">@drawable/text_selector_night</item>
     </style>
 
 </resources>
