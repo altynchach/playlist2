@@ -51,9 +51,7 @@ class CreatePlaylistViewModel(
         }
     }
 
-    fun hasCover(): Boolean {
-        return coverPath != null
-    }
+    fun hasCover(): Boolean = coverPath != null
 
     private fun updateState(
         isCreateButtonEnabled: Boolean? = null,

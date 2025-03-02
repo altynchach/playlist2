@@ -126,7 +126,7 @@ class PlayerActivity : AppCompatActivity() {
                         val inflater = LayoutInflater.from(this@PlayerActivity)
                         val customToastView = inflater.inflate(
                             R.layout.playlist_created_toast,
-                            findViewById(android.R.id.content), // или null — главное, чтобы LayoutInflater мог привязать ресурсы
+                            findViewById(android.R.id.content),
                             false
                         )
                         val toastTextView: TextView = customToastView.findViewById(R.id.playlistCreatedNotify)

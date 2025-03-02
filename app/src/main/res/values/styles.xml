@@ -285,6 +285,7 @@
     <style name="editText" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
         <item name="boxStrokeColor">@drawable/edit_text_selector</item>
         <item name="android:textColorHint">@drawable/text_selector</item>
+        <item name="android:textColor">@color/black_main</item>
         <item name="boxCornerRadiusTopStart">8dp</item>
         <item name="boxCornerRadiusTopEnd">8dp</item>
         <item name="boxCornerRadiusBottomStart">8dp</item>
