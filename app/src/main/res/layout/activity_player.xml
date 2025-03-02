@@ -261,9 +261,19 @@
         </ScrollView>
     </LinearLayout>
 
+    <View
+        android:id="@+id/scrimOverlay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/black_50"
+        android:visibility="gone"
+        />
+
     <LinearLayout
         android:id="@+id/standard_bottom_sheet_player"
         style="@style/BottomSheetStyle"
+        android:clipToOutline="true"
+        android:elevation="8dp"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"

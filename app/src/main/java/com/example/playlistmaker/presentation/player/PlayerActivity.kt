@@ -64,6 +64,8 @@ class PlayerActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_player)
 
+        val scrimOverlay = findViewById<View>(R.id.scrimOverlay)
+
         backButton = findViewById(R.id.buttonBack)
         playButton = findViewById(R.id.buttonPlay)
         currentTimeText = findViewById(R.id.current_time)
@@ -87,12 +89,30 @@ class PlayerActivity : AppCompatActivity() {
         }
 
         bottomSheetLayout = findViewById(R.id.standard_bottom_sheet_player)
+        // Устанавливаем фон со скруглёнными углами динамически
+        bottomSheetLayout.setBackgroundResource(R.drawable.rounded_bottom_sheet)
+
         bottomSheetBehavior = BottomSheetBehavior.from(bottomSheetLayout).apply {
             state = BottomSheetBehavior.STATE_HIDDEN
         }
         bottomSheetBehavior.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
-            override fun onStateChanged(bottomSheet: View, newState: Int) {}
-            override fun onSlide(bottomSheet: View, slideOffset: Float) {}
+            override fun onStateChanged(bottomSheet: View, newState: Int) {
+                when (newState) {
+                    BottomSheetBehavior.STATE_COLLAPSED,
+                    BottomSheetBehavior.STATE_EXPANDED -> {
+                        scrimOverlay.visibility = View.VISIBLE
+                    }
+                    BottomSheetBehavior.STATE_HIDDEN -> {
+                        scrimOverlay.visibility = View.GONE
+                    }
+                    else -> {}
+                }
+            }
+            override fun onSlide(bottomSheet: View, slideOffset: Float) {
+                if (slideOffset >= 0) {
+                    scrimOverlay.alpha = slideOffset
+                }
+            }
         })
 
         playlistRecyclerBSPlayer = findViewById(R.id.playlistRecyclerBSPlayer)
@@ -100,7 +120,6 @@ class PlayerActivity : AppCompatActivity() {
 
         bottomSheetAdapter = BottomSheetPlaylistsAdapter { playlist ->
             val currentTrack = track ?: return@BottomSheetPlaylistsAdapter
-
             lifecycleScope.launch {
                 viewModel.addTrackToPlaylist(playlist.playlistId, currentTrack.trackId) { added, playlistName ->
                     if (added) {
@@ -109,7 +128,6 @@ class PlayerActivity : AppCompatActivity() {
                             getString(R.string.added_to_playlist, playlistName),
                             Toast.LENGTH_SHORT
                         ).show()
-                        // Обновляем список, чтобы счетчик треков был виден сразу
                         viewModel.loadPlaylistsForPlayerScreen { updatedPlaylists ->
                             bottomSheetAdapter.updateList(updatedPlaylists)
                         }
@@ -124,6 +142,7 @@ class PlayerActivity : AppCompatActivity() {
                 }
             }
         }
+
         playlistRecyclerBSPlayer.layoutManager = LinearLayoutManager(this)
         playlistRecyclerBSPlayer.adapter = bottomSheetAdapter
 
@@ -133,7 +152,6 @@ class PlayerActivity : AppCompatActivity() {
             fragment.show(supportFragmentManager, "CreatePlaylistDialog")
         }
 
-        // Слушаем сигнал о созданном плейлисте
         supportFragmentManager.setFragmentResultListener(PLAYLIST_CREATED_KEY, this) { _, _ ->
             viewModel.loadPlaylistsForPlayerScreen { playlists ->
                 bottomSheetAdapter.updateList(playlists)
