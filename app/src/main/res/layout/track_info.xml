@@ -223,6 +223,7 @@
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:background="@drawable/rounded_bottom_sheet"
+
         app:behavior_hideable="true"
         app:behavior_peekHeight="505dp"
         app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">

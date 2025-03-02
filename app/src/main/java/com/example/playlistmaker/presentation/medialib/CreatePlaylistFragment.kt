@@ -19,6 +19,8 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.DialogFragment
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.bitmap.CenterCrop
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.playlistmaker.R
 import com.example.playlistmaker.presentation.medialib.view.CreatePlaylistViewModel
 import com.google.android.material.textfield.TextInputEditText
@@ -159,6 +161,10 @@ class CreatePlaylistFragment : DialogFragment() {
                 addPlaylistImage.scaleType = ImageView.ScaleType.CENTER_CROP
                 Glide.with(this)
                     .load(filePath)
+                    .transform(
+                        CenterCrop(),
+                        RoundedCorners(resources.getDimensionPixelSize(R.dimen.corner_radius))
+                    )
                     .into(addPlaylistImage)
             }
         }
@@ -235,7 +241,6 @@ class CreatePlaylistFragment : DialogFragment() {
                 dismissAllowingStateLoss()
             }
             .setNegativeButton(R.string.cancel) { dialog, _ ->
-                // Просто закрываем диалог подтверждения, остаёмся на экране
                 dialog.dismiss()
             }
             .create()
