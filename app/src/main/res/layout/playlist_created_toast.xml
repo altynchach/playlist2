@@ -9,7 +9,7 @@
         android:id="@+id/playlistCreatedNotify"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="@dimen/icon_padding"
+        android:layout_marginHorizontal="@dimen/button_radius"
         android:layout_marginBottom="@dimen/button_radius"
         android:background="@color/black_toast"
         android:gravity="center"
