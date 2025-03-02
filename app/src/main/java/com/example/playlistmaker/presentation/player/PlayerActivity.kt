@@ -2,6 +2,7 @@ package com.example.playlistmaker.presentation.player
 
 import android.os.Bundle
 import android.util.Log
+import android.view.LayoutInflater
 import android.view.View
 import android.widget.Button
 import android.widget.ImageButton
@@ -122,15 +123,25 @@ class PlayerActivity : AppCompatActivity() {
             lifecycleScope.launch {
                 viewModel.addTrackToPlaylist(playlist.playlistId, currentTrack.trackId) { added, playlistName ->
                     if (added) {
-                        Toast.makeText(
-                            this@PlayerActivity,
-                            getString(R.string.added_to_playlist, playlistName),
-                            Toast.LENGTH_SHORT
-                        ).show()
+                        val inflater = LayoutInflater.from(this@PlayerActivity)
+                        val customToastView = inflater.inflate(
+                            R.layout.playlist_created_toast,
+                            findViewById(android.R.id.content), // или null — главное, чтобы LayoutInflater мог привязать ресурсы
+                            false
+                        )
+                        val toastTextView: TextView = customToastView.findViewById(R.id.playlistCreatedNotify)
+                        toastTextView.text = getString(R.string.added_to_playlist, playlistName)
+
+                        val toast = Toast(applicationContext).apply {
+                            duration = Toast.LENGTH_SHORT
+                            view = customToastView
+                        }
+                        toast.show()
+
                         viewModel.loadPlaylistsForPlayerScreen { updatedPlaylists ->
                             bottomSheetAdapter.updateList(updatedPlaylists)
                         }
-                        // Исправленный момент: вместо сокрытия BottomSheet показываем его в свернутом состоянии.
+
                         bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
                     } else {
                         Toast.makeText(
