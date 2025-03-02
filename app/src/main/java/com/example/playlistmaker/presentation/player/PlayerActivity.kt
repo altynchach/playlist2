@@ -89,7 +89,6 @@ class PlayerActivity : AppCompatActivity() {
         }
 
         bottomSheetLayout = findViewById(R.id.standard_bottom_sheet_player)
-        // Устанавливаем фон со скруглёнными углами динамически
         bottomSheetLayout.setBackgroundResource(R.drawable.rounded_bottom_sheet)
 
         bottomSheetBehavior = BottomSheetBehavior.from(bottomSheetLayout).apply {
@@ -131,7 +130,8 @@ class PlayerActivity : AppCompatActivity() {
                         viewModel.loadPlaylistsForPlayerScreen { updatedPlaylists ->
                             bottomSheetAdapter.updateList(updatedPlaylists)
                         }
-                        bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
+                        // Исправленный момент: вместо сокрытия BottomSheet показываем его в свернутом состоянии.
+                        bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
                     } else {
                         Toast.makeText(
                             this@PlayerActivity,
