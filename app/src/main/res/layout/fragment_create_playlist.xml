@@ -90,6 +90,7 @@
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/editTextNamePlaylist"
+                    style="@style/editTextInput"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:maxLines="1" />
@@ -111,9 +112,9 @@
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/editTextDescriptionPlaylist"
+                    style="@style/editTextInput"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/black_main"
                     android:hint="@string/playlistDescription"
                     android:maxLines="1" />
 

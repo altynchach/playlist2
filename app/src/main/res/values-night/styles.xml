@@ -159,6 +159,10 @@
         <item name="android:backgroundTint">@color/white_black</item>
     </style>
 
+    <style name="editTextInput">
+        <item name="android:textColor">#FFFFFF</item>
+    </style>
+
     <style name="editText" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
         <item name="boxBackgroundColor">@color/text_field_bg_dark</item>
         <item name="boxStrokeColor">@drawable/edit_text_selector_night</item>
