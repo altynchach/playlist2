@@ -23,10 +23,8 @@ class CreatePlaylistViewModel(
     val state: LiveData<CreatePlaylistState> = _state
 
     private var coverPath: String? = null
-    private var playlistName: String = ""
 
     fun onNameChanged(newName: String) {
-        playlistName = newName
         updateState(isCreateButtonEnabled = newName.isNotBlank())
     }
 

@@ -10,6 +10,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -30,6 +31,7 @@ class PlayerActivity : AppCompatActivity() {
 
     companion object {
         const val NAME_TRACK = "TRACK_DATA"
+        private const val PLAYLIST_CREATED_KEY = "PLAYLIST_CREATED"
     }
 
     private val viewModel: PlayerViewModel by viewModel()
@@ -107,7 +109,10 @@ class PlayerActivity : AppCompatActivity() {
                             getString(R.string.added_to_playlist, playlistName),
                             Toast.LENGTH_SHORT
                         ).show()
-                        // Сворачиваем шторку
+                        // Обновляем список, чтобы счетчик треков был виден сразу
+                        viewModel.loadPlaylistsForPlayerScreen { updatedPlaylists ->
+                            bottomSheetAdapter.updateList(updatedPlaylists)
+                        }
                         bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
                     } else {
                         Toast.makeText(
@@ -126,6 +131,13 @@ class PlayerActivity : AppCompatActivity() {
             bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
             val fragment = CreatePlaylistFragment.newInstance()
             fragment.show(supportFragmentManager, "CreatePlaylistDialog")
+        }
+
+        // Слушаем сигнал о созданном плейлисте
+        supportFragmentManager.setFragmentResultListener(PLAYLIST_CREATED_KEY, this) { _, _ ->
+            viewModel.loadPlaylistsForPlayerScreen { playlists ->
+                bottomSheetAdapter.updateList(playlists)
+            }
         }
 
         viewModel.getState().observe(this) { state ->

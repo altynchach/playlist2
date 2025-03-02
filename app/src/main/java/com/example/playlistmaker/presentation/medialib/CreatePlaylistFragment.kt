@@ -18,6 +18,7 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.setFragmentResult
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
@@ -38,12 +39,12 @@ class CreatePlaylistFragment : DialogFragment() {
     private lateinit var editTextDescriptionPlaylist: TextInputEditText
     private lateinit var createPlaylistButton: Button
 
-    private var hasUnsavedData = false
     private var coverPath: String? = null
     private var playlistName: String = ""
     private var playlistDescription: String = ""
 
     companion object {
+        private const val PLAYLIST_CREATED_KEY = "PLAYLIST_CREATED"
         fun newInstance() = CreatePlaylistFragment()
     }
 
@@ -78,12 +79,10 @@ class CreatePlaylistFragment : DialogFragment() {
             val name = it.toString()
             playlistName = name
             viewModel.onNameChanged(name)
-            hasUnsavedData = hasUnsavedData || name.isNotEmpty()
         }
 
         editTextDescriptionPlaylist.addTextChangedListener {
             playlistDescription = it.toString()
-            hasUnsavedData = true
         }
 
         createPlaylistButton.setOnClickListener {
@@ -96,6 +95,9 @@ class CreatePlaylistFragment : DialogFragment() {
                 getString(R.string.playlist_created_notify, name),
                 Toast.LENGTH_SHORT
             ).show()
+
+            // Уведомляем Activity о новом плейлисте
+            setFragmentResult(PLAYLIST_CREATED_KEY, Bundle())
 
             dismissAllowingStateLoss()
         }
@@ -157,7 +159,6 @@ class CreatePlaylistFragment : DialogFragment() {
                 val filePath = copyUriToInternalStorage(uri)
                 coverPath = filePath
                 viewModel.onCoverPicked(filePath)
-                hasUnsavedData = true
                 addPlaylistImage.scaleType = ImageView.ScaleType.CENTER_CROP
                 Glide.with(this)
                     .load(filePath)
