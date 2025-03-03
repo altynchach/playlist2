@@ -51,6 +51,7 @@ class CreatePlaylistFragment : DialogFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setStyle(STYLE_NORMAL, R.style.ThemeOverlay_FullScreenDialog)
+        isCancelable = false
     }
 
     override fun onCreateView(
@@ -97,8 +98,7 @@ class CreatePlaylistFragment : DialogFragment() {
             ).show()
 
             setFragmentResult(PLAYLIST_CREATED_KEY, Bundle())
-
-            dismissAllowingStateLoss()
+            dismiss() // вместо dismissAllowingStateLoss()
         }
 
         addPlaylistImage.setOnClickListener {
@@ -147,6 +147,9 @@ class CreatePlaylistFragment : DialogFragment() {
             ViewGroup.LayoutParams.MATCH_PARENT,
             ViewGroup.LayoutParams.MATCH_PARENT
         )
+    }
+
+    override fun onCancel(dialog: DialogInterface) {
     }
 
     private val galleryLauncher =
@@ -215,27 +218,23 @@ class CreatePlaylistFragment : DialogFragment() {
         return fileName
     }
 
-    override fun onCancel(dialog: DialogInterface) {
-        handleClose()
-    }
-
-    private fun handleClose() {
+    fun handleClose() {
         val name = editTextNamePlaylist.text?.toString().orEmpty()
         val description = editTextDescriptionPlaylist.text?.toString().orEmpty()
         if (name.isBlank() && description.isBlank() && !viewModel.hasCover()) {
-            dismissAllowingStateLoss()
+            dismiss()
         } else {
             showConfirmationDialog()
         }
     }
 
     private fun showConfirmationDialog() {
-        AlertDialog.Builder(requireContext())
+        AlertDialog.Builder(requireActivity())
             .setTitle(R.string.finishPlaylistCreating)
             .setMessage(R.string.dataWillLost)
             .setPositiveButton(R.string.complete) { dialog, _ ->
                 dialog.dismiss()
-                dismissAllowingStateLoss()
+                dismiss()
             }
             .setNegativeButton(R.string.cancel) { dialog, _ ->
                 dialog.dismiss()

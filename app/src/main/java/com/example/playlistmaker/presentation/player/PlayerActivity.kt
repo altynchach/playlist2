@@ -62,6 +62,9 @@ class PlayerActivity : AppCompatActivity() {
     private var track: Track? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        // Если хотим, чтобы клавиатура поднимала контент, можно прописать:
+        // window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
+
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_player)
 
@@ -82,7 +85,8 @@ class PlayerActivity : AppCompatActivity() {
         countrySong = findViewById(R.id.countrySong)
         cover = findViewById(R.id.cover)
 
-        backButton.setOnClickListener { finish() }
+        // Вместо finish() используем onBackPressed()
+        backButton.setOnClickListener { onBackPressed() }
         playButton.setOnClickListener { viewModel.onPlayPauseClicked() }
         likeButton.setOnClickListener { viewModel.onLikeButtonClicked() }
         addToPlaylistButton.setOnClickListener {
@@ -177,7 +181,7 @@ class PlayerActivity : AppCompatActivity() {
         Log.d("PlayerActivity", "Received JSON: $json")
 
         if (json.isNullOrEmpty()) {
-            finish()
+            onBackPressed()
             return
         }
 
@@ -188,7 +192,7 @@ class PlayerActivity : AppCompatActivity() {
             null
         }
         if (track == null) {
-            finish()
+            onBackPressed()
             return
         }
 
@@ -237,6 +241,16 @@ class PlayerActivity : AppCompatActivity() {
         likeButton.setImageResource(
             if (state.isFavorite) R.drawable.like_button_active else R.drawable.add_to_likes
         )
+    }
+
+    override fun onBackPressed() {
+        val fragment = supportFragmentManager.findFragmentByTag("CreatePlaylistDialog")
+                as? CreatePlaylistFragment
+        if (fragment != null && fragment.isVisible) {
+            fragment.handleClose() // Показываем диалог подтверждения
+        } else {
+            super.onBackPressed()
+        }
     }
 
     override fun onPause() {
