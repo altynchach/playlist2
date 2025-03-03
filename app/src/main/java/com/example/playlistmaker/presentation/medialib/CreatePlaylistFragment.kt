@@ -97,6 +97,7 @@ class CreatePlaylistFragment : DialogFragment() {
             ).show()
 
             setFragmentResult(PLAYLIST_CREATED_KEY, Bundle())
+
             dismissAllowingStateLoss()
         }
 
@@ -145,9 +146,6 @@ class CreatePlaylistFragment : DialogFragment() {
         dialog?.window?.setLayout(
             ViewGroup.LayoutParams.MATCH_PARENT,
             ViewGroup.LayoutParams.MATCH_PARENT
-        )
-        dialog?.window?.setSoftInputMode(
-            WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN
         )
     }
 
