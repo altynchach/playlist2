@@ -96,9 +96,7 @@ class CreatePlaylistFragment : DialogFragment() {
                 Toast.LENGTH_SHORT
             ).show()
 
-            // Уведомляем Activity о новом плейлисте
             setFragmentResult(PLAYLIST_CREATED_KEY, Bundle())
-
             dismissAllowingStateLoss()
         }
 
@@ -149,7 +147,7 @@ class CreatePlaylistFragment : DialogFragment() {
             ViewGroup.LayoutParams.MATCH_PARENT
         )
         dialog?.window?.setSoftInputMode(
-            WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE
+            WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN
         )
     }
 
