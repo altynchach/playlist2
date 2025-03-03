@@ -1,4 +1,6 @@
-    <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -8,12 +10,14 @@
 
     <GridLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:columnCount="2"
         android:padding="@dimen/padding_standard"
-        tools:layout_editor_absoluteX="0dp"
-        tools:layout_editor_absoluteY="0dp"
-        tools:ignore="MissingConstraints">
+
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -24,32 +28,31 @@
             android:padding="0dp"
             tools:ignore="UselessParent">
 
-
             <TextView
                 android:id="@+id/action_bar_search"
                 style="@style/header_page"
+                android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_marginStart="2dp"
                 android:text="@string/search" />
         </LinearLayout>
 
+        <!-- Поле ввода: занимает следующую "строку" (row=1), 2 колонки -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_columnSpan="2"
-            android:layout_gravity="center_horizontal"
+            android:orientation="horizontal"
             android:layout_margin="0dp"
             android:layout_marginStart="16dp"
-            android:orientation="horizontal"
-            android:padding="0dp"
             tools:ignore="ExtraText,UselessParent">
 
             <EditText
                 android:id="@+id/inputEditText"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-
                 android:layout_weight="1"
+                android:layout_marginTop="16dp"
                 android:background="@drawable/search_background"
                 android:cursorVisible="true"
                 android:drawableStart="@drawable/search"
@@ -62,8 +65,8 @@
                 android:textColor="@color/color_area"
                 android:textColorHint="@color/icon_search"
                 android:textCursorDrawable="@drawable/cursor_color"
-                tools:ignore="TouchTargetSizeCheck"
-                android:layout_width="0dp"/>
+                tools:ignore="TouchTargetSizeCheck" />
+
         </LinearLayout>
 
         <LinearLayout
@@ -75,12 +78,12 @@
 
             <TextView
                 android:id="@+id/history_title"
+                style="@style/HistorySearchText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                style="@style/HistorySearchText"
-                android:text="@string/search_history"
                 android:layout_marginTop="22dp"
-                android:layout_marginBottom="22dp" />
+                android:layout_marginBottom="22dp"
+                android:text="@string/search_history" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/search_history_recycler"
@@ -89,23 +92,33 @@
                 android:layout_weight="1" />
 
             <Button
+                android:id="@+id/clear_history_button"
+                style="@style/ClearSearchButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:layout_marginBottom="16dp"
-                android:id="@+id/clear_history_button"
-                android:text="@string/clear_history"
-                style="@style/ClearSearchButtonStyle"
-                />
+                android:text="@string/clear_history" />
+
         </LinearLayout>
 
-        <LinearLayout
+
+        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:gravity="center_horizontal">
+            android:layout_height="wrap_content"
+            android:layout_columnSpan="2">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="16dp"
+                android:visibility="gone" />
 
             <LinearLayout
                 android:id="@+id/nothingFound"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center_horizontal"
                 android:orientation="vertical"
@@ -128,13 +141,12 @@
 
             <LinearLayout
                 android:id="@+id/connectionProblem"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="24dp"
                 android:gravity="center_horizontal"
                 android:orientation="vertical"
-                android:visibility="gone"
-                tools:visibility="visible">
+                android:layout_margin="24dp"
+                android:visibility="gone">
 
                 <ImageView
                     style="@style/search_image_view"
@@ -162,8 +174,7 @@
                 android:id="@+id/progress_bar_layout"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:visibility="gone"
-                >
+                android:visibility="gone">
 
                 <ProgressBar
                     android:id="@+id/progress_bar"
@@ -174,19 +185,7 @@
                     android:indeterminateTint="@color/blue_sky" />
             </FrameLayout>
 
-        </LinearLayout>
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recyclerView"
-            android:layout_width="383dp"
-            android:layout_height="603dp"
-            android:layout_columnSpan="2"
-            android:layout_marginTop="16dp"
-            android:layout_marginBottom="16dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/inputEditText" />
+        </FrameLayout>
 
     </GridLayout>
 
