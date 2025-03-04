@@ -1,11 +1,10 @@
 package com.example.playlistmaker.presentation.player
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import com.example.playlistmaker.domain.interactor.FavoritesInteractor
 import com.example.playlistmaker.domain.interactor.PlayerInteractor
+import com.example.playlistmaker.domain.interactor.PlaylistInteractor
+import com.example.playlistmaker.domain.models.Playlist
 import com.example.playlistmaker.domain.models.Track
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.first
@@ -15,7 +14,8 @@ import java.util.concurrent.TimeUnit
 
 class PlayerViewModel(
     private val playerInteractor: PlayerInteractor,
-    private val favoritesInteractor: FavoritesInteractor
+    private val favoritesInteractor: FavoritesInteractor,
+    private val playlistInteractor: PlaylistInteractor,
 ) : ViewModel() {
 
     private val stateLiveData = MutableLiveData(PlayerScreenState())
@@ -37,10 +37,8 @@ class PlayerViewModel(
         track.previewUrl?.let {
             playerInteractor.setTrackPreview(it)
         }
-
         viewModelScope.launch {
-            val favFlow = favoritesInteractor.isFavorite(track.trackId)
-            val isFav = favFlow.first()
+            val isFav = favoritesInteractor.isFavorite(track.trackId).first()
             updateState(isFavorite = isFav)
         }
     }
@@ -68,10 +66,7 @@ class PlayerViewModel(
 
     private fun stopPlayback() {
         playerInteractor.stop()
-        updateState(
-            isPlaying = false,
-            currentTimeFormatted = "00:00"
-        )
+        updateState(isPlaying = false, currentTimeFormatted = "00:00")
         stopUpdatingProgress(true)
     }
 
@@ -124,6 +119,31 @@ class PlayerViewModel(
                 favoritesInteractor.addFavorite(track)
                 updateState(isFavorite = true)
             }
+        }
+    }
+
+    fun loadPlaylistsForPlayerScreen(callback: (List<Playlist>) -> Unit) {
+        viewModelScope.launch {
+            val playlists = playlistInteractor.getAllPlaylists().first()
+            callback(playlists)
+        }
+    }
+
+    fun addTrackToPlaylist(
+        playlistId: Long,
+        trackId: Long,
+        callback: (added: Boolean, playlistName: String) -> Unit
+    ) {
+        viewModelScope.launch {
+            val playlists = playlistInteractor.getAllPlaylists().first()
+            val playlist = playlists.find { it.playlistId == playlistId }
+            val name = playlist?.name ?: ""
+            if (playlist == null) {
+                callback(false, "")
+                return@launch
+            }
+            val result = playlistInteractor.addTrackToPlaylist(playlistId, trackId)
+            callback(result, name)
         }
     }
 

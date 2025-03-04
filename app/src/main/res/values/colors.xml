@@ -24,6 +24,7 @@
     <color name="color_bg_dark">#3C3C3F</color>
     <color name="gray_switch_track_dark">#3C3C3F</color>
     <color name="black_dark">#FFFFFF</color>
+    <color name="black_50">#CC000000</color>
     <color name="white_dark">#000000</color>
     <color name="gray_back_dark">#2C2C2F</color>
     <color name="search_text_dark">#EAEAEA</color>
@@ -45,6 +46,7 @@
     <color name="divider_color">#E6E8EB</color>
     <color name="like_fill_color">#F56B6C</color>
     <color name="like_bg_color">#1A1B22</color>
-
+    <color name="text_field_bg_light">#FFFFFFFF</color>
+    <color name="black_toast">#1A1B22</color>
 
 </resources>
