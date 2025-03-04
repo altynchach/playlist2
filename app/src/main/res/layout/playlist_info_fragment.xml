@@ -6,7 +6,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:background="@color/gray_light"
     android:orientation="vertical"
-    tools:context="">
+    tools:context=".mediateka.ui.PlaylistInfoFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/constraintLayout"
@@ -36,7 +36,7 @@
             android:scaleType="centerInside"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/settings_back" />
+            app:srcCompat="@drawable/back" />
 
         <ImageView
             android:id="@+id/PlaylistImage"
@@ -54,7 +54,7 @@
             android:id="@+id/PlaylistName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="@dimen/button_radius"
+            android:layout_marginHorizontal="@dimen/padding16"
             android:layout_marginTop="@dimen/size24"
             android:maxLines="1"
             android:textColor="@color/black_main"
@@ -69,8 +69,8 @@
             android:id="@+id/PlaylistDescription"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="@dimen/button_radius"
-            android:layout_marginTop="@dimen/corner_radius"
+            android:layout_marginHorizontal="@dimen/padding16"
+            android:layout_marginTop="@dimen/padding8"
             android:maxLines="1"
             android:textColor="@color/black_main"
             android:textSize="@dimen/text_size_18sp"
@@ -83,8 +83,8 @@
             android:id="@+id/playlistInfoNumbers"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="@dimen/button_radius"
-            android:layout_marginTop="@dimen/corner_radius"
+            android:layout_marginHorizontal="@dimen/padding16"
+            android:layout_marginTop="@dimen/padding8"
             android:gravity="start"
             android:orientation="horizontal"
             app:layout_constraintEnd_toEndOf="parent"
@@ -118,8 +118,8 @@
             android:id="@+id/buttonsLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="@dimen/button_radius"
-            android:layout_marginTop="@dimen/button_radius"
+            android:layout_marginHorizontal="@dimen/padding16"
+            android:layout_marginTop="@dimen/padding16"
             android:orientation="horizontal"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -134,7 +134,7 @@
             <ImageView
                 android:id="@+id/editPlaylist"
                 style="@style/IconSettingsStyle"
-                android:layout_marginStart="@dimen/button_radius"
+                android:layout_marginStart="@dimen/padding16"
                 android:background="@drawable/edit"
                 android:backgroundTint="@color/black_main" />
 
@@ -159,7 +159,7 @@
             android:layout_width="50dp"
             android:layout_height="4dp"
             android:layout_gravity="center"
-            android:layout_marginTop="@dimen/corner_radius"
+            android:layout_marginTop="@dimen/padding8"
             android:background="@drawable/rounded_view" />
 
         <androidx.recyclerview.widget.RecyclerView
@@ -186,7 +186,7 @@
             android:layout_width="50dp"
             android:layout_height="4dp"
             android:layout_gravity="center"
-            android:layout_marginTop="@dimen/corner_radius"
+            android:layout_marginTop="@dimen/padding8"
             android:layout_marginBottom="@dimen/padding12"
             android:background="@drawable/rounded_view" />
 
@@ -197,7 +197,7 @@
 
         <FrameLayout
             android:id="@+id/share"
-            android:layout_marginTop="@dimen/corner_radius"
+            android:layout_marginTop="@dimen/padding8"
             style="@style/LayoutSettingsStyle">
 
             <TextView
@@ -207,7 +207,7 @@
 
         <FrameLayout
             android:id="@+id/edit"
-            android:layout_marginTop="@dimen/corner_radius"
+            android:layout_marginTop="@dimen/padding8"
             style="@style/LayoutSettingsStyle">
 
             <TextView
@@ -217,7 +217,7 @@
 
         <FrameLayout
             android:id="@+id/delete"
-            android:layout_marginTop="@dimen/corner_radius"
+            android:layout_marginTop="@dimen/padding8"
             style="@style/LayoutSettingsStyle">
 
             <TextView
