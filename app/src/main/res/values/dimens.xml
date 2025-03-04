@@ -16,9 +16,11 @@
     <dimen name="padding_standard">15dp</dimen>
     <dimen name="size1">1dp</dimen>
     <dimen name="size14">14dp</dimen>
+    <dimen name="size21">21dp</dimen>
     <dimen name="size24">24dp</dimen>
     <dimen name="size28">28dp</dimen>
     <dimen name="size32">32dp</dimen>
+    <dimen name="size66">66dp</dimen>
     <dimen name="size38dp">38dp</dimen>
     <dimen name="size334">334dp</dimen>
     <dimen name="size_106dp">106dp</dimen>
