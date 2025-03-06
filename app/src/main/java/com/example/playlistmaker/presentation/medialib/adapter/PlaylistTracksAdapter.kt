@@ -1,4 +1,4 @@
-package com.example.playlistmaker.presentation.medialib.playlistinfo.adapter
+package com.example.playlistmaker.presentation.medialib.adapter
 
 import android.view.LayoutInflater
 import android.view.View

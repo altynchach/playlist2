@@ -1,7 +1,6 @@
-package com.example.playlistmaker.presentation.medialib.playlistinfo
+package com.example.playlistmaker.presentation.medialib
 
 import android.app.AlertDialog
-import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.view.*
@@ -14,8 +13,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.playlistmaker.R
 import com.example.playlistmaker.domain.models.Track
-import com.example.playlistmaker.presentation.medialib.CreatePlaylistFragment
-import com.example.playlistmaker.presentation.medialib.playlistinfo.adapter.PlaylistTracksAdapter
+import com.example.playlistmaker.presentation.medialib.adapter.PlaylistTracksAdapter
+import com.example.playlistmaker.presentation.medialib.view.PlaylistInfoScreenState
+import com.example.playlistmaker.presentation.medialib.view.PlaylistInfoViewModel
 import com.example.playlistmaker.presentation.player.PlayerActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.bottomsheet.BottomSheetBehavior

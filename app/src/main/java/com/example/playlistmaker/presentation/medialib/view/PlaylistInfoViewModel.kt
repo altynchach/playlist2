@@ -1,4 +1,4 @@
-package com.example.playlistmaker.presentation.medialib.playlistinfo
+package com.example.playlistmaker.presentation.medialib.view
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData

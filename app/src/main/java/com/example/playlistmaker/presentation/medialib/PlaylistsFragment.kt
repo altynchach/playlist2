@@ -15,8 +15,6 @@ import com.example.playlistmaker.R
 import com.example.playlistmaker.presentation.medialib.adapter.PlaylistsAdapter
 import com.example.playlistmaker.presentation.medialib.view.PlaylistsScreenState
 import com.example.playlistmaker.presentation.medialib.view.PlaylistsViewModel
-import com.example.playlistmaker.presentation.player.PlayerActivity
-import com.example.playlistmaker.presentation.medialib.playlistinfo.PlaylistInfoFragment
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class PlaylistsFragment : Fragment() {

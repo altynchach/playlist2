@@ -6,7 +6,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:background="@color/gray"
     android:orientation="vertical"
-    tools:context=".presentation.medialib.playlistinfo.PlaylistInfoFragment">
+    tools:context=".presentation.medialib.PlaylistInfoFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/constraintLayout"
