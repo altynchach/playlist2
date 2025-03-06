@@ -56,7 +56,6 @@ class PlaylistInfoViewModel(
     fun deletePlaylist() {
         viewModelScope.launch {
             playlistInteractor.deletePlaylist(currentPlaylistId)
-            // Возвращаемся назад, очистив state
             _state.value = PlaylistInfoScreenState()
         }
     }
@@ -89,12 +88,9 @@ class PlaylistInfoViewModel(
 
     private suspend fun getTracksForPlaylist(trackIds: List<Long>): List<Track> {
         if (trackIds.isEmpty()) return emptyList()
-        // Все треки из избранного
         val favList = favoritesInteractor.getFavorites().first()
-        // фильтруем только те, что есть в trackIds
         val result = favList.filter { trackIds.contains(it.trackId) }
-        // Сортируем по убыванию добавления: но IDs у нас в плейлисте идут с последне-добавленного (если в репо так сделано).
-        // Если trackIds[0] — последний добавленный, значит надо сохранить этот порядок:
+
         val sorted = trackIds.mapNotNull { id -> result.find { track -> track.trackId == id } }
         return sorted
     }
@@ -109,7 +105,6 @@ class PlaylistInfoViewModel(
     }
 
     private fun formatMinutesWord(minutes: Long): String {
-        // Можно было бы учесть множественные формы
         return "минут"
     }
 
