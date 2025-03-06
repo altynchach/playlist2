@@ -85,7 +85,11 @@ val dataModule = module {
     }
 
     single<PlaylistRepository> {
-        PlaylistRepositoryImpl(playlistDao = get())
+        PlaylistRepositoryImpl(
+            playlistDao = get(),
+            favoritesRepository = get(),
+            favoriteTrackDao = get()
+        )
     }
 
     single<PlaylistInteractor> {

@@ -191,14 +191,13 @@
             android:background="@drawable/rounded_view" />
 
         <include
-            android:id = "@+id/playlistInfoSheet"
-            layout="@layout/playlist_info_element_sheet"
-            />
+            android:id="@+id/playlistInfoSheet"
+            layout="@layout/playlist_info_element_sheet" />
 
         <FrameLayout
             android:id="@+id/share"
-            android:layout_marginTop="@dimen/corner_radius"
-            style="@style/LayoutSettingsStyle">
+            style="@style/LayoutSettingsStyle"
+            android:layout_marginTop="@dimen/corner_radius">
 
             <TextView
                 style="@style/TextSettingsStyle"
@@ -207,8 +206,8 @@
 
         <FrameLayout
             android:id="@+id/edit"
-            android:layout_marginTop="@dimen/corner_radius"
-            style="@style/LayoutSettingsStyle">
+            style="@style/LayoutSettingsStyle"
+            android:layout_marginTop="@dimen/corner_radius">
 
             <TextView
                 style="@style/TextSettingsStyle"
@@ -217,8 +216,8 @@
 
         <FrameLayout
             android:id="@+id/delete"
-            android:layout_marginTop="@dimen/corner_radius"
-            style="@style/LayoutSettingsStyle">
+            style="@style/LayoutSettingsStyle"
+            android:layout_marginTop="@dimen/corner_radius">
 
             <TextView
                 style="@style/TextSettingsStyle"
