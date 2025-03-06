@@ -15,6 +15,8 @@ import com.example.playlistmaker.R
 import com.example.playlistmaker.presentation.medialib.adapter.PlaylistsAdapter
 import com.example.playlistmaker.presentation.medialib.view.PlaylistsScreenState
 import com.example.playlistmaker.presentation.medialib.view.PlaylistsViewModel
+import com.example.playlistmaker.presentation.player.PlayerActivity
+import com.example.playlistmaker.presentation.medialib.playlistinfo.PlaylistInfoFragment
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class PlaylistsFragment : Fragment() {
@@ -53,6 +55,11 @@ class PlaylistsFragment : Fragment() {
         playlistCreatedNotify = view.findViewById(R.id.playlistCreatedNotify)
 
         adapter = PlaylistsAdapter { playlist ->
+            val fragment = PlaylistInfoFragment.newInstance(playlist.playlistId)
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.rootFragmentContainerView, fragment)
+                .addToBackStack(null)
+                .commit()
         }
         createdPlaylists.layoutManager = GridLayoutManager(requireContext(), 2)
         createdPlaylists.adapter = adapter

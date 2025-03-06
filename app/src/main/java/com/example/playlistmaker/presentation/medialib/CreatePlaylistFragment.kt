@@ -12,19 +12,21 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
-import android.widget.Button
-import android.widget.ImageView
-import android.widget.Toast
+import android.widget.*
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.setFragmentResult
+import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.playlistmaker.R
+import com.example.playlistmaker.domain.models.Playlist
+import com.example.playlistmaker.presentation.medialib.view.CreatePlaylistState
 import com.example.playlistmaker.presentation.medialib.view.CreatePlaylistViewModel
 import com.google.android.material.textfield.TextInputEditText
+import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.io.File
 import java.io.FileOutputStream
@@ -43,15 +45,33 @@ class CreatePlaylistFragment : DialogFragment() {
     private var playlistName: String = ""
     private var playlistDescription: String = ""
 
+    private var editingPlaylistId: Long = 0L // 0 => создаём, != 0 => редактируем
+
     companion object {
+
         private const val PLAYLIST_CREATED_KEY = "PLAYLIST_CREATED"
-        fun newInstance() = CreatePlaylistFragment()
+
+        fun newInstance(): CreatePlaylistFragment {
+            return CreatePlaylistFragment()
+        }
+
+        // Перегруженный метод для режима редактирования
+        fun newInstance(playlistId: Long): CreatePlaylistFragment {
+            val fragment = CreatePlaylistFragment()
+            val args = Bundle()
+            args.putLong("EXTRA_PLAYLIST_ID", playlistId)
+            fragment.arguments = args
+            return fragment
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setStyle(STYLE_NORMAL, R.style.ThemeOverlay_FullScreenDialog)
         isCancelable = false
+
+        // Получим аргумент, если он есть
+        editingPlaylistId = arguments?.getLong("EXTRA_PLAYLIST_ID", 0L) ?: 0L
     }
 
     override fun onCreateView(
@@ -90,15 +110,33 @@ class CreatePlaylistFragment : DialogFragment() {
             val name = editTextNamePlaylist.text.toString().trim()
             val description = editTextDescriptionPlaylist.text.toString().trim()
 
-            viewModel.savePlaylist(name, description)
-            Toast.makeText(
-                requireContext(),
-                getString(R.string.playlist_created_notify, name),
-                Toast.LENGTH_SHORT
-            ).show()
-
-            setFragmentResult(PLAYLIST_CREATED_KEY, Bundle())
-            dismiss() // вместо dismissAllowingStateLoss()
+            if (editingPlaylistId == 0L) {
+                // Создание нового плейлиста
+                viewModel.savePlaylist(name, description)
+                Toast.makeText(
+                    requireContext(),
+                    getString(R.string.playlist_created_notify, name),
+                    Toast.LENGTH_SHORT
+                ).show()
+                setFragmentResult(PLAYLIST_CREATED_KEY, Bundle())
+                dismiss()
+            } else {
+                // Редактирование существующего
+                lifecycleScope.launch {
+                    viewModel.updatePlaylist(
+                        playlistId = editingPlaylistId,
+                        name = name,
+                        description = description,
+                        coverPath = coverPath
+                    )
+                    Toast.makeText(
+                        requireContext(),
+                        getString(R.string.playlist_updated),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    dismiss()
+                }
+            }
         }
 
         addPlaylistImage.setOnClickListener {
@@ -111,6 +149,11 @@ class CreatePlaylistFragment : DialogFragment() {
                 addPlaylistImage.setImageURI(Uri.parse(it))
             }
         }
+
+        // Если вошли в режим редактирования, загрузим существующий плейлист
+        if (editingPlaylistId != 0L) {
+            viewModel.loadPlaylistForEdit(editingPlaylistId)
+        }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -118,6 +161,7 @@ class CreatePlaylistFragment : DialogFragment() {
         outState.putString("COVER_PATH", coverPath)
         outState.putString("PLAYLIST_NAME", playlistName)
         outState.putString("PLAYLIST_DESC", playlistDescription)
+        outState.putLong("EDITING_ID", editingPlaylistId)
     }
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
@@ -126,6 +170,7 @@ class CreatePlaylistFragment : DialogFragment() {
             coverPath = savedInstanceState.getString("COVER_PATH")
             playlistName = savedInstanceState.getString("PLAYLIST_NAME", "")
             playlistDescription = savedInstanceState.getString("PLAYLIST_DESC", "")
+            editingPlaylistId = savedInstanceState.getLong("EDITING_ID", 0L)
 
             if (!coverPath.isNullOrEmpty()) {
                 viewModel.onCoverPicked(coverPath)

@@ -43,11 +43,37 @@ class CreatePlaylistViewModel(
                 trackCount = 0
             )
             playlistInteractor.createPlaylist(playlist)
-
             updateState(
                 isPlaylistCreated = true,
                 createdPlaylistName = name
             )
+        }
+    }
+
+    fun loadPlaylistForEdit(playlistId: Long) {
+        viewModelScope.launch {
+            val playlist = playlistInteractor.getPlaylistById(playlistId)
+            if (playlist != null) {
+                coverPath = playlist.coverFilePath
+                updateState(
+                    isCreateButtonEnabled = playlist.name.isNotBlank(),
+                    coverFilePath = coverPath
+                )
+            }
+        }
+    }
+
+    fun updatePlaylist(playlistId: Long, name: String, description: String, coverPath: String?) {
+        viewModelScope.launch {
+            val playlist = playlistInteractor.getPlaylistById(playlistId)
+            if (playlist != null) {
+                val updated = playlist.copy(
+                    name = name,
+                    description = description,
+                    coverFilePath = coverPath
+                )
+                playlistInteractor.updatePlaylist(updated)
+            }
         }
     }
 
