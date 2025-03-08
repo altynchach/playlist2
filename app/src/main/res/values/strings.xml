@@ -69,6 +69,8 @@
     <string name="edit">Редактировать</string>
     <string name="save">Сохранить</string>
     <string name="no_tracks_in_playlist">В этом плейлисте нет треков</string>
+    <string name="share_playlist_menu">Поделиться</string>
+    <string name="edit_playlist_info">Редактировать</string>
 
     <plurals name="playlist_tracks_count">
         <item quantity="one">%d трек</item>

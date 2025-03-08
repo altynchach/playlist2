@@ -8,6 +8,7 @@ import android.widget.*
 import androidx.core.view.isVisible
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -17,7 +18,6 @@ import com.example.playlistmaker.presentation.medialib.adapter.PlaylistTracksAda
 import com.example.playlistmaker.presentation.medialib.view.PlaylistInfoScreenState
 import com.example.playlistmaker.presentation.medialib.view.PlaylistInfoViewModel
 import com.example.playlistmaker.presentation.player.PlayerActivity
-import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -33,6 +33,7 @@ class PlaylistInfoFragment : DialogFragment() {
     private lateinit var tracksCount: TextView
     private lateinit var sharePlaylist: ImageView
     private lateinit var editPlaylist: ImageView
+    private lateinit var buttonsLayout: LinearLayout
 
     private lateinit var bottomSheetPlaylistInfo: LinearLayout
     private lateinit var bottomSheetEditPlaylistInfo: LinearLayout
@@ -40,6 +41,18 @@ class PlaylistInfoFragment : DialogFragment() {
     private lateinit var darkFrame: View
 
     private lateinit var playlistTracksAdapter: PlaylistTracksAdapter
+    private var playlistIdArg: Long = 0L
+
+    // Защита от двойных нажатий
+    private var isClickAllowed = true
+    private fun clickDebounce(): Boolean {
+        val current = isClickAllowed
+        if (isClickAllowed) {
+            isClickAllowed = false
+            view?.postDelayed({ isClickAllowed = true }, 1000L)
+        }
+        return current
+    }
 
     companion object {
         private const val PLAYLIST_ID_ARG = "PLAYLIST_ID_ARG"
@@ -55,11 +68,12 @@ class PlaylistInfoFragment : DialogFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        // DialogFragment: фуллскрин + отсутствие системных баров
         setStyle(STYLE_NORMAL, R.style.ThemeOverlay_FullScreenDialog)
         isCancelable = false
 
-        val playlistId = arguments?.getLong(PLAYLIST_ID_ARG, 0L) ?: 0L
-        viewModel.loadPlaylist(playlistId)
+        playlistIdArg = arguments?.getLong(PLAYLIST_ID_ARG, 0L) ?: 0L
+        viewModel.loadPlaylist(playlistIdArg)
     }
 
     override fun onCreateView(
@@ -67,21 +81,12 @@ class PlaylistInfoFragment : DialogFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View {
+        // Макет: смотрите, чтобы 100% соответствовал имени и содержал bottom_sheet_playlist_info
         return inflater.inflate(R.layout.playlist_info_fragment, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        requireActivity().window.setSoftInputMode(
-            WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN
-                    or WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN
-        )
-        requireActivity().window.decorView.systemUiVisibility = (
-                View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                        or View.SYSTEM_UI_FLAG_FULLSCREEN
-                        or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-                )
 
         backFromPlaylistInfo = view.findViewById(R.id.backFromPlaylistInfo)
         playlistImage = view.findViewById(R.id.PlaylistImage)
@@ -92,122 +97,171 @@ class PlaylistInfoFragment : DialogFragment() {
         sharePlaylist = view.findViewById(R.id.sharePlaylist)
         editPlaylist = view.findViewById(R.id.editPlaylist)
 
+        buttonsLayout = view.findViewById(R.id.buttonsLayout)
+
         bottomSheetPlaylistInfo = view.findViewById(R.id.bottom_sheet_playlist_info)
         bottomSheetEditPlaylistInfo = view.findViewById(R.id.bottom_sheet_edit_playlist_info)
         darkFrame = view.findViewById(R.id.darkFrame)
         playlistTracksRecyclerBS = view.findViewById(R.id.playlistTracksRecyclerBS)
 
+        // Инициализируем адаптер списка треков
         playlistTracksAdapter = PlaylistTracksAdapter { track ->
-            openPlayerActivity(track)
+            if (clickDebounce()) {
+                openPlayerActivity(track)
+            }
         }
+        // Лонг-клик (удаление трека)
         playlistTracksAdapter.setOnTrackLongClickListener { track ->
-            showRemoveTrackDialog(track)
+            if (clickDebounce()) {
+                showRemoveTrackDialog(track)
+            }
         }
         playlistTracksRecyclerBS.layoutManager = LinearLayoutManager(requireContext())
         playlistTracksRecyclerBS.adapter = playlistTracksAdapter
 
+        // Подключаем BottomSheetBehavior к нашей LinearLayout
         val playlistSheetBehavior = BottomSheetBehavior.from(bottomSheetPlaylistInfo)
         bottomSheetPlaylistInfo.visibility = View.VISIBLE
         playlistSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
 
+        // ==== ВАЖНО: Вычисляем и ставим peekHeight, чтобы шторка была под кнопками ====
+        val location = IntArray(2)
+        buttonsLayout.getLocationOnScreen(location)
+        val buttonsLayoutY = location[1]
+        val screenHeightPx = resources.displayMetrics.heightPixels
+        // Расстояние от низа экрана до низа buttonsLayout
+        val distanceFromBottomPx = screenHeightPx - buttonsLayoutY - buttonsLayout.height
+
+        // Устанавливаем стартовую высоту шторки
+        playlistSheetBehavior.peekHeight = distanceFromBottomPx
+
+        // Отслеживаем свайпы. Если пользователь тянет вниз (slideOffset < 0),
+        // заново выставляем peekHeight, чтобы BottomSheet не уехал выше кнопок
+        playlistSheetBehavior.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
+            override fun onStateChanged(sheet: View, newState: Int) {
+                // Можем при свертывании скрывать darkFrame, если нужно
+                if (newState == BottomSheetBehavior.STATE_EXPANDED ||
+                    newState == BottomSheetBehavior.STATE_COLLAPSED
+                ) {
+                    darkFrame.visibility = View.GONE
+                }
+            }
+            override fun onSlide(sheet: View, slideOffset: Float) {
+                if (slideOffset < 0) {
+                    playlistSheetBehavior.peekHeight = distanceFromBottomPx
+                }
+            }
+        })
+
+        // Вторая шторка (меню: «Поделиться», «Редакт.», «Удалить»)
         val editSheetBehavior = BottomSheetBehavior.from(bottomSheetEditPlaylistInfo)
         editSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
+        editSheetBehavior.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
+            override fun onStateChanged(sheet: View, newState: Int) {
+                if (newState == BottomSheetBehavior.STATE_HIDDEN) {
+                    darkFrame.visibility = View.INVISIBLE
+                } else if (newState == BottomSheetBehavior.STATE_EXPANDED
+                    || newState == BottomSheetBehavior.STATE_HALF_EXPANDED
+                ) {
+                    darkFrame.visibility = View.VISIBLE
+                }
+            }
+            override fun onSlide(sheet: View, slideOffset: Float) {}
+        })
 
+        // Кнопка «Назад»
         backFromPlaylistInfo.setOnClickListener {
-            dismiss()
+            if (clickDebounce()) {
+                findNavController().popBackStack()
+            }
         }
 
+        // Кнопка «Поделиться» (прямая, над треками)
         sharePlaylist.setOnClickListener {
-            viewModel.sharePlaylist { shareText ->
-                if (shareText.isEmpty()) {
-                    Toast.makeText(
-                        requireContext(),
-                        getString(R.string.no_tracks_in_playlist_to_share),
-                        Toast.LENGTH_SHORT
-                    ).show()
-                } else {
-                    val intent = Intent(Intent.ACTION_SEND).apply {
-                        type = "text/plain"
-                        putExtra(Intent.EXTRA_TEXT, shareText)
+            if (clickDebounce()) {
+                viewModel.sharePlaylist { shareText ->
+                    if (shareText.isEmpty()) {
+                        Toast.makeText(
+                            requireContext(),
+                            getString(R.string.no_tracks_in_playlist_to_share),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    } else {
+                        val intent = Intent(Intent.ACTION_SEND).apply {
+                            type = "text/plain"
+                            putExtra(Intent.EXTRA_TEXT, shareText)
+                        }
+                        startActivity(Intent.createChooser(intent, getString(R.string.share_playlist)))
                     }
-                    startActivity(Intent.createChooser(intent, getString(R.string.share_playlist)))
                 }
             }
         }
 
+        // Кнопка «Меню» (три точки) -> открывает вторую шторку
         editPlaylist.setOnClickListener {
-            darkFrame.visibility = View.VISIBLE
-            editSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
+            if (clickDebounce()) {
+                darkFrame.visibility = View.VISIBLE
+                editSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
+            }
         }
 
+        // Тап по затемнению скрывает вторую шторку
         darkFrame.setOnClickListener {
             darkFrame.visibility = View.INVISIBLE
             editSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
         }
 
-        editSheetBehavior.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
-            override fun onStateChanged(bottomSheet: View, newState: Int) {
-                if (newState == BottomSheetBehavior.STATE_HIDDEN) {
-                    darkFrame.visibility = View.INVISIBLE
-                }
-            }
-            override fun onSlide(bottomSheet: View, slideOffset: Float) {}
-        })
-
+        // Кнопки внутри второй шторки: shareLayout, editLayout, deleteLayout
         val shareLayout = bottomSheetEditPlaylistInfo.findViewById<View>(R.id.share)
         val editLayout = bottomSheetEditPlaylistInfo.findViewById<View>(R.id.edit)
         val deleteLayout = bottomSheetEditPlaylistInfo.findViewById<View>(R.id.delete)
 
         shareLayout.setOnClickListener {
-            editSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
-            viewModel.sharePlaylist { shareText ->
-                if (shareText.isEmpty()) {
-                    Toast.makeText(
-                        requireContext(),
-                        getString(R.string.no_tracks_in_playlist_to_share),
-                        Toast.LENGTH_SHORT
-                    ).show()
-                } else {
-                    val intent = Intent(Intent.ACTION_SEND).apply {
-                        type = "text/plain"
-                        putExtra(Intent.EXTRA_TEXT, shareText)
+            if (clickDebounce()) {
+                editSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
+                viewModel.sharePlaylist { shareText ->
+                    if (shareText.isEmpty()) {
+                        Toast.makeText(
+                            requireContext(),
+                            getString(R.string.no_tracks_in_playlist_to_share),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    } else {
+                        val intent = Intent(Intent.ACTION_SEND).apply {
+                            type = "text/plain"
+                            putExtra(Intent.EXTRA_TEXT, shareText)
+                        }
+                        startActivity(Intent.createChooser(intent, getString(R.string.share_playlist)))
                     }
-                    startActivity(Intent.createChooser(intent, getString(R.string.share_playlist)))
                 }
             }
         }
 
         editLayout.setOnClickListener {
-            editSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
-            viewModel.state.value?.playlist?.let { pl ->
-                openEditPlaylistScreen(pl.playlistId)
+            if (clickDebounce()) {
+                editSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
+                val playlist = viewModel.state.value?.playlist ?: return@setOnClickListener
+                openEditPlaylistScreen(playlist.playlistId)
             }
         }
 
         deleteLayout.setOnClickListener {
-            editSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
-            showDeletePlaylistDialog()
+            if (clickDebounce()) {
+                editSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
+                showDeletePlaylistDialog()
+            }
         }
 
+        // Подписываемся на LiveData viewModel
         viewModel.state.observe(viewLifecycleOwner, Observer { state ->
             renderState(state)
         })
     }
 
-    override fun onStart() {
-        super.onStart()
-        val navView = requireActivity().findViewById<BottomNavigationView>(R.id.bottomNavigationView)
-        navView?.visibility = View.GONE
-    }
-
-    override fun onStop() {
-        super.onStop()
-        val navView = requireActivity().findViewById<BottomNavigationView>(R.id.bottomNavigationView)
-        navView?.visibility = View.VISIBLE
-    }
-
     override fun onResume() {
         super.onResume()
+        // Обновим плейлист при возврате, чтобы показать свежие данные
+        viewModel.loadPlaylist(playlistIdArg)
         dialog?.window?.setLayout(
             ViewGroup.LayoutParams.MATCH_PARENT,
             ViewGroup.LayoutParams.MATCH_PARENT
@@ -217,6 +271,7 @@ class PlaylistInfoFragment : DialogFragment() {
     private fun renderState(state: PlaylistInfoScreenState) {
         val playlist = state.playlist ?: return
 
+        // Обложка
         if (playlist.coverFilePath.isNullOrEmpty()) {
             playlistImage.setImageResource(R.drawable.placeholder)
         } else {
@@ -226,10 +281,12 @@ class PlaylistInfoFragment : DialogFragment() {
                 .into(playlistImage)
         }
 
+        // Название, описание
         playlistName.text = playlist.name
         playlistDescription.isVisible = playlist.description.isNotBlank()
         playlistDescription.text = playlist.description
 
+        // Кол-во треков
         if (playlist.trackIds.isEmpty()) {
             tracksCount.text = getString(R.string.no_tracks_in_playlist)
         } else {
@@ -241,10 +298,14 @@ class PlaylistInfoFragment : DialogFragment() {
             tracksCount.text = countText
         }
 
+        // Общая длительность
         sumLength.text = state.totalDuration
+
+        // Обновить адаптер
         playlistTracksAdapter.updateTracks(state.tracks)
     }
 
+    // Диалог подтверждения удаления одного трека
     private fun showRemoveTrackDialog(track: Track) {
         AlertDialog.Builder(requireContext())
             .setTitle(getString(R.string.delete_track))
@@ -260,6 +321,7 @@ class PlaylistInfoFragment : DialogFragment() {
             .show()
     }
 
+    // Диалог подтверждения удаления всего плейлиста
     private fun showDeletePlaylistDialog() {
         AlertDialog.Builder(requireContext())
             .setTitle(getString(R.string.delete_playlist))
@@ -267,7 +329,8 @@ class PlaylistInfoFragment : DialogFragment() {
             .setPositiveButton(getString(R.string.delete)) { dialog, _ ->
                 dialog.dismiss()
                 viewModel.deletePlaylist()
-                dismiss()
+                // Уходим назад, чтобы вернуться на список плейлистов
+                findNavController().popBackStack()
             }
             .setNegativeButton(getString(R.string.cancel)) { dialog, _ ->
                 dialog.dismiss()
@@ -276,11 +339,13 @@ class PlaylistInfoFragment : DialogFragment() {
             .show()
     }
 
+    // Открываем фрагмент/диалог для редактирования
     private fun openEditPlaylistScreen(playlistId: Long) {
         val dialog = CreatePlaylistFragment.newInstance(playlistId)
         dialog.show(parentFragmentManager, "EditPlaylistDialog")
     }
 
+    // Открываем экран плеера
     private fun openPlayerActivity(track: Track) {
         val ctx = context ?: return
         val intent = Intent(ctx, PlayerActivity::class.java)

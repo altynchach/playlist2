@@ -7,9 +7,7 @@ import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
 import android.provider.OpenableColumns
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.*
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.widget.addTextChangedListener
@@ -41,17 +39,15 @@ class CreatePlaylistFragment : DialogFragment() {
     private var playlistName: String = ""
     private var playlistDescription: String = ""
 
-    private var editingPlaylistId: Long = 0L // 0 => создаём, != 0 => редактируем
+    private var editingPlaylistId: Long = 0L
 
     companion object {
-
         private const val PLAYLIST_CREATED_KEY = "PLAYLIST_CREATED"
 
         fun newInstance(): CreatePlaylistFragment {
             return CreatePlaylistFragment()
         }
 
-        // Перегруженный метод для режима редактирования
         fun newInstance(playlistId: Long): CreatePlaylistFragment {
             val fragment = CreatePlaylistFragment()
             val args = Bundle()
@@ -65,15 +61,13 @@ class CreatePlaylistFragment : DialogFragment() {
         super.onCreate(savedInstanceState)
         setStyle(STYLE_NORMAL, R.style.ThemeOverlay_FullScreenDialog)
         isCancelable = false
-
-        // Получим аргумент, если он есть
         editingPlaylistId = arguments?.getLong("EXTRA_PLAYLIST_ID", 0L) ?: 0L
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
-    ): View? {
+    ): View {
         return inflater.inflate(R.layout.fragment_new_playlist, container, false)
     }
 
@@ -103,11 +97,11 @@ class CreatePlaylistFragment : DialogFragment() {
         }
 
         createPlaylistButton.setOnClickListener {
-            val name = editTextNamePlaylist.text.toString().trim()
-            val description = editTextDescriptionPlaylist.text.toString().trim()
+            val name = playlistName.trim()
+            val description = playlistDescription.trim()
 
             if (editingPlaylistId == 0L) {
-                // Создание нового плейлиста
+                // Создаём новый плейлист
                 viewModel.savePlaylist(name, description)
                 Toast.makeText(
                     requireContext(),
@@ -117,7 +111,7 @@ class CreatePlaylistFragment : DialogFragment() {
                 setFragmentResult(PLAYLIST_CREATED_KEY, Bundle())
                 dismiss()
             } else {
-                // Редактирование существующего
+                // Редактируем
                 lifecycleScope.launch {
                     viewModel.updatePlaylist(
                         playlistId = editingPlaylistId,
@@ -139,14 +133,15 @@ class CreatePlaylistFragment : DialogFragment() {
             galleryLauncher.launch("image/*")
         }
 
+        // Подпишемся на LiveData
         viewModel.state.observe(viewLifecycleOwner) { state ->
             createPlaylistButton.isEnabled = state.isCreateButtonEnabled
-            state.coverFilePath?.let {
-                addPlaylistImage.setImageURI(Uri.parse(it))
+            state.coverFilePath?.let { path ->
+                addPlaylistImage.setImageURI(Uri.parse(path))
             }
         }
 
-        // Если вошли в режим редактирования, загрузим существующий плейлист
+        // Если есть playlistId, загрузим текущие данные
         if (editingPlaylistId != 0L) {
             viewModel.loadPlaylistForEdit(editingPlaylistId)
         }
@@ -191,6 +186,7 @@ class CreatePlaylistFragment : DialogFragment() {
     }
 
     override fun onCancel(dialog: DialogInterface) {
+        // Если нужно, можно что-то обработать при закрытии
     }
 
     private val galleryLauncher =
@@ -270,7 +266,7 @@ class CreatePlaylistFragment : DialogFragment() {
     }
 
     private fun showConfirmationDialog() {
-        AlertDialog.Builder(requireActivity())
+        AlertDialog.Builder(requireContext())
             .setTitle(R.string.finishPlaylistCreating)
             .setMessage(R.string.dataWillLost)
             .setPositiveButton(R.string.complete) { dialog, _ ->

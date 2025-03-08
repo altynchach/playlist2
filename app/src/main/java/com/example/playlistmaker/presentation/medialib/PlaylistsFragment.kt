@@ -9,9 +9,11 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.playlistmaker.R
+import com.example.playlistmaker.domain.models.Playlist
 import com.example.playlistmaker.presentation.medialib.adapter.PlaylistsAdapter
 import com.example.playlistmaker.presentation.medialib.view.PlaylistsScreenState
 import com.example.playlistmaker.presentation.medialib.view.PlaylistsViewModel
@@ -31,15 +33,12 @@ class PlaylistsFragment : Fragment() {
 
     companion object {
         fun newInstance(): PlaylistsFragment = PlaylistsFragment()
-        const val REQUEST_CREATE_PLAYLIST = 777
-        const val PLAYLIST_CREATED_KEY = "PLAYLIST_CREATED_KEY"
-        const val PLAYLIST_NAME_KEY = "PLAYLIST_NAME_KEY"
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
-    ): View? {
+    ): View {
         return inflater.inflate(R.layout.fragment_playlists, container, false)
     }
 
@@ -53,17 +52,21 @@ class PlaylistsFragment : Fragment() {
         playlistCreatedNotify = view.findViewById(R.id.playlistCreatedNotify)
 
         adapter = PlaylistsAdapter { playlist ->
-            val fragment = PlaylistInfoFragment.newInstance(playlist.playlistId)
-            parentFragmentManager.beginTransaction()
-                .replace(R.id.rootFragmentContainerView, fragment)
-                .addToBackStack(null)
-                .commit()
+            // Переход на экран «Плейлист»
+            val bundle = Bundle().apply {
+                putLong("PLAYLIST_ID_ARG", playlist.playlistId)
+            }
+            findNavController().navigate(
+                R.id.action_libraryFragment_to_playlistInfoFragment,
+                bundle
+            )
         }
         createdPlaylists.layoutManager = GridLayoutManager(requireContext(), 2)
         createdPlaylists.adapter = adapter
 
         newPlaylistButton.setOnClickListener {
-            openCreatePlaylistScreen()
+            val dialog = CreatePlaylistFragment.newInstance()
+            dialog.show(parentFragmentManager, "CreatePlaylistDialog")
         }
 
         viewModel.state.observe(viewLifecycleOwner, Observer { state ->
@@ -74,17 +77,6 @@ class PlaylistsFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         viewModel.loadPlaylists()
-
-        val bundle = activity?.intent?.extras
-        val created = bundle?.getBoolean(PLAYLIST_CREATED_KEY, false) ?: false
-        if (created) {
-            val name = bundle?.getString(PLAYLIST_NAME_KEY, "")?.orEmpty() ?: ""
-            if (name.isNotEmpty()) {
-                showPlaylistCreatedNotification(name)
-            }
-            bundle?.remove(PLAYLIST_CREATED_KEY)
-            bundle?.remove(PLAYLIST_NAME_KEY)
-        }
     }
 
     private fun renderState(state: PlaylistsScreenState) {
@@ -98,19 +90,5 @@ class PlaylistsFragment : Fragment() {
             createdPlaylists.visibility = View.VISIBLE
             adapter.updateList(state.playlists)
         }
-    }
-
-    private fun openCreatePlaylistScreen() {
-        val fragment = CreatePlaylistFragment.newInstance()
-        fragment.show(parentFragmentManager, "CreatePlaylistDialog")
-    }
-
-    private fun showPlaylistCreatedNotification(name: String) {
-        val text = getString(R.string.playlist_created_notify, name)
-        playlistCreatedNotify.text = text
-        playlistCreatedNotify.visibility = View.VISIBLE
-        playlistCreatedNotify.postDelayed({
-            playlistCreatedNotify.visibility = View.GONE
-        }, 3000)
     }
 }
