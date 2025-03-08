@@ -1,13 +1,11 @@
+// SearchFragment.kt
 package com.example.playlistmaker.presentation.search
 
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.MotionEvent
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.core.widget.addTextChangedListener
@@ -19,6 +17,7 @@ import com.example.playlistmaker.R
 import com.example.playlistmaker.domain.models.Track
 import com.example.playlistmaker.presentation.player.PlayerActivity
 import com.example.playlistmaker.presentation.search.adapters.TrackAdapter
+import com.example.playlistmaker.presentation.search.SearchScreenState
 import com.google.gson.Gson
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -45,19 +44,17 @@ class SearchFragment : Fragment() {
     private lateinit var historyRecyclerView: RecyclerView
     private lateinit var clearHistoryButton: Button
 
-    // private var lastClickTime: Long = 0
-
     private var searchText: String = ""
-
     private var clickJob: Job? = null
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?,
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View = inflater.inflate(R.layout.fragment_search, container, false)
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        val rootContainer = view.findViewById<View>(R.id.searchRootContainer)
+
         inputText = view.findViewById(R.id.inputEditText)
         recyclerView = view.findViewById(R.id.recyclerView)
         nothingFound = view.findViewById(R.id.nothingFound)
@@ -81,23 +78,20 @@ class SearchFragment : Fragment() {
         }
 
         trackAdapter.setOnTrackClickListener { track ->
-            if (clickJob?.isActive == true) {
-                return@setOnTrackClickListener
-            }
+            if (clickJob?.isActive == true) return@setOnTrackClickListener
             clickJob = viewLifecycleOwner.lifecycleScope.launch {
                 viewModel.saveTrackToHistory(track)
                 openPlayerActivity(track)
                 delay(2000)
             }
-
         }
 
         historyAdapter.setOnTrackClickListener { track ->
             openPlayerActivity(track)
         }
 
-        inputText.addTextChangedListener { s ->
-            searchText = s.toString()
+        inputText.addTextChangedListener {
+            searchText = it.toString()
             viewModel.onSearchQueryChanged(searchText)
             updateClearButtonVisibility()
         }
@@ -131,7 +125,6 @@ class SearchFragment : Fragment() {
         viewModel.getState().observe(viewLifecycleOwner) { state ->
             renderState(state, historyAdapter)
         }
-
         viewModel.init()
     }
 
@@ -148,13 +141,17 @@ class SearchFragment : Fragment() {
     private fun updateClearButtonVisibility() {
         if (inputText.text.isNotEmpty()) {
             inputText.setCompoundDrawablesWithIntrinsicBounds(
-                requireContext().getDrawable(R.drawable.search), null,
-                requireContext().getDrawable(R.drawable.clear), null
+                requireContext().getDrawable(R.drawable.search),
+                null,
+                requireContext().getDrawable(R.drawable.clear),
+                null
             )
         } else {
             inputText.setCompoundDrawablesWithIntrinsicBounds(
-                requireContext().getDrawable(R.drawable.search), null,
-                null, null
+                requireContext().getDrawable(R.drawable.search),
+                null,
+                null,
+                null
             )
         }
     }
@@ -169,7 +166,6 @@ class SearchFragment : Fragment() {
         if (state.results.isNotEmpty()) {
             trackAdapter.updateTracks(state.results)
         }
-
         if (state.history.isNotEmpty()) {
             historyAdapter.updateTracks(state.history)
         }
@@ -178,8 +174,7 @@ class SearchFragment : Fragment() {
     private fun openPlayerActivity(track: Track) {
         val ctx = context ?: return
         val displayIntent = Intent(ctx, PlayerActivity::class.java)
-        val strTrack = Gson().toJson(track)
-        displayIntent.putExtra(NAME_TRACK, strTrack)
+        displayIntent.putExtra(NAME_TRACK, Gson().toJson(track))
         startActivity(displayIntent)
     }
 }
