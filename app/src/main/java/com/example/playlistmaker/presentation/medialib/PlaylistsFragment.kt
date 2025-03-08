@@ -1,4 +1,3 @@
-// PlaylistsFragment.kt
 package com.example.playlistmaker.presentation.medialib
 
 import android.os.Bundle
@@ -37,7 +36,7 @@ class PlaylistsFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
-    ): View? {
+    ): View {
         return inflater.inflate(R.layout.fragment_playlists, container, false)
     }
 
@@ -51,6 +50,7 @@ class PlaylistsFragment : Fragment() {
         playlistCreatedNotify = view.findViewById(R.id.playlistCreatedNotify)
 
         adapter = PlaylistsAdapter { playlist ->
+            // Открываем экран инфо о плейлисте
             val fragment = PlaylistInfoFragment.newInstance(playlist.playlistId)
             parentFragmentManager.beginTransaction()
                 .replace(R.id.rootFragmentContainerView, fragment)
@@ -61,8 +61,8 @@ class PlaylistsFragment : Fragment() {
         createdPlaylists.adapter = adapter
 
         newPlaylistButton.setOnClickListener {
-            val dialog = CreatePlaylistFragment.newInstance()
-            dialog.show(parentFragmentManager, "CreatePlaylistDialog")
+            val fragment = CreatePlaylistFragment.newInstance()
+            fragment.show(parentFragmentManager, "CreatePlaylistDialog")
         }
 
         viewModel.state.observe(viewLifecycleOwner, Observer { state ->
@@ -72,6 +72,7 @@ class PlaylistsFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
+        // Перезагружаем список плейлистов при возврате на экран
         viewModel.loadPlaylists()
     }
 

@@ -13,6 +13,16 @@
         <item name="android:scaleType">centerInside</item>
     </style>
 
+    <style name="LayoutSettingsStyle">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:paddingVertical">@dimen/size21</item>
+        <item name="android:paddingStart">@dimen/button_radius</item>
+        <item name="android:paddingEnd">@dimen/padding12</item>
+    </style>
+
     <style name="FrameLayoutStyle">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_rowWeight">1</item>
@@ -124,6 +134,17 @@
 
     <style name="BackButtonSettingsStyle">
         <item name="android:tint">@color/like_bg_color</item>
+    </style>
+
+    <style name="TextSettingsStyle">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">start|center_vertical</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textSize">@dimen/track_size_16</item>
+        <item name="android:fontFamily">@font/ys_display_regular</item>
+        <item name="android:textFontWeight">400</item>
     </style>
 
     <style name="TextSearchProblem">

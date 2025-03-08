@@ -271,6 +271,7 @@
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:orientation">horizontal</item>
+        <item name="android:textColor">@color/black</item>
         <item name="android:paddingVertical">@dimen/size21</item>
         <item name="android:paddingStart">@dimen/button_radius</item>
         <item name="android:paddingEnd">@dimen/padding12</item>

@@ -35,7 +35,7 @@
             android:scaleType="centerInside"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/settings_back" />
+            app:srcCompat="@drawable/back" />
 
         <ImageView
             android:id="@+id/PlaylistImage"

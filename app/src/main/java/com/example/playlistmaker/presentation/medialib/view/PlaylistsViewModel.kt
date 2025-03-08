@@ -1,4 +1,3 @@
-// PlaylistsViewModel.kt
 package com.example.playlistmaker.presentation.medialib.view
 
 import androidx.lifecycle.LiveData
@@ -14,7 +13,9 @@ data class PlaylistsScreenState(
     val playlists: List<Playlist> = emptyList()
 )
 
-class PlaylistsViewModel(private val playlistInteractor: PlaylistInteractor) : ViewModel() {
+class PlaylistsViewModel(
+    private val playlistInteractor: PlaylistInteractor
+) : ViewModel() {
 
     private val _state = MutableLiveData(PlaylistsScreenState())
     val state: LiveData<PlaylistsScreenState> = _state
