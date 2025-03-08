@@ -1,3 +1,4 @@
+// PlaylistInfoViewModel.kt
 package com.example.playlistmaker.presentation.medialib.view
 
 import androidx.lifecycle.LiveData
@@ -34,13 +35,12 @@ class PlaylistInfoViewModel(
         viewModelScope.launch {
             val pl = playlistInteractor.getPlaylistById(playlistId)
             if (pl != null) {
-                val trackIds = pl.trackIds
-                val realTracks = getTracksForPlaylist(trackIds)
-                val totalDur = calculateTotalDuration(realTracks)
+                val tracks = getTracksForPlaylist(pl.trackIds)
+                val dur = calculateTotalDuration(tracks)
                 _state.value = PlaylistInfoScreenState(
                     playlist = pl,
-                    tracks = realTracks,
-                    totalDuration = totalDur
+                    tracks = tracks,
+                    totalDuration = dur
                 )
             }
         }
@@ -72,12 +72,11 @@ class PlaylistInfoViewModel(
         if (pl.description.isNotEmpty()) {
             sb.append(pl.description).append("\n")
         }
-        val count = st.tracks.size
-        sb.append("($count) ").append("\n")
-        st.tracks.forEachIndexed { index, track ->
-            val durationText = formatTrackTime(track.trackTime)
-            sb.append("${index + 1}. ${track.artistName} - ${track.trackName} ($durationText)")
-                .append("\n")
+        val c = st.tracks.size
+        sb.append("($c) ").append("\n")
+        st.tracks.forEachIndexed { i, track ->
+            val dt = formatTrackTime(track.trackTime)
+            sb.append("${i + 1}. ${track.artistName} - ${track.trackName} ($dt)").append("\n")
         }
         callback(sb.toString().trim())
     }
@@ -88,19 +87,18 @@ class PlaylistInfoViewModel(
 
     private suspend fun getTracksForPlaylist(trackIds: List<Long>): List<Track> {
         if (trackIds.isEmpty()) return emptyList()
-        val favList = favoritesInteractor.getFavorites().first()
-        val result = favList.filter { trackIds.contains(it.trackId) }
-        val sorted = trackIds.mapNotNull { id -> result.find { track -> track.trackId == id } }
-        return sorted
+        val favs = favoritesInteractor.getFavorites().first()
+        val result = favs.filter { trackIds.contains(it.trackId) }
+        return trackIds.mapNotNull { id -> result.find { t -> t.trackId == id } }
     }
 
     private fun calculateTotalDuration(tracks: List<Track>): String {
         var totalMs = 0L
-        for (track in tracks) {
-            totalMs += track.trackTime
+        for (t in tracks) {
+            totalMs += t.trackTime
         }
-        val totalMinutes = TimeUnit.MILLISECONDS.toMinutes(totalMs)
-        return "$totalMinutes ${formatMinutesWord(totalMinutes)}"
+        val mins = TimeUnit.MILLISECONDS.toMinutes(totalMs)
+        return "$mins ${formatMinutesWord(mins)}"
     }
 
     private fun formatMinutesWord(minutes: Long): String {
@@ -108,8 +106,8 @@ class PlaylistInfoViewModel(
     }
 
     private fun formatTrackTime(ms: Long): String {
-        val minutes = TimeUnit.MILLISECONDS.toMinutes(ms) % 60
-        val seconds = TimeUnit.MILLISECONDS.toSeconds(ms) % 60
-        return String.format(Locale.getDefault(), "%02d:%02d", minutes, seconds)
+        val m = TimeUnit.MILLISECONDS.toMinutes(ms) % 60
+        val s = TimeUnit.MILLISECONDS.toSeconds(ms) % 60
+        return String.format(Locale.getDefault(), "%02d:%02d", m, s)
     }
 }

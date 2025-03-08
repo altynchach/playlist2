@@ -1,3 +1,4 @@
+// PlaylistRepositoryImpl.kt
 package com.example.playlistmaker.data.playlists
 
 import com.example.playlistmaker.data.favorites.dao.FavoriteTrackDao
@@ -20,9 +21,10 @@ class PlaylistRepositoryImpl(
     private val gson = Gson()
     private val typeToken = object : TypeToken<ArrayList<Long>>() {}.type
 
-    override fun getAllPlaylists() = playlistDao.getAllPlaylists().map { entities ->
-        entities.map { mapEntityToDomain(it) }
-    }
+    override fun getAllPlaylists() =
+        playlistDao.getAllPlaylists().map { entities ->
+            entities.map { mapEntityToDomain(it) }
+        }
 
     override suspend fun createPlaylist(playlist: Playlist): Long {
         val entity = mapDomainToEntity(playlist)
@@ -70,7 +72,6 @@ class PlaylistRepositoryImpl(
         )
         playlistDao.updatePlaylist(updatedEntity)
 
-        // check if track is used anywhere else
         val allPlaylists = playlistDao.getAllPlaylists().first()
         var trackStillUsed = false
         for (pl in allPlaylists) {
@@ -90,10 +91,11 @@ class PlaylistRepositoryImpl(
     }
 
     override suspend fun deletePlaylist(playlistId: Long) {
-        val playlistEntity = playlistDao.getPlaylistById(playlistId) ?: return
-        if (!playlistEntity.trackIds.isNullOrEmpty()) {
-            val currentIds: ArrayList<Long> = gson.fromJson(playlistEntity.trackIds, typeToken)
+        val entity = playlistDao.getPlaylistById(playlistId) ?: return
+        if (!entity.trackIds.isNullOrEmpty()) {
+            val currentIds: ArrayList<Long> = gson.fromJson(entity.trackIds, typeToken)
             playlistDao.deletePlaylist(playlistId)
+
             val allPlaylists = playlistDao.getAllPlaylists().first()
             for (id in currentIds) {
                 var trackStillUsed = false
