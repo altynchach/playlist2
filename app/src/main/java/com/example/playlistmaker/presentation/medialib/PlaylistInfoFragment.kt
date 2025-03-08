@@ -1,11 +1,15 @@
-// PlaylistInfoFragment.kt
+// PlaylistInfoFragment.kt (Kotlin code referencing included layout)
 package com.example.playlistmaker.presentation.medialib
 
 import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
 import android.view.*
-import android.widget.*
+import android.widget.FrameLayout
+import android.widget.ImageView
+import android.widget.LinearLayout
+import android.widget.TextView
+import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.Observer
@@ -44,6 +48,11 @@ class PlaylistInfoFragment : DialogFragment() {
     private lateinit var playlistTracksAdapter: PlaylistTracksAdapter
     private var playlistIdArg: Long = 0L
 
+    // Menu sheet views
+    private lateinit var playlistImageSheet: ImageView
+    private lateinit var playlistNameSheet: TextView
+    private lateinit var playlistCountTracksSheet: TextView
+
     private var isClickAllowed = true
     private fun clickDebounce(): Boolean {
         val current = isClickAllowed
@@ -72,6 +81,7 @@ class PlaylistInfoFragment : DialogFragment() {
         super.onCreate(savedInstanceState)
         setStyle(STYLE_NORMAL, R.style.ThemeOverlay_FullScreenDialog)
         isCancelable = false
+
         playlistIdArg = arguments?.getLong(PLAYLIST_ID_ARG, 0L) ?: 0L
         viewModel.loadPlaylist(playlistIdArg)
     }
@@ -102,6 +112,7 @@ class PlaylistInfoFragment : DialogFragment() {
         darkFrame = view.findViewById(R.id.darkFrame)
         playlistTracksRecyclerBS = view.findViewById(R.id.playlistTracksRecyclerBS)
 
+        // Set up main bottom sheet
         playlistTracksAdapter = PlaylistTracksAdapter { track ->
             if (clickDebounce()) {
                 openPlayerActivity(track)
@@ -123,6 +134,7 @@ class PlaylistInfoFragment : DialogFragment() {
 
         view.post { anchorMainSheetUnderButtons() }
 
+        // Set up menu bottom sheet
         editSheetBehavior = BottomSheetBehavior.from(bottomSheetEditPlaylistInfo)
         editSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
 
@@ -175,7 +187,16 @@ class PlaylistInfoFragment : DialogFragment() {
             override fun onSlide(bottomSheet: View, slideOffset: Float) {}
         })
 
-        bottomSheetEditPlaylistInfo.findViewById<View>(R.id.share).setOnClickListener {
+        val shareLayout = bottomSheetEditPlaylistInfo.findViewById<View>(R.id.share)
+        val editLayout = bottomSheetEditPlaylistInfo.findViewById<View>(R.id.edit)
+        val deleteLayout = bottomSheetEditPlaylistInfo.findViewById<View>(R.id.delete)
+
+        // Reference included layout views
+        playlistImageSheet = bottomSheetEditPlaylistInfo.findViewById(R.id.playlistImageSheet)
+        playlistNameSheet = bottomSheetEditPlaylistInfo.findViewById(R.id.playlistNameSheet)
+        playlistCountTracksSheet = bottomSheetEditPlaylistInfo.findViewById(R.id.playlistCountTracksSheet)
+
+        shareLayout.setOnClickListener {
             if (clickDebounce()) {
                 editSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
                 viewModel.sharePlaylist { shareText ->
@@ -195,7 +216,8 @@ class PlaylistInfoFragment : DialogFragment() {
                 }
             }
         }
-        bottomSheetEditPlaylistInfo.findViewById<View>(R.id.edit).setOnClickListener {
+
+        editLayout.setOnClickListener {
             if (clickDebounce()) {
                 editSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
                 viewModel.state.value?.playlist?.let { pl ->
@@ -204,7 +226,8 @@ class PlaylistInfoFragment : DialogFragment() {
                 }
             }
         }
-        bottomSheetEditPlaylistInfo.findViewById<View>(R.id.delete).setOnClickListener {
+
+        deleteLayout.setOnClickListener {
             if (clickDebounce()) {
                 editSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
                 showDeletePlaylistDialog()
@@ -213,6 +236,7 @@ class PlaylistInfoFragment : DialogFragment() {
 
         viewModel.state.observe(viewLifecycleOwner, Observer { state ->
             renderState(state)
+            updateMenuSheetHeader(state)
         })
     }
 
@@ -268,6 +292,30 @@ class PlaylistInfoFragment : DialogFragment() {
         playlistTracksAdapter.updateTracks(state.tracks)
     }
 
+    private fun updateMenuSheetHeader(state: PlaylistInfoScreenState) {
+        val pl = state.playlist ?: return
+        if (!pl.coverFilePath.isNullOrEmpty()) {
+            Glide.with(this)
+                .load(pl.coverFilePath)
+                .placeholder(R.drawable.placeholder)
+                .into(playlistImageSheet)
+        } else {
+            playlistImageSheet.setImageResource(R.drawable.placeholder)
+        }
+
+        playlistNameSheet.text = pl.name
+        if (pl.trackIds.isEmpty()) {
+            playlistCountTracksSheet.text = getString(R.string.no_tracks_in_playlist)
+        } else {
+            val cText = resources.getQuantityString(
+                R.plurals.playlist_tracks_count,
+                pl.trackIds.size,
+                pl.trackIds.size
+            )
+            playlistCountTracksSheet.text = cText
+        }
+    }
+
     private fun showRemoveTrackDialog(track: Track) {
         AlertDialog.Builder(requireContext())
             .setTitle(getString(R.string.delete_track))
@@ -290,6 +338,7 @@ class PlaylistInfoFragment : DialogFragment() {
             .setPositiveButton(getString(R.string.yes)) { dialog, _ ->
                 dialog.dismiss()
                 viewModel.deletePlaylist()
+                // After deleting from DB, close this screen
                 findNavController().popBackStack()
             }
             .setNegativeButton(getString(R.string.no)) { dialog, _ ->

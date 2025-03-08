@@ -1,4 +1,3 @@
-// PlaylistInfoViewModel.kt
 package com.example.playlistmaker.presentation.medialib.view
 
 import androidx.lifecycle.LiveData

@@ -9,7 +9,6 @@
     android:background="@color/gray"
     tools:context=".presentation.medialib.PlaylistInfoFragment">
 
-    <!-- Верхний контейнер, где лежат основные элементы экрана -->
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/constraintLayout"
@@ -170,7 +169,6 @@
             tools:listitem="@layout/item_track" />
     </LinearLayout>
 
-    <!-- Шторка для меню: «Поделиться», «Редактировать информацию», «Удалить плейлист» -->
     <LinearLayout
         android:id="@+id/bottom_sheet_edit_playlist_info"
         style="@style/BottomSheetStyle"
