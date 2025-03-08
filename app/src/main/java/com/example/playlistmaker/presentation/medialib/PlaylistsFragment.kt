@@ -1,3 +1,4 @@
+// PlaylistsFragment.kt
 package com.example.playlistmaker.presentation.medialib
 
 import android.os.Bundle
@@ -9,17 +10,19 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
-import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.playlistmaker.R
-import com.example.playlistmaker.domain.models.Playlist
 import com.example.playlistmaker.presentation.medialib.adapter.PlaylistsAdapter
 import com.example.playlistmaker.presentation.medialib.view.PlaylistsScreenState
 import com.example.playlistmaker.presentation.medialib.view.PlaylistsViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class PlaylistsFragment : Fragment() {
+
+    companion object {
+        fun newInstance() = PlaylistsFragment()
+    }
 
     private val viewModel: PlaylistsViewModel by viewModel()
 
@@ -31,14 +34,10 @@ class PlaylistsFragment : Fragment() {
 
     private lateinit var adapter: PlaylistsAdapter
 
-    companion object {
-        fun newInstance(): PlaylistsFragment = PlaylistsFragment()
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
-    ): View {
+    ): View? {
         return inflater.inflate(R.layout.fragment_playlists, container, false)
     }
 
@@ -52,14 +51,11 @@ class PlaylistsFragment : Fragment() {
         playlistCreatedNotify = view.findViewById(R.id.playlistCreatedNotify)
 
         adapter = PlaylistsAdapter { playlist ->
-            // Переход на экран «Плейлист»
-            val bundle = Bundle().apply {
-                putLong("PLAYLIST_ID_ARG", playlist.playlistId)
-            }
-            findNavController().navigate(
-                R.id.action_libraryFragment_to_playlistInfoFragment,
-                bundle
-            )
+            val fragment = PlaylistInfoFragment.newInstance(playlist.playlistId)
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.rootFragmentContainerView, fragment)
+                .addToBackStack(null)
+                .commit()
         }
         createdPlaylists.layoutManager = GridLayoutManager(requireContext(), 2)
         createdPlaylists.adapter = adapter

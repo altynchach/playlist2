@@ -42,15 +42,15 @@ class PlaylistRepositoryImpl(
     }
 
     override suspend fun addTrackToPlaylist(playlistId: Long, trackId: Long): Boolean {
-        val playlistEntity = playlistDao.getPlaylistById(playlistId) ?: return false
-        val currentIds: ArrayList<Long> = if (!playlistEntity.trackIds.isNullOrEmpty()) {
-            gson.fromJson(playlistEntity.trackIds, typeToken)
+        val pEnt = playlistDao.getPlaylistById(playlistId) ?: return false
+        val currentIds: ArrayList<Long> = if (!pEnt.trackIds.isNullOrEmpty()) {
+            gson.fromJson(pEnt.trackIds, typeToken)
         } else {
             arrayListOf()
         }
         if (currentIds.contains(trackId)) return false
         currentIds.add(0, trackId)
-        val updatedEntity = playlistEntity.copy(
+        val updatedEntity = pEnt.copy(
             trackIds = gson.toJson(currentIds),
             trackCount = currentIds.size
         )
@@ -59,32 +59,33 @@ class PlaylistRepositoryImpl(
     }
 
     override suspend fun removeTrackFromPlaylist(playlistId: Long, trackId: Long): Boolean {
-        val playlistEntity = playlistDao.getPlaylistById(playlistId) ?: return false
-        val currentIds: ArrayList<Long> = if (!playlistEntity.trackIds.isNullOrEmpty()) {
-            gson.fromJson(playlistEntity.trackIds, typeToken)
+        val pEnt = playlistDao.getPlaylistById(playlistId) ?: return false
+        val curr: ArrayList<Long> = if (!pEnt.trackIds.isNullOrEmpty()) {
+            gson.fromJson(pEnt.trackIds, typeToken)
         } else {
             arrayListOf()
         }
-        if (!currentIds.remove(trackId)) return false
-        val updatedEntity = playlistEntity.copy(
-            trackIds = if (currentIds.isEmpty()) null else gson.toJson(currentIds),
-            trackCount = currentIds.size
+        if (!curr.remove(trackId)) return false
+        val upEnt = pEnt.copy(
+            trackIds = if (curr.isEmpty()) null else gson.toJson(curr),
+            trackCount = curr.size
         )
-        playlistDao.updatePlaylist(updatedEntity)
+        playlistDao.updatePlaylist(upEnt)
 
-        val allPlaylists = playlistDao.getAllPlaylists().first()
-        var trackStillUsed = false
-        for (pl in allPlaylists) {
+        // check if that track is used anywhere else
+        val allPL = playlistDao.getAllPlaylists().first()
+        var used = false
+        for (pl in allPL) {
             if (!pl.trackIds.isNullOrEmpty()) {
-                val ids: List<Long> = gson.fromJson(pl.trackIds, typeToken)
+                val ids = gson.fromJson<List<Long>>(pl.trackIds, typeToken)
                 if (ids.contains(trackId)) {
-                    trackStillUsed = true
+                    used = true
                     break
                 }
             }
         }
         val isFav = favoritesRepository.isFavorite(trackId).first()
-        if (!trackStillUsed && !isFav) {
+        if (!used && !isFav) {
             favoriteTrackDao.deleteFavoriteTrack(trackId)
         }
         return true
@@ -93,59 +94,54 @@ class PlaylistRepositoryImpl(
     override suspend fun deletePlaylist(playlistId: Long) {
         val entity = playlistDao.getPlaylistById(playlistId) ?: return
         if (!entity.trackIds.isNullOrEmpty()) {
-            val currentIds: ArrayList<Long> = gson.fromJson(entity.trackIds, typeToken)
+            val curr: ArrayList<Long> = gson.fromJson(entity.trackIds, typeToken)
             playlistDao.deletePlaylist(playlistId)
 
-            val allPlaylists = playlistDao.getAllPlaylists().first()
-            for (id in currentIds) {
-                var trackStillUsed = false
-                for (pl in allPlaylists) {
+            val all = playlistDao.getAllPlaylists().first()
+            for (id in curr) {
+                var stillUsed = false
+                for (pl in all) {
                     if (!pl.trackIds.isNullOrEmpty()) {
                         val ids: List<Long> = gson.fromJson(pl.trackIds, typeToken)
                         if (ids.contains(id)) {
-                            trackStillUsed = true
+                            stillUsed = true
                             break
                         }
                     }
                 }
                 val isFav = favoritesRepository.isFavorite(id).first()
-                if (!trackStillUsed && !isFav) {
+                if (!stillUsed && !isFav) {
                     favoriteTrackDao.deleteFavoriteTrack(id)
                 }
             }
         } else {
+            // if no tracks
             playlistDao.deletePlaylist(playlistId)
         }
     }
 
     private fun mapEntityToDomain(entity: PlaylistEntity): Playlist {
-        val trackIdsList: List<Long> = if (!entity.trackIds.isNullOrEmpty()) {
+        val tIds: List<Long> = if (!entity.trackIds.isNullOrEmpty()) {
             gson.fromJson(entity.trackIds, typeToken)
-        } else {
-            emptyList()
-        }
+        } else emptyList()
         return Playlist(
             playlistId = entity.playlistId,
             name = entity.playlistName,
             description = entity.description.orEmpty(),
             coverFilePath = entity.coverFilePath,
-            trackIds = trackIdsList,
+            trackIds = tIds,
             trackCount = entity.trackCount
         )
     }
 
     private fun mapDomainToEntity(domain: Playlist): PlaylistEntity {
-        val trackIdsJson = if (domain.trackIds.isNotEmpty()) {
-            gson.toJson(domain.trackIds)
-        } else {
-            null
-        }
+        val tJson = if (domain.trackIds.isNotEmpty()) gson.toJson(domain.trackIds) else null
         return PlaylistEntity(
             playlistId = domain.playlistId,
             playlistName = domain.name,
             description = domain.description.ifBlank { null },
             coverFilePath = domain.coverFilePath,
-            trackIds = trackIdsJson,
+            trackIds = tJson,
             trackCount = domain.trackCount
         )
     }

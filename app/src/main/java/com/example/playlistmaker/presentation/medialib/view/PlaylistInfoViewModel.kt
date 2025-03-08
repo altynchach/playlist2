@@ -26,7 +26,7 @@ class PlaylistInfoViewModel(
 ) : ViewModel() {
 
     private val _state = MutableLiveData(PlaylistInfoScreenState())
-    val state: LiveData<PlaylistInfoScreenState> = _state
+    val state: LiveData<PlaylistInfoScreenState> get() = _state
 
     private var currentPlaylistId: Long = 0L
 
@@ -35,12 +35,12 @@ class PlaylistInfoViewModel(
         viewModelScope.launch {
             val pl = playlistInteractor.getPlaylistById(playlistId)
             if (pl != null) {
-                val tracks = getTracksForPlaylist(pl.trackIds)
-                val dur = calculateTotalDuration(tracks)
+                val trackList = fetchTracks(pl.trackIds)
+                val total = calcDuration(trackList)
                 _state.value = PlaylistInfoScreenState(
                     playlist = pl,
-                    tracks = tracks,
-                    totalDuration = dur
+                    tracks = trackList,
+                    totalDuration = total
                 )
             }
         }
@@ -49,7 +49,7 @@ class PlaylistInfoViewModel(
     fun removeTrackFromPlaylist(track: Track) {
         viewModelScope.launch {
             playlistInteractor.removeTrackFromPlaylist(currentPlaylistId, track.trackId)
-            refresh()
+            loadPlaylist(currentPlaylistId)
         }
     }
 
@@ -62,50 +62,44 @@ class PlaylistInfoViewModel(
 
     fun sharePlaylist(callback: (String) -> Unit) {
         val st = _state.value ?: return
-        val pl = st.playlist ?: return
+        val p = st.playlist ?: return
         if (st.tracks.isEmpty()) {
             callback("")
             return
         }
         val sb = StringBuilder()
-        sb.append(pl.name).append("\n")
-        if (pl.description.isNotEmpty()) {
-            sb.append(pl.description).append("\n")
+        sb.append(p.name).append("\n")
+        if (p.description.isNotEmpty()) {
+            sb.append(p.description).append("\n")
         }
         val c = st.tracks.size
-        sb.append("($c) ").append("\n")
+        sb.append("($c)\n")
         st.tracks.forEachIndexed { i, track ->
-            val dt = formatTrackTime(track.trackTime)
-            sb.append("${i + 1}. ${track.artistName} - ${track.trackName} ($dt)").append("\n")
+            val dt = formatTime(track.trackTime)
+            sb.append("${i + 1}. ${track.artistName} - ${track.trackName} ($dt)\n")
         }
         callback(sb.toString().trim())
     }
 
-    private fun refresh() {
-        loadPlaylist(currentPlaylistId)
-    }
-
-    private suspend fun getTracksForPlaylist(trackIds: List<Long>): List<Track> {
+    private suspend fun fetchTracks(trackIds: List<Long>): List<Track> {
         if (trackIds.isEmpty()) return emptyList()
-        val favs = favoritesInteractor.getFavorites().first()
-        val result = favs.filter { trackIds.contains(it.trackId) }
-        return trackIds.mapNotNull { id -> result.find { t -> t.trackId == id } }
+        val favList = favoritesInteractor.getFavorites().first()
+        // keep order by trackIds
+        return trackIds.mapNotNull { id -> favList.find { it.trackId == id } }
     }
 
-    private fun calculateTotalDuration(tracks: List<Track>): String {
+    private fun calcDuration(tracks: List<Track>): String {
         var totalMs = 0L
         for (t in tracks) {
             totalMs += t.trackTime
         }
-        val mins = TimeUnit.MILLISECONDS.toMinutes(totalMs)
-        return "$mins ${formatMinutesWord(mins)}"
+        val min = TimeUnit.MILLISECONDS.toMinutes(totalMs)
+        return "$min ${formatMinWord(min)}"
     }
 
-    private fun formatMinutesWord(minutes: Long): String {
-        return "минут"
-    }
+    private fun formatMinWord(min: Long): String = "минут"
 
-    private fun formatTrackTime(ms: Long): String {
+    private fun formatTime(ms: Long): String {
         val m = TimeUnit.MILLISECONDS.toMinutes(ms) % 60
         val s = TimeUnit.MILLISECONDS.toSeconds(ms) % 60
         return String.format(Locale.getDefault(), "%02d:%02d", m, s)
