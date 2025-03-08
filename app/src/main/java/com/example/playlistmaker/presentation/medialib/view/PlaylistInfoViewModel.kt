@@ -1,3 +1,4 @@
+// PlaylistInfoViewModel.kt
 package com.example.playlistmaker.presentation.medialib.view
 
 import androidx.lifecycle.LiveData
@@ -90,7 +91,6 @@ class PlaylistInfoViewModel(
         if (trackIds.isEmpty()) return emptyList()
         val favList = favoritesInteractor.getFavorites().first()
         val result = favList.filter { trackIds.contains(it.trackId) }
-
         val sorted = trackIds.mapNotNull { id -> result.find { track -> track.trackId == id } }
         return sorted
     }

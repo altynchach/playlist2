@@ -1,3 +1,4 @@
+// PlaylistRepositoryImpl.kt (ensure it deletes the playlist even if trackIds empty)
 package com.example.playlistmaker.data.playlists
 
 import com.example.playlistmaker.data.favorites.dao.FavoriteTrackDao
@@ -70,7 +71,6 @@ class PlaylistRepositoryImpl(
         )
         playlistDao.updatePlaylist(updatedEntity)
 
-        // Проверка, надо ли удалять трек из favorite_tracks
         val allPlaylists = playlistDao.getAllPlaylists().first()
         var trackStillUsed = false
         for (pl in allPlaylists) {
