@@ -150,7 +150,7 @@
         android:layout_height="match_parent"
         android:background="@drawable/rounded_bottom_sheet"
         android:orientation="vertical"
-        android:visibility="gone"
+        android:visibility="visible"
         app:behavior_hideable="false"
         app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
 
