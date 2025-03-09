@@ -49,7 +49,6 @@ class PlaylistsFragment : Fragment() {
 
         adapter = PlaylistsAdapter { playlist ->
             val fragment = PlaylistInfoFragment.newInstance(playlist.playlistId)
-            // Открываем экран инфо
             parentFragmentManager.beginTransaction()
                 .replace(R.id.rootFragmentContainerView, fragment)
                 .addToBackStack(null)
@@ -63,13 +62,11 @@ class PlaylistsFragment : Fragment() {
             fragment.show(parentFragmentManager, "CreatePlaylistDialog")
         }
 
-        // Когда вернёмся из CreatePlaylistFragment, если там создали/отредактировали,
-        // придёт этот ключ => заново загружаем список
+
         setFragmentResultListener(CreatePlaylistFragment.PLAYLIST_CREATED_KEY) { _, _ ->
             viewModel.loadPlaylists()
         }
 
-        // Подписка на стейт
         viewModel.state.observe(viewLifecycleOwner, Observer { state ->
             renderState(state)
         })

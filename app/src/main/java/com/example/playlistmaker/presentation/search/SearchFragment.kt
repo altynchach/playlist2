@@ -1,4 +1,3 @@
-// SearchFragment.kt
 package com.example.playlistmaker.presentation.search
 
 import android.annotation.SuppressLint

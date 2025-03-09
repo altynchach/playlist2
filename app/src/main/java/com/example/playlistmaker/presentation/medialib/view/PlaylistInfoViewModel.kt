@@ -29,7 +29,6 @@ class PlaylistInfoViewModel(
 
     private var currentPlaylistId: Long = 0L
 
-    // Флаг, что плейлист удалён
     private val _deleted = MutableLiveData(false)
     val deleted: LiveData<Boolean> get() = _deleted
 
@@ -38,7 +37,6 @@ class PlaylistInfoViewModel(
         viewModelScope.launch {
             val pl = playlistInteractor.getPlaylistById(playlistId)
             if (pl != null) {
-                // Подписываемся на Flow треков плейлиста
                 playlistInteractor.getTracksForPlaylist(playlistId).collect { tracks ->
                     val dur = calculateTotalDuration(tracks)
                     _state.value = PlaylistInfoScreenState(
@@ -60,9 +58,7 @@ class PlaylistInfoViewModel(
 
     fun deletePlaylist() {
         viewModelScope.launch {
-            // Удаляем в БД
             playlistInteractor.deletePlaylist(currentPlaylistId)
-            // Уведомим UI
             _deleted.value = true
         }
     }

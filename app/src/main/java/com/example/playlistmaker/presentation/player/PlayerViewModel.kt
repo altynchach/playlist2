@@ -35,14 +35,10 @@ class PlayerViewModel(
     }
 
     fun setTrack(track: Track) {
-        // Устанавливаем выбранный трек
         stateLiveData.value = stateLiveData.value?.copy(track = track)
-        // Указываем MediaPlayer, какую ссылку проигрывать
         track.previewUrl?.let {
-            // По коду в PlayerInteractor: setTrackPreview(url: String)
             playerInteractor.setTrackPreview(it)
         }
-        // Проверяем, не в избранном ли трек
         viewModelScope.launch {
             val isFav = favoritesInteractor.isFavorite(track.trackId).first()
             updateState(isFavorite = isFav)
@@ -127,7 +123,6 @@ class PlayerViewModel(
         }
     }
 
-    // Загружаем список плейлистов, чтобы отобразить их в bottom sheet
     fun loadPlaylistsForPlayerScreen(callback: (List<Playlist>) -> Unit) {
         viewModelScope.launch {
             val playlists = playlistInteractor.getAllPlaylists().first()
@@ -135,7 +130,6 @@ class PlayerViewModel(
         }
     }
 
-    // Добавляем текущий трек в указанный плейлист
     fun addTrackToPlaylist(
         playlistId: Long,
         callback: (added: Boolean, playlistName: String) -> Unit
@@ -153,7 +147,6 @@ class PlayerViewModel(
                 callback(false, "")
                 return@launch
             }
-            // Вызываем новую реализацию: addTrackToPlaylist(playlistId, track: Track)
             val result = playlistInteractor.addTrackToPlaylist(playlistId, currentTrack)
             callback(result, name)
         }

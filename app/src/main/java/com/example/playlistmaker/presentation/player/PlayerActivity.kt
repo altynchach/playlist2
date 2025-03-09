@@ -116,7 +116,6 @@ class PlayerActivity : AppCompatActivity() {
         bottomSheetAdapter = BottomSheetPlaylistsAdapter { playlist ->
             val currentTrack = track ?: return@BottomSheetPlaylistsAdapter
             lifecycleScope.launch {
-                // Вызываем метод без trackId, а только playlistId + callback
                 viewModel.addTrackToPlaylist(playlist.playlistId) { added, playlistName ->
                     if (added) {
                         val inflater = LayoutInflater.from(this@PlayerActivity)

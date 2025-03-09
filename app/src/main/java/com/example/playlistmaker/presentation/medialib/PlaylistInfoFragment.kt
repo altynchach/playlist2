@@ -47,7 +47,6 @@ class PlaylistInfoFragment : Fragment() {
     private lateinit var playlistSheetBehavior: BottomSheetBehavior<LinearLayout>
     private lateinit var editSheetBehavior: BottomSheetBehavior<LinearLayout>
 
-    // Мини-обложка в листе "Меню"
     private lateinit var playlistImageSheet: ImageView
     private lateinit var playlistNameSheet: TextView
     private lateinit var playlistCountTracksSheet: TextView
@@ -126,7 +125,6 @@ class PlaylistInfoFragment : Fragment() {
         })
 
         backFromPlaylistInfo.setOnClickListener {
-            // Без NavController, просто закрываем экран
             requireActivity().onBackPressedDispatcher.onBackPressed()
         }
         sharePlaylist.setOnClickListener {
@@ -181,7 +179,6 @@ class PlaylistInfoFragment : Fragment() {
 
         editLayout.setOnClickListener {
             editSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
-            // Открываем диалог редактирования
             viewModel.state.value?.playlist?.let { pl ->
                 val dialog = CreatePlaylistFragment.newInstance(pl.playlistId)
                 dialog.show(parentFragmentManager, "EditPlaylistDialog")
@@ -193,25 +190,21 @@ class PlaylistInfoFragment : Fragment() {
             showDeletePlaylistDialog()
         }
 
-        // Подписываемся на стейт
         viewModel.state.observe(viewLifecycleOwner, Observer { s ->
             renderState(s)
             updateSecondSheetHeader(s)
         })
 
-        // Слушаем результат "PLAYLIST_CREATED_KEY", чтобы обновляться сразу
         setFragmentResultListener(CreatePlaylistFragment.PLAYLIST_CREATED_KEY) { _, _ ->
             viewModel.loadPlaylist(playlistIdArg)
         }
 
-        // Слушаем флаг deleted
         viewModel.deleted.observe(viewLifecycleOwner) { wasDeleted ->
             if (wasDeleted) {
                 requireActivity().onBackPressedDispatcher.onBackPressed()
             }
         }
 
-        // Загрузим данные о плейлисте
         viewModel.loadPlaylist(playlistIdArg)
 
         view.post { anchorSheetUnderButtons() }
@@ -219,7 +212,6 @@ class PlaylistInfoFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        // Прочитаем заново (на случай, если что-то поменялось)
         viewModel.loadPlaylist(playlistIdArg)
     }
 
