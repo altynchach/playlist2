@@ -58,7 +58,6 @@ class CreatePlaylistFragment : DialogFragment() {
     private var playlistName: String = ""
     private var playlistDescription: String = ""
 
-    // Флаг, чтобы кнопка "Сохранить/Создать" была неактивна при пустом названии.
     private var isNameNotBlank = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -85,31 +84,26 @@ class CreatePlaylistFragment : DialogFragment() {
         createPlaylistButton = view.findViewById(R.id.createPlaylistButton)
         titleTextView = view.findViewById(R.id.title)
 
-        // По умолчанию — неактивна
         createPlaylistButton.isEnabled = false
 
         if (editingPlaylistId == 0L) {
-            // Режим создания
-            titleTextView.text = getString(R.string.newPlaylist)   // "Новый плейлист"
-            createPlaylistButton.text = getString(R.string.create) // "Создать"
+            titleTextView.text = getString(R.string.newPlaylist)
+            createPlaylistButton.text = getString(R.string.create)
         } else {
-            // Режим редактирования
-            titleTextView.text = getString(R.string.edit_playlist)  // "Редактировать"
-            createPlaylistButton.text = getString(R.string.save_changes) // "Сохранить"
+            titleTextView.text = getString(R.string.edit_playlist)
+            createPlaylistButton.text = getString(R.string.save_changes)
         }
 
         backFromCreatePlaylist.setOnClickListener {
             handleClose()
         }
 
-        // Когда пользователь меняет название, проверяем пустое ли оно
         editTextNamePlaylist.addTextChangedListener {
             playlistName = it.toString()
             isNameNotBlank = playlistName.isNotBlank()
             updateButtonState()
         }
 
-        // Когда пользователь меняет описание
         editTextDescriptionPlaylist.addTextChangedListener {
             playlistDescription = it.toString()
         }
@@ -119,7 +113,6 @@ class CreatePlaylistFragment : DialogFragment() {
             val description = playlistDescription.trim()
 
             if (editingPlaylistId == 0L) {
-                // Создать новый
                 lifecycleScope.launch {
                     viewModel.createPlaylist(name, description, coverPath)
                     Toast.makeText(
@@ -131,7 +124,6 @@ class CreatePlaylistFragment : DialogFragment() {
                     dismiss()
                 }
             } else {
-                // Сохранить изменения
                 lifecycleScope.launch {
                     viewModel.updatePlaylist(
                         playlistId = editingPlaylistId,
@@ -150,15 +142,12 @@ class CreatePlaylistFragment : DialogFragment() {
             }
         }
 
-        // Нажатие на обложку — выбираем изображение
         addPlaylistImage.setOnClickListener {
             galleryLauncher.launch("image/*")
         }
 
         if (savedInstanceState == null) {
-            // Если впервые открыли, а не пересоздаём
             if (editingPlaylistId != 0L) {
-                // Подгрузим старые данные
                 lifecycleScope.launch {
                     val playlist = viewModel.getPlaylistById(editingPlaylistId)
                     if (playlist != null) {
@@ -167,7 +156,6 @@ class CreatePlaylistFragment : DialogFragment() {
                 }
             }
         } else {
-            // Если восстанавливаем, берем данные из Bundle
             coverPath = savedInstanceState.getString("COVER_PATH")
             playlistName = savedInstanceState.getString("PLAYLIST_NAME", "")
             playlistDescription = savedInstanceState.getString("PLAYLIST_DESC", "")
@@ -175,7 +163,6 @@ class CreatePlaylistFragment : DialogFragment() {
             updateButtonState()
 
             if (!coverPath.isNullOrEmpty()) {
-                addPlaylistImage.setImageURI(Uri.parse(coverPath))
                 addPlaylistImage.scaleType = ImageView.ScaleType.CENTER_CROP
             }
             editTextNamePlaylist.setText(playlistName)
@@ -200,13 +187,9 @@ class CreatePlaylistFragment : DialogFragment() {
     }
 
     override fun onCancel(dialog: DialogInterface) {
-        // ничего
     }
 
-    /**
-     * Когда мы загружаем существующий плейлист для редактирования,
-     * заполняем поля и переменные (название, описание, обложка).
-     */
+
     private fun fillExistingData(playlist: Playlist) {
         playlistName = playlist.name
         playlistDescription = playlist.description
@@ -224,9 +207,7 @@ class CreatePlaylistFragment : DialogFragment() {
         }
     }
 
-    /**
-     * Активируем кнопку "Создать"/"Сохранить" если имя не пустое.
-     */
+
     private fun updateButtonState() {
         createPlaylistButton.isEnabled = isNameNotBlank
     }
@@ -249,9 +230,7 @@ class CreatePlaylistFragment : DialogFragment() {
             }
         }
 
-    /**
-     * Копирование выбранного файла в внутреннее хранилище
-     */
+
     private fun copyUriToInternalStorage(uri: Uri): String? {
         try {
             val bitmap = decodeSampledBitmapFromUri(uri, 1024, 1024)
@@ -303,9 +282,7 @@ class CreatePlaylistFragment : DialogFragment() {
         return fileName
     }
 
-    /**
-     * Если пользователь нажал «Назад»
-     */
+
     fun handleClose() {
         if (playlistName.isBlank() && playlistDescription.isBlank() && coverPath.isNullOrEmpty()) {
             dismiss()

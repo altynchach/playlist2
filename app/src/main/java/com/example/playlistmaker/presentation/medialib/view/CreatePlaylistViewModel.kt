@@ -8,9 +8,7 @@ class CreatePlaylistViewModel(
     private val playlistInteractor: PlaylistInteractor
 ) : ViewModel() {
 
-    /**
-     * Создаёт новый плейлист
-     */
+
     suspend fun createPlaylist(name: String, description: String, coverPath: String?) {
         val playlist = Playlist(
             name = name,
@@ -22,16 +20,11 @@ class CreatePlaylistViewModel(
         playlistInteractor.createPlaylist(playlist)
     }
 
-    /**
-     * Возвращает плейлист из репозитория (для редактирования).
-     */
+
     suspend fun getPlaylistById(playlistId: Long): Playlist? {
         return playlistInteractor.getPlaylistById(playlistId)
     }
 
-    /**
-     * Сохраняет изменения существующего плейлиста
-     */
     suspend fun updatePlaylist(
         playlistId: Long,
         name: String,
