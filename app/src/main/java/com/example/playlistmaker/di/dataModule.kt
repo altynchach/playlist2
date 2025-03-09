@@ -12,12 +12,7 @@ import com.example.playlistmaker.data.repository.PlayerRepositoryImpl
 import com.example.playlistmaker.data.repository.TrackRepositoryImpl
 import com.example.playlistmaker.domain.interactor.PlaylistInteractor
 import com.example.playlistmaker.domain.interactor.PlaylistInteractorImpl
-import com.example.playlistmaker.domain.repository.FavoritesRepository
-import com.example.playlistmaker.domain.repository.PlayerRepository
-import com.example.playlistmaker.domain.repository.PlaylistRepository
-import com.example.playlistmaker.domain.repository.SearchHistoryRepository
-import com.example.playlistmaker.domain.repository.ThemePreferencesRepository
-import com.example.playlistmaker.domain.repository.TrackRepository
+import com.example.playlistmaker.domain.repository.*
 import okhttp3.OkHttpClient
 import org.koin.dsl.module
 import retrofit2.Retrofit
@@ -84,16 +79,20 @@ val dataModule = module {
         get<PlaylistMakerDatabase>().playlistDao()
     }
 
+    single {
+        get<PlaylistMakerDatabase>().playlistTrackDao()
+    }
+
     single<PlaylistRepository> {
         PlaylistRepositoryImpl(
             playlistDao = get(),
             favoritesRepository = get(),
-            favoriteTrackDao = get()
+            favoriteTrackDao = get(),
+            playlistTrackDao = get()
         )
     }
 
     single<PlaylistInteractor> {
         PlaylistInteractorImpl(repository = get())
     }
-
 }

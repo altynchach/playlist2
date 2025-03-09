@@ -1,6 +1,9 @@
 package com.example.playlistmaker.presentation.player
 
-import androidx.lifecycle.*
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.playlistmaker.domain.interactor.FavoritesInteractor
 import com.example.playlistmaker.domain.interactor.PlayerInteractor
 import com.example.playlistmaker.domain.interactor.PlaylistInteractor
@@ -32,11 +35,14 @@ class PlayerViewModel(
     }
 
     fun setTrack(track: Track) {
+        // Устанавливаем выбранный трек
         stateLiveData.value = stateLiveData.value?.copy(track = track)
-
+        // Указываем MediaPlayer, какую ссылку проигрывать
         track.previewUrl?.let {
+            // По коду в PlayerInteractor: setTrackPreview(url: String)
             playerInteractor.setTrackPreview(it)
         }
+        // Проверяем, не в избранном ли трек
         viewModelScope.launch {
             val isFav = favoritesInteractor.isFavorite(track.trackId).first()
             updateState(isFavorite = isFav)
@@ -74,8 +80,8 @@ class PlayerViewModel(
         updateJob?.cancel()
         updateJob = viewModelScope.launch {
             while (true) {
-                val currentState = stateLiveData.value ?: break
-                if (!currentState.isPlaying) break
+                val st = stateLiveData.value ?: break
+                if (!st.isPlaying) break
 
                 val currentPositionMs = playerInteractor.getCurrentPosition()
                 val minutes = TimeUnit.MILLISECONDS.toMinutes(currentPositionMs.toLong()) % 60
@@ -83,16 +89,15 @@ class PlayerViewModel(
                 val currentTime = String.format(Locale.getDefault(), "%02d:%02d", minutes, seconds)
 
                 updateState(currentTimeFormatted = currentTime)
-
                 kotlinx.coroutines.delay(300)
             }
         }
     }
 
-    private fun stopUpdatingProgress(isStop: Boolean) {
+    private fun stopUpdatingProgress(reset: Boolean) {
         updateJob?.cancel()
         updateJob = null
-        if (isStop) {
+        if (reset) {
             updateState(currentTimeFormatted = "00:00")
         }
     }
@@ -122,6 +127,7 @@ class PlayerViewModel(
         }
     }
 
+    // Загружаем список плейлистов, чтобы отобразить их в bottom sheet
     fun loadPlaylistsForPlayerScreen(callback: (List<Playlist>) -> Unit) {
         viewModelScope.launch {
             val playlists = playlistInteractor.getAllPlaylists().first()
@@ -129,12 +135,17 @@ class PlayerViewModel(
         }
     }
 
+    // Добавляем текущий трек в указанный плейлист
     fun addTrackToPlaylist(
         playlistId: Long,
-        trackId: Long,
         callback: (added: Boolean, playlistName: String) -> Unit
     ) {
         viewModelScope.launch {
+            val currentTrack = stateLiveData.value?.track
+            if (currentTrack == null) {
+                callback(false, "")
+                return@launch
+            }
             val playlists = playlistInteractor.getAllPlaylists().first()
             val playlist = playlists.find { it.playlistId == playlistId }
             val name = playlist?.name ?: ""
@@ -142,7 +153,8 @@ class PlayerViewModel(
                 callback(false, "")
                 return@launch
             }
-            val result = playlistInteractor.addTrackToPlaylist(playlistId, trackId)
+            // Вызываем новую реализацию: addTrackToPlaylist(playlistId, track: Track)
+            val result = playlistInteractor.addTrackToPlaylist(playlistId, currentTrack)
             callback(result, name)
         }
     }

@@ -1,17 +1,12 @@
 package com.example.playlistmaker.presentation.player
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
-import android.widget.Button
-import android.widget.ImageButton
-import android.widget.ImageView
-import android.widget.LinearLayout
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -62,9 +57,6 @@ class PlayerActivity : AppCompatActivity() {
     private var track: Track? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        // Если хотим, чтобы клавиатура поднимала контент, можно прописать:
-        // window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
-
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_player)
 
@@ -82,10 +74,9 @@ class PlayerActivity : AppCompatActivity() {
         albumSong = findViewById(R.id.albumSong)
         yearSong = findViewById(R.id.yearSong)
         genreSong = findViewById(R.id.genreSong)
-        countrySong = findViewById(R.id.countrySong)
+        countrySong = findViewById(R.id.country)
         cover = findViewById(R.id.cover)
 
-        // Вместо finish() используем onBackPressed()
         backButton.setOnClickListener { onBackPressed() }
         playButton.setOnClickListener { viewModel.onPlayPauseClicked() }
         likeButton.setOnClickListener { viewModel.onLikeButtonClicked() }
@@ -125,7 +116,8 @@ class PlayerActivity : AppCompatActivity() {
         bottomSheetAdapter = BottomSheetPlaylistsAdapter { playlist ->
             val currentTrack = track ?: return@BottomSheetPlaylistsAdapter
             lifecycleScope.launch {
-                viewModel.addTrackToPlaylist(playlist.playlistId, currentTrack.trackId) { added, playlistName ->
+                // Вызываем метод без trackId, а только playlistId + callback
+                viewModel.addTrackToPlaylist(playlist.playlistId) { added, playlistName ->
                     if (added) {
                         val inflater = LayoutInflater.from(this@PlayerActivity)
                         val customToastView = inflater.inflate(
@@ -145,7 +137,6 @@ class PlayerActivity : AppCompatActivity() {
                         viewModel.loadPlaylistsForPlayerScreen { updatedPlaylists ->
                             bottomSheetAdapter.updateList(updatedPlaylists)
                         }
-
                         bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
                     } else {
                         Toast.makeText(
@@ -209,8 +200,8 @@ class PlayerActivity : AppCompatActivity() {
     private fun renderState(state: PlayerScreenState) {
         val stTrack = state.track ?: return
 
-        title.text = stTrack.trackName ?: ""
-        author.text = stTrack.artistName ?: ""
+        title.text = stTrack.trackName
+        author.text = stTrack.artistName
         durationSong.text = stTrack.trackTime.let {
             val format = SimpleDateFormat("mm:ss", Locale.getDefault())
             format.format(it)
@@ -247,7 +238,7 @@ class PlayerActivity : AppCompatActivity() {
         val fragment = supportFragmentManager.findFragmentByTag("CreatePlaylistDialog")
                 as? CreatePlaylistFragment
         if (fragment != null && fragment.isVisible) {
-            fragment.handleClose() // Показываем диалог подтверждения
+            fragment.handleClose()
         } else {
             super.onBackPressed()
         }

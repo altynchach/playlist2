@@ -8,6 +8,7 @@ import com.example.playlistmaker.domain.interactor.FavoritesInteractor
 import com.example.playlistmaker.domain.interactor.PlaylistInteractor
 import com.example.playlistmaker.domain.models.Playlist
 import com.example.playlistmaker.domain.models.Track
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import java.util.Locale
@@ -31,17 +32,19 @@ class PlaylistInfoViewModel(
 
     fun loadPlaylist(playlistId: Long) {
         currentPlaylistId = playlistId
+
         viewModelScope.launch {
             val pl = playlistInteractor.getPlaylistById(playlistId)
             if (pl != null) {
-                val tracks = getTracksForPlaylist(pl.trackIds)
-                val dur = calculateTotalDuration(tracks)
-
-                _state.value = PlaylistInfoScreenState(
-                    playlist = pl,
-                    tracks = tracks,
-                    totalDuration = dur
-                )
+                // Подпишемся на треки плейлиста (Flow)
+                playlistInteractor.getTracksForPlaylist(playlistId).collect { tracks ->
+                    val dur = calculateTotalDuration(tracks)
+                    _state.value = PlaylistInfoScreenState(
+                        playlist = pl,
+                        tracks = tracks,
+                        totalDuration = dur
+                    )
+                }
             }
         }
     }
@@ -76,7 +79,6 @@ class PlaylistInfoViewModel(
         st.tracks.forEachIndexed { i, track ->
             val dt = formatTrackTime(track.trackTime)
             sb.append("${i + 1}. ${track.artistName} - ${track.trackName} ($dt)").append("\n")
-
         }
         callback(sb.toString().trim())
     }
@@ -85,25 +87,13 @@ class PlaylistInfoViewModel(
         loadPlaylist(currentPlaylistId)
     }
 
-    private suspend fun getTracksForPlaylist(trackIds: List<Long>): List<Track> {
-        if (trackIds.isEmpty()) return emptyList()
-        val favs = favoritesInteractor.getFavorites().first()
-        val result = favs.filter { trackIds.contains(it.trackId) }
-        return trackIds.mapNotNull { id -> result.find { t -> t.trackId == id } }
-
-    }
-
     private fun calculateTotalDuration(tracks: List<Track>): String {
         var totalMs = 0L
         for (t in tracks) {
             totalMs += t.trackTime
         }
         val mins = TimeUnit.MILLISECONDS.toMinutes(totalMs)
-        return "$mins ${formatMinutesWord(mins)}"
-    }
-
-    private fun formatMinutesWord(minutes: Long): String {
-        return "минут"
+        return "$mins минут"
     }
 
     private fun formatTrackTime(ms: Long): String {

@@ -18,6 +18,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.playlistmaker.R
+import com.example.playlistmaker.presentation.medialib.view.CreatePlaylistState
 import com.example.playlistmaker.presentation.medialib.view.CreatePlaylistViewModel
 import com.google.android.material.textfield.TextInputEditText
 import kotlinx.coroutines.launch
@@ -34,6 +35,7 @@ class CreatePlaylistFragment : DialogFragment() {
     private lateinit var editTextNamePlaylist: TextInputEditText
     private lateinit var editTextDescriptionPlaylist: TextInputEditText
     private lateinit var createPlaylistButton: Button
+    private lateinit var titleTextView: TextView
 
     private var coverPath: String? = null
     private var playlistName: String = ""
@@ -79,8 +81,18 @@ class CreatePlaylistFragment : DialogFragment() {
         editTextNamePlaylist = view.findViewById(R.id.editTextNamePlaylist)
         editTextDescriptionPlaylist = view.findViewById(R.id.editTextDescriptionPlaylist)
         createPlaylistButton = view.findViewById(R.id.createPlaylistButton)
+        titleTextView = view.findViewById(R.id.title)
 
         createPlaylistButton.isEnabled = false
+
+        // Если редактирование плейлиста
+        if (editingPlaylistId != 0L) {
+            titleTextView.text = getString(R.string.edit_playlist)
+            createPlaylistButton.text = getString(R.string.save_changes)
+        } else {
+            titleTextView.text = getString(R.string.newPlaylist)
+            createPlaylistButton.text = getString(R.string.create)
+        }
 
         backFromCreatePlaylist.setOnClickListener {
             handleClose()
@@ -111,7 +123,7 @@ class CreatePlaylistFragment : DialogFragment() {
                 setFragmentResult(PLAYLIST_CREATED_KEY, Bundle())
                 dismiss()
             } else {
-                // Редактируем
+                // Редактируем существующий
                 lifecycleScope.launch {
                     viewModel.updatePlaylist(
                         playlistId = editingPlaylistId,
@@ -133,7 +145,6 @@ class CreatePlaylistFragment : DialogFragment() {
             galleryLauncher.launch("image/*")
         }
 
-        // Подпишемся на LiveData
         viewModel.state.observe(viewLifecycleOwner) { state ->
             createPlaylistButton.isEnabled = state.isCreateButtonEnabled
             state.coverFilePath?.let { path ->
@@ -141,7 +152,6 @@ class CreatePlaylistFragment : DialogFragment() {
             }
         }
 
-        // Если есть playlistId, загрузим текущие данные
         if (editingPlaylistId != 0L) {
             viewModel.loadPlaylistForEdit(editingPlaylistId)
         }
@@ -186,7 +196,7 @@ class CreatePlaylistFragment : DialogFragment() {
     }
 
     override fun onCancel(dialog: DialogInterface) {
-        // Если нужно, можно что-то обработать при закрытии
+        // можно ничего не делать при обычном cancel
     }
 
     private val galleryLauncher =
