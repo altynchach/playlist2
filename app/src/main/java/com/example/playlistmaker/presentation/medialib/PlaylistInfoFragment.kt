@@ -1,4 +1,3 @@
-// PlaylistInfoFragment.kt
 package com.example.playlistmaker.presentation.medialib
 
 import android.app.AlertDialog
@@ -10,8 +9,9 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.view.isVisible
-import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -24,7 +24,7 @@ import com.example.playlistmaker.presentation.player.PlayerActivity
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class PlaylistInfoFragment : DialogFragment() {
+class PlaylistInfoFragment : Fragment() {
 
     private val viewModel: PlaylistInfoViewModel by viewModel()
 
@@ -46,24 +46,23 @@ class PlaylistInfoFragment : DialogFragment() {
     private lateinit var playlistTracksAdapter: PlaylistTracksAdapter
     private var playlistIdArg: Long = 0L
 
-    // Views in the included layout on the second (menu) sheet
+    // second sheet views (если нужно)
     private lateinit var playlistImageSheet: ImageView
     private lateinit var playlistNameSheet: TextView
     private lateinit var playlistCountTracksSheet: TextView
 
     private var isClickAllowed = true
     private fun clickDebounce(): Boolean {
-        val current = isClickAllowed
-        if (current) {
+        val c = isClickAllowed
+        if (c) {
             isClickAllowed = false
             view?.postDelayed({ isClickAllowed = true }, 1000L)
         }
-        return current
+        return c
     }
 
     companion object {
         private const val PLAYLIST_ID_ARG = "PLAYLIST_ID_ARG"
-
         fun newInstance(playlistId: Long): PlaylistInfoFragment {
             val fragment = PlaylistInfoFragment()
             val args = Bundle()
@@ -78,17 +77,15 @@ class PlaylistInfoFragment : DialogFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setStyle(STYLE_NORMAL, R.style.ThemeOverlay_FullScreenDialog)
-        isCancelable = false
-
         playlistIdArg = arguments?.getLong(PLAYLIST_ID_ARG, 0L) ?: 0L
         viewModel.loadPlaylist(playlistIdArg)
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?,
-    ): View? {
+        savedInstanceState: Bundle?
+    ): View {
+        // Теперь обычный Fragment (не DialogFragment)
         return inflater.inflate(R.layout.playlist_info_fragment, container, false)
     }
 
@@ -124,19 +121,17 @@ class PlaylistInfoFragment : DialogFragment() {
         playlistTracksRecyclerBS.layoutManager = LinearLayoutManager(requireContext())
         playlistTracksRecyclerBS.adapter = playlistTracksAdapter
 
-        // Main bottom sheet (tracks)
+        // main sheet
         playlistSheetBehavior = BottomSheetBehavior.from(bottomSheetPlaylistInfo)
         playlistSheetBehavior.isHideable = false
         bottomSheetPlaylistInfo.visibility = View.VISIBLE
         playlistSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
 
-        view.post { anchorSheetUnderButtons() }
-
-        // Second bottom sheet (menu)
+        // second sheet
         editSheetBehavior = BottomSheetBehavior.from(bottomSheetEditPlaylistInfo)
         editSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
 
-        // reference included views on second sheet
+        // Если нужно получить ссылки на Image/Text из второго bottomSheet:
         playlistImageSheet = bottomSheetEditPlaylistInfo.findViewById(R.id.playlistImageSheet)
         playlistNameSheet = bottomSheetEditPlaylistInfo.findViewById(R.id.playlistNameSheet)
         playlistCountTracksSheet = bottomSheetEditPlaylistInfo.findViewById(R.id.playlistCountTracksSheet)
@@ -152,8 +147,13 @@ class PlaylistInfoFragment : DialogFragment() {
 
         backFromPlaylistInfo.setOnClickListener {
             if (clickDebounce()) {
-                // we simply pop ourselves
-                parentFragmentManager.popBackStack()
+                // Оборачиваем popBackStack в try/catch
+                try {
+                    findNavController().popBackStack()
+                } catch (e: IllegalStateException) {
+                    // Если NavController нет, fallback:
+                    requireActivity().onBackPressedDispatcher.onBackPressed()
+                }
             }
         }
 
@@ -182,7 +182,6 @@ class PlaylistInfoFragment : DialogFragment() {
                 bottomSheetEditPlaylistInfo.visibility = View.VISIBLE
                 darkFrame.visibility = View.VISIBLE
                 editSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
-                bottomSheetEditPlaylistInfo.bringToFront()
             }
         }
 
@@ -221,6 +220,8 @@ class PlaylistInfoFragment : DialogFragment() {
                 editSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
                 viewModel.state.value?.playlist?.let { pl ->
                     val dialog = CreatePlaylistFragment.newInstance(pl.playlistId)
+                    // Если экран "CreatePlaylistFragment" тоже в NavGraph, можно navigate()
+                    // Если это Dialog, то show(...)
                     dialog.show(parentFragmentManager, "EditPlaylistDialog")
                 }
             }
@@ -233,17 +234,19 @@ class PlaylistInfoFragment : DialogFragment() {
             }
         }
 
-        // observe changes
         viewModel.state.observe(viewLifecycleOwner, Observer { s ->
             renderState(s)
             updateSecondSheetHeader(s)
         })
+
+        // После инициализации
+        view.post { anchorSheetUnderButtons() }
     }
 
     override fun onResume() {
         super.onResume()
+        // Если возвращаемся из редактирования, перезагружаем
         viewModel.loadPlaylist(playlistIdArg)
-        dialog?.window?.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
     }
 
     private fun anchorSheetUnderButtons() {
@@ -252,14 +255,13 @@ class PlaylistInfoFragment : DialogFragment() {
         val btnY = loc[1]
         val screenHeightPx = resources.displayMetrics.heightPixels
         val marginPx = resources.getDimensionPixelSize(R.dimen.size24)
-        val dist = screenHeightPx - (btnY + buttonsLayout.height + marginPx)
-        playlistSheetBehavior.peekHeight = dist
+        val distFromBottom = screenHeightPx - (btnY + buttonsLayout.height + marginPx)
+        playlistSheetBehavior.peekHeight = distFromBottom
         playlistSheetBehavior.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
             override fun onStateChanged(sheet: View, newState: Int) {}
             override fun onSlide(sheet: View, slideOffset: Float) {
-                // keep it anchored
                 if (slideOffset < 0) {
-                    playlistSheetBehavior.peekHeight = dist
+                    playlistSheetBehavior.peekHeight = distFromBottom
                 }
             }
         })
@@ -268,7 +270,6 @@ class PlaylistInfoFragment : DialogFragment() {
 
     private fun renderState(s: PlaylistInfoScreenState) {
         val pl = s.playlist ?: return
-        // cover
         if (pl.coverFilePath.isNullOrEmpty()) {
             playlistImage.setImageResource(R.drawable.placeholder)
         } else {
@@ -277,12 +278,9 @@ class PlaylistInfoFragment : DialogFragment() {
                 .placeholder(R.drawable.placeholder)
                 .into(playlistImage)
         }
-        // name & desc
         playlistName.text = pl.name
         playlistDescription.isVisible = pl.description.isNotBlank()
         playlistDescription.text = pl.description
-
-        // track count
         if (pl.trackIds.isEmpty()) {
             tracksCount.text = getString(R.string.no_tracks_in_playlist)
         } else {
@@ -293,9 +291,7 @@ class PlaylistInfoFragment : DialogFragment() {
             )
             tracksCount.text = cntText
         }
-        // total time
         sumLength.text = s.totalDuration
-        // fill track list
         playlistTracksAdapter.updateTracks(s.tracks)
     }
 
@@ -309,6 +305,7 @@ class PlaylistInfoFragment : DialogFragment() {
                 .placeholder(R.drawable.placeholder)
                 .into(playlistImageSheet)
         }
+
         playlistNameSheet.text = pl.name
         if (pl.trackIds.isEmpty()) {
             playlistCountTracksSheet.text = getString(R.string.no_tracks_in_playlist)
@@ -324,13 +321,13 @@ class PlaylistInfoFragment : DialogFragment() {
 
     private fun showRemoveTrackDialog(track: Track) {
         AlertDialog.Builder(requireContext())
-            .setTitle(R.string.delete_track)
-            .setMessage(R.string.delete_track_question)
-            .setPositiveButton(R.string.delete) { dialog, _ ->
+            .setTitle(getString(R.string.delete_track))
+            .setMessage(getString(R.string.delete_track_question))
+            .setPositiveButton(getString(R.string.delete)) { dialog, _ ->
                 dialog.dismiss()
                 viewModel.removeTrackFromPlaylist(track)
             }
-            .setNegativeButton(R.string.cancel) { d, _ ->
+            .setNegativeButton(getString(R.string.cancel)) { d, _ ->
                 d.dismiss()
             }
             .create()
@@ -339,15 +336,19 @@ class PlaylistInfoFragment : DialogFragment() {
 
     private fun showDeletePlaylistDialog() {
         AlertDialog.Builder(requireContext())
-            .setTitle(R.string.delete_playlist)
-            .setMessage(R.string.delete_playlist_question)
-            .setPositiveButton(R.string.yes) { dd, _ ->
+            .setTitle(getString(R.string.delete_playlist))
+            .setMessage(getString(R.string.delete_playlist_question))
+            .setPositiveButton(getString(R.string.yes)) { dd, _ ->
                 dd.dismiss()
                 viewModel.deletePlaylist()
-                // after removing from DB, simply pop ourselves from the fragment stack
-                parentFragmentManager.popBackStack()
+                // При попытке вернуться назад, если NavController нет -> fallback
+                try {
+                    findNavController().popBackStack()
+                } catch (e: IllegalStateException) {
+                    requireActivity().onBackPressedDispatcher.onBackPressed()
+                }
             }
-            .setNegativeButton(R.string.no) { d, _ ->
+            .setNegativeButton(getString(R.string.no)) { d, _ ->
                 d.dismiss()
             }
             .create()
