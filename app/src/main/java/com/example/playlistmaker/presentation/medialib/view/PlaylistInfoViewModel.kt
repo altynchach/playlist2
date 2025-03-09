@@ -8,7 +8,7 @@ import com.example.playlistmaker.domain.interactor.FavoritesInteractor
 import com.example.playlistmaker.domain.interactor.PlaylistInteractor
 import com.example.playlistmaker.domain.models.Playlist
 import com.example.playlistmaker.domain.models.Track
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import java.util.Locale
 import java.util.concurrent.TimeUnit
@@ -38,6 +38,7 @@ class PlaylistInfoViewModel(
         viewModelScope.launch {
             val pl = playlistInteractor.getPlaylistById(playlistId)
             if (pl != null) {
+                // Подписываемся на Flow треков плейлиста
                 playlistInteractor.getTracksForPlaylist(playlistId).collect { tracks ->
                     val dur = calculateTotalDuration(tracks)
                     _state.value = PlaylistInfoScreenState(
@@ -59,9 +60,15 @@ class PlaylistInfoViewModel(
 
     fun deletePlaylist() {
         viewModelScope.launch {
+            // Удаляем в БД
             playlistInteractor.deletePlaylist(currentPlaylistId)
+            // Уведомим UI
             _deleted.value = true
         }
+    }
+
+    private fun refresh() {
+        loadPlaylist(currentPlaylistId)
     }
 
     fun sharePlaylist(callback: (String) -> Unit) {
@@ -83,10 +90,6 @@ class PlaylistInfoViewModel(
             sb.append("${i + 1}. ${track.artistName} - ${track.trackName} ($dt)").append("\n")
         }
         callback(sb.toString().trim())
-    }
-
-    private fun refresh() {
-        loadPlaylist(currentPlaylistId)
     }
 
     private fun calculateTotalDuration(tracks: List<Track>): String {

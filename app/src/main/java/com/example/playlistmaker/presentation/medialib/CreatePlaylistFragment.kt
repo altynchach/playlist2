@@ -41,10 +41,14 @@ class CreatePlaylistFragment : DialogFragment() {
     private var playlistName: String = ""
     private var playlistDescription: String = ""
 
+    // Если == 0L, то создаём плейлист. Если != 0L, то редактируем
     private var editingPlaylistId: Long = 0L
 
+    // Чтобы избежать зацикливания TextWatcher и setText(...)
+    private var blockTextWatcher = false
+
     companion object {
-        private const val PLAYLIST_CREATED_KEY = "PLAYLIST_CREATED"
+        const val PLAYLIST_CREATED_KEY = "PLAYLIST_CREATED"
 
         fun newInstance(): CreatePlaylistFragment {
             return CreatePlaylistFragment()
@@ -83,26 +87,29 @@ class CreatePlaylistFragment : DialogFragment() {
         createPlaylistButton = view.findViewById(R.id.createPlaylistButton)
         titleTextView = view.findViewById(R.id.title)
 
+        // Настраиваем режим "Создание" или "Редактирование"
+        if (editingPlaylistId != 0L) {
+            titleTextView.text = getString(R.string.edit_playlist) // "Редактировать"
+            createPlaylistButton.text = getString(R.string.save_changes) // "Сохранить"
+        } else {
+            titleTextView.text = getString(R.string.newPlaylist) // "Новый плейлист"
+            createPlaylistButton.text = getString(R.string.create) // "Создать"
+        }
+
+        // Кнопка по умолчанию неактивна, пока пользователь не введёт непустое имя
         createPlaylistButton.isEnabled = false
 
-        if (editingPlaylistId != 0L) {
-            titleTextView.text = getString(R.string.edit_playlist)
-            createPlaylistButton.text = getString(R.string.save_changes)
-        } else {
-            titleTextView.text = getString(R.string.newPlaylist)
-            createPlaylistButton.text = getString(R.string.create)
-        }
-
-        backFromCreatePlaylist.setOnClickListener {
-            handleClose()
-        }
-
+        // TextWatcher для поля "Название"
         editTextNamePlaylist.addTextChangedListener {
+            if (blockTextWatcher) return@addTextChangedListener
             val name = it.toString()
             playlistName = name
             viewModel.onNameChanged(name)
         }
+
+        // TextWatcher для поля "Описание"
         editTextDescriptionPlaylist.addTextChangedListener {
+            if (blockTextWatcher) return@addTextChangedListener
             playlistDescription = it.toString()
         }
 
@@ -111,17 +118,18 @@ class CreatePlaylistFragment : DialogFragment() {
             val description = playlistDescription.trim()
 
             if (editingPlaylistId == 0L) {
-                // Создаём новый плейлист
+                // Создание нового
                 viewModel.savePlaylist(name, description)
                 Toast.makeText(
                     requireContext(),
                     getString(R.string.playlist_created_notify, name),
                     Toast.LENGTH_SHORT
                 ).show()
+                // Посылаем результат, чтобы родитель обновил список
                 setFragmentResult(PLAYLIST_CREATED_KEY, Bundle())
                 dismiss()
             } else {
-                // Редактируем
+                // Редактирование
                 lifecycleScope.launch {
                     viewModel.updatePlaylist(
                         playlistId = editingPlaylistId,
@@ -134,6 +142,7 @@ class CreatePlaylistFragment : DialogFragment() {
                         getString(R.string.playlist_updated),
                         Toast.LENGTH_SHORT
                     ).show()
+                    setFragmentResult(PLAYLIST_CREATED_KEY, Bundle())
                     dismiss()
                 }
             }
@@ -143,26 +152,40 @@ class CreatePlaylistFragment : DialogFragment() {
             galleryLauncher.launch("image/*")
         }
 
+        // Подписываемся на стейт из ViewModel
         viewModel.state.observe(viewLifecycleOwner) { state ->
             createPlaylistButton.isEnabled = state.isCreateButtonEnabled
 
-            // Если есть обложка, загружаем и масштабируем
+            // Избегаем бесконечного цикла: ставим флаг blockTextWatcher
+            blockTextWatcher = true
+
+            // Если есть обложка, отображаем
             state.coverFilePath?.let { path ->
                 addPlaylistImage.setImageURI(Uri.parse(path))
                 addPlaylistImage.scaleType = ImageView.ScaleType.CENTER_CROP
             }
-            // Если у нас есть сохранённое имя/описание — подставим
-            if (state.createdPlaylistName.isNotBlank()) {
+
+            // Подставим имя, если оно есть и оно отличается от текущего
+            if (state.createdPlaylistName.isNotEmpty()
+                && editTextNamePlaylist.text.toString() != state.createdPlaylistName
+            ) {
                 editTextNamePlaylist.setText(state.createdPlaylistName)
                 playlistName = state.createdPlaylistName
             }
-            if (state.createdPlaylistDesc.isNotBlank()) {
+
+            // Подставим описание, если оно есть и отличается
+            if (state.createdPlaylistDesc.isNotEmpty()
+                && editTextDescriptionPlaylist.text.toString() != state.createdPlaylistDesc
+            ) {
                 editTextDescriptionPlaylist.setText(state.createdPlaylistDesc)
                 playlistDescription = state.createdPlaylistDesc
             }
+
+            blockTextWatcher = false
         }
 
         if (editingPlaylistId != 0L) {
+            // Загрузим уже имеющийся плейлист
             viewModel.loadPlaylistForEdit(editingPlaylistId)
         }
     }
@@ -183,6 +206,9 @@ class CreatePlaylistFragment : DialogFragment() {
             playlistDescription = savedInstanceState.getString("PLAYLIST_DESC", "")
             editingPlaylistId = savedInstanceState.getLong("EDITING_ID", 0L)
 
+            // Снова блокируем TextWatcher при восстановлении
+            blockTextWatcher = true
+
             if (!coverPath.isNullOrEmpty()) {
                 viewModel.onCoverPicked(coverPath)
                 addPlaylistImage.setImageURI(Uri.parse(coverPath))
@@ -195,6 +221,8 @@ class CreatePlaylistFragment : DialogFragment() {
             if (playlistDescription.isNotEmpty()) {
                 editTextDescriptionPlaylist.setText(playlistDescription)
             }
+
+            blockTextWatcher = false
         }
     }
 
@@ -207,7 +235,7 @@ class CreatePlaylistFragment : DialogFragment() {
     }
 
     override fun onCancel(dialog: DialogInterface) {
-        // ничего не делаем
+        // ничего не делаем специально
     }
 
     private val galleryLauncher =
@@ -276,6 +304,10 @@ class CreatePlaylistFragment : DialogFragment() {
         return fileName
     }
 
+    /**
+     * Нажатие на «Назад»: если поля пустые, просто уходим.
+     * Если что-то введено — предупреждение о потере данных.
+     */
     fun handleClose() {
         val name = editTextNamePlaylist.text?.toString().orEmpty()
         val description = editTextDescriptionPlaylist.text?.toString().orEmpty()
@@ -294,8 +326,8 @@ class CreatePlaylistFragment : DialogFragment() {
                 dialog.dismiss()
                 dismiss()
             }
-            .setNegativeButton(R.string.cancel) { dialog, _ ->
-                dialog.dismiss()
+            .setNegativeButton(R.string.cancel) { d, _ ->
+                d.dismiss()
             }
             .create()
             .show()

@@ -7,6 +7,7 @@ import android.view.*
 import android.widget.*
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -46,7 +47,7 @@ class PlaylistInfoFragment : Fragment() {
     private lateinit var playlistSheetBehavior: BottomSheetBehavior<LinearLayout>
     private lateinit var editSheetBehavior: BottomSheetBehavior<LinearLayout>
 
-    // Мини-информация для второго bottom sheet (info в меню)
+    // Мини-обложка в листе "Меню"
     private lateinit var playlistImageSheet: ImageView
     private lateinit var playlistNameSheet: TextView
     private lateinit var playlistCountTracksSheet: TextView
@@ -65,7 +66,6 @@ class PlaylistInfoFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         playlistIdArg = arguments?.getLong(PLAYLIST_ID_ARG, 0L) ?: 0L
-        viewModel.loadPlaylist(playlistIdArg)
     }
 
     override fun onCreateView(
@@ -93,7 +93,6 @@ class PlaylistInfoFragment : Fragment() {
         darkFrame = view.findViewById(R.id.darkFrame)
         playlistTracksRecyclerBS = view.findViewById(R.id.playlistTracksRecyclerBS)
 
-        // Элементы "миникарточки" в листе редактирования
         playlistImageSheet = bottomSheetEditPlaylistInfo.findViewById(R.id.playlistImageSheet)
         playlistNameSheet = bottomSheetEditPlaylistInfo.findViewById(R.id.playlistNameSheet)
         playlistCountTracksSheet = bottomSheetEditPlaylistInfo.findViewById(R.id.playlistCountTracksSheet)
@@ -127,7 +126,7 @@ class PlaylistInfoFragment : Fragment() {
         })
 
         backFromPlaylistInfo.setOnClickListener {
-            // Вместо findNavController() -> безопасное закрытие
+            // Без NavController, просто закрываем экран
             requireActivity().onBackPressedDispatcher.onBackPressed()
         }
         sharePlaylist.setOnClickListener {
@@ -182,6 +181,7 @@ class PlaylistInfoFragment : Fragment() {
 
         editLayout.setOnClickListener {
             editSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
+            // Открываем диалог редактирования
             viewModel.state.value?.playlist?.let { pl ->
                 val dialog = CreatePlaylistFragment.newInstance(pl.playlistId)
                 dialog.show(parentFragmentManager, "EditPlaylistDialog")
@@ -193,25 +193,33 @@ class PlaylistInfoFragment : Fragment() {
             showDeletePlaylistDialog()
         }
 
-        // Подписываемся на состояние для отрисовки
+        // Подписываемся на стейт
         viewModel.state.observe(viewLifecycleOwner, Observer { s ->
             renderState(s)
             updateSecondSheetHeader(s)
         })
 
-        // Подписываемся на флаг deleted, чтобы вернуться на список
+        // Слушаем результат "PLAYLIST_CREATED_KEY", чтобы обновляться сразу
+        setFragmentResultListener(CreatePlaylistFragment.PLAYLIST_CREATED_KEY) { _, _ ->
+            viewModel.loadPlaylist(playlistIdArg)
+        }
+
+        // Слушаем флаг deleted
         viewModel.deleted.observe(viewLifecycleOwner) { wasDeleted ->
             if (wasDeleted) {
-                // Без findNavController, возвращаемся назад
                 requireActivity().onBackPressedDispatcher.onBackPressed()
             }
         }
+
+        // Загрузим данные о плейлисте
+        viewModel.loadPlaylist(playlistIdArg)
 
         view.post { anchorSheetUnderButtons() }
     }
 
     override fun onResume() {
         super.onResume()
+        // Прочитаем заново (на случай, если что-то поменялось)
         viewModel.loadPlaylist(playlistIdArg)
     }
 
@@ -223,15 +231,6 @@ class PlaylistInfoFragment : Fragment() {
         val marginPx = resources.getDimensionPixelSize(R.dimen.size24)
         val distFromBottom = screenHeightPx - (btnY + buttonsLayout.height + marginPx)
         playlistSheetBehavior.peekHeight = distFromBottom
-        playlistSheetBehavior.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
-            override fun onStateChanged(sheet: View, newState: Int) {}
-            override fun onSlide(sheet: View, slideOffset: Float) {
-                if (slideOffset < 0) {
-                    playlistSheetBehavior.peekHeight = distFromBottom
-                }
-            }
-        })
-        playlistSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
     }
 
     private fun renderState(s: PlaylistInfoScreenState) {
@@ -272,7 +271,7 @@ class PlaylistInfoFragment : Fragment() {
                 .into(playlistImageSheet)
         }
         playlistNameSheet.text = pl.name
-        val cText = if (pl.trackIds.isEmpty()) {
+        val trackCountText = if (pl.trackIds.isEmpty()) {
             getString(R.string.no_tracks_in_playlist)
         } else {
             resources.getQuantityString(
@@ -281,7 +280,7 @@ class PlaylistInfoFragment : Fragment() {
                 pl.trackIds.size
             )
         }
-        playlistCountTracksSheet.text = cText
+        playlistCountTracksSheet.text = trackCountText
     }
 
     private fun showRemoveTrackDialog(track: Track) {

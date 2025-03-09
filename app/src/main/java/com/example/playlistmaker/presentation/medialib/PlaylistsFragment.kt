@@ -1,13 +1,12 @@
 package com.example.playlistmaker.presentation.medialib
 
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -21,6 +20,7 @@ class PlaylistsFragment : Fragment() {
 
     companion object {
         fun newInstance() = PlaylistsFragment()
+        const val PLAYLIST_CREATED_KEY = "PLAYLIST_CREATED"
     }
 
     private val viewModel: PlaylistsViewModel by viewModel()
@@ -29,7 +29,6 @@ class PlaylistsFragment : Fragment() {
     private lateinit var mediatekaIsEmpty: ImageView
     private lateinit var noCreatedPlaylists: TextView
     private lateinit var createdPlaylists: RecyclerView
-    private lateinit var playlistCreatedNotify: TextView
 
     private lateinit var adapter: PlaylistsAdapter
 
@@ -47,11 +46,10 @@ class PlaylistsFragment : Fragment() {
         mediatekaIsEmpty = view.findViewById(R.id.mediatekaIsEmpty)
         noCreatedPlaylists = view.findViewById(R.id.noCreatedPlaylists)
         createdPlaylists = view.findViewById(R.id.createdPlaylists)
-        playlistCreatedNotify = view.findViewById(R.id.playlistCreatedNotify)
 
         adapter = PlaylistsAdapter { playlist ->
-            // Открываем экран инфо о плейлисте
             val fragment = PlaylistInfoFragment.newInstance(playlist.playlistId)
+            // Открываем экран инфо
             parentFragmentManager.beginTransaction()
                 .replace(R.id.rootFragmentContainerView, fragment)
                 .addToBackStack(null)
@@ -65,6 +63,13 @@ class PlaylistsFragment : Fragment() {
             fragment.show(parentFragmentManager, "CreatePlaylistDialog")
         }
 
+        // Когда вернёмся из CreatePlaylistFragment, если там создали/отредактировали,
+        // придёт этот ключ => заново загружаем список
+        setFragmentResultListener(CreatePlaylistFragment.PLAYLIST_CREATED_KEY) { _, _ ->
+            viewModel.loadPlaylists()
+        }
+
+        // Подписка на стейт
         viewModel.state.observe(viewLifecycleOwner, Observer { state ->
             renderState(state)
         })
@@ -72,7 +77,6 @@ class PlaylistsFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        // Перезагружаем список плейлистов при возврате на экран
         viewModel.loadPlaylists()
     }
 
