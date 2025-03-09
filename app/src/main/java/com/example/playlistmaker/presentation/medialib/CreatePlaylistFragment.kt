@@ -18,7 +18,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.playlistmaker.R
-import com.example.playlistmaker.presentation.medialib.view.CreatePlaylistState
+import com.example.playlistmaker.domain.models.Playlist
 import com.example.playlistmaker.presentation.medialib.view.CreatePlaylistViewModel
 import com.google.android.material.textfield.TextInputEditText
 import kotlinx.coroutines.launch
@@ -29,23 +29,6 @@ import java.io.FileOutputStream
 class CreatePlaylistFragment : DialogFragment() {
 
     private val viewModel: CreatePlaylistViewModel by viewModel()
-
-    private lateinit var backFromCreatePlaylist: ImageView
-    private lateinit var addPlaylistImage: ImageView
-    private lateinit var editTextNamePlaylist: TextInputEditText
-    private lateinit var editTextDescriptionPlaylist: TextInputEditText
-    private lateinit var createPlaylistButton: Button
-    private lateinit var titleTextView: TextView
-
-    private var coverPath: String? = null
-    private var playlistName: String = ""
-    private var playlistDescription: String = ""
-
-    // Если == 0L, то создаём плейлист. Если != 0L, то редактируем
-    private var editingPlaylistId: Long = 0L
-
-    // Чтобы избежать зацикливания TextWatcher и setText(...)
-    private var blockTextWatcher = false
 
     companion object {
         const val PLAYLIST_CREATED_KEY = "PLAYLIST_CREATED"
@@ -62,6 +45,21 @@ class CreatePlaylistFragment : DialogFragment() {
             return fragment
         }
     }
+
+    private lateinit var backFromCreatePlaylist: ImageView
+    private lateinit var addPlaylistImage: ImageView
+    private lateinit var editTextNamePlaylist: TextInputEditText
+    private lateinit var editTextDescriptionPlaylist: TextInputEditText
+    private lateinit var createPlaylistButton: Button
+    private lateinit var titleTextView: TextView
+
+    private var editingPlaylistId: Long = 0L
+    private var coverPath: String? = null
+    private var playlistName: String = ""
+    private var playlistDescription: String = ""
+
+    // Флаг, чтобы кнопка "Сохранить/Создать" была неактивна при пустом названии.
+    private var isNameNotBlank = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -87,29 +85,32 @@ class CreatePlaylistFragment : DialogFragment() {
         createPlaylistButton = view.findViewById(R.id.createPlaylistButton)
         titleTextView = view.findViewById(R.id.title)
 
-        // Настраиваем режим "Создание" или "Редактирование"
-        if (editingPlaylistId != 0L) {
-            titleTextView.text = getString(R.string.edit_playlist) // "Редактировать"
-            createPlaylistButton.text = getString(R.string.save_changes) // "Сохранить"
-        } else {
-            titleTextView.text = getString(R.string.newPlaylist) // "Новый плейлист"
-            createPlaylistButton.text = getString(R.string.create) // "Создать"
-        }
-
-        // Кнопка по умолчанию неактивна, пока пользователь не введёт непустое имя
+        // По умолчанию — неактивна
         createPlaylistButton.isEnabled = false
 
-        // TextWatcher для поля "Название"
-        editTextNamePlaylist.addTextChangedListener {
-            if (blockTextWatcher) return@addTextChangedListener
-            val name = it.toString()
-            playlistName = name
-            viewModel.onNameChanged(name)
+        if (editingPlaylistId == 0L) {
+            // Режим создания
+            titleTextView.text = getString(R.string.newPlaylist)   // "Новый плейлист"
+            createPlaylistButton.text = getString(R.string.create) // "Создать"
+        } else {
+            // Режим редактирования
+            titleTextView.text = getString(R.string.edit_playlist)  // "Редактировать"
+            createPlaylistButton.text = getString(R.string.save_changes) // "Сохранить"
         }
 
-        // TextWatcher для поля "Описание"
+        backFromCreatePlaylist.setOnClickListener {
+            handleClose()
+        }
+
+        // Когда пользователь меняет название, проверяем пустое ли оно
+        editTextNamePlaylist.addTextChangedListener {
+            playlistName = it.toString()
+            isNameNotBlank = playlistName.isNotBlank()
+            updateButtonState()
+        }
+
+        // Когда пользователь меняет описание
         editTextDescriptionPlaylist.addTextChangedListener {
-            if (blockTextWatcher) return@addTextChangedListener
             playlistDescription = it.toString()
         }
 
@@ -118,24 +119,25 @@ class CreatePlaylistFragment : DialogFragment() {
             val description = playlistDescription.trim()
 
             if (editingPlaylistId == 0L) {
-                // Создание нового
-                viewModel.savePlaylist(name, description)
-                Toast.makeText(
-                    requireContext(),
-                    getString(R.string.playlist_created_notify, name),
-                    Toast.LENGTH_SHORT
-                ).show()
-                // Посылаем результат, чтобы родитель обновил список
-                setFragmentResult(PLAYLIST_CREATED_KEY, Bundle())
-                dismiss()
+                // Создать новый
+                lifecycleScope.launch {
+                    viewModel.createPlaylist(name, description, coverPath)
+                    Toast.makeText(
+                        requireContext(),
+                        getString(R.string.playlist_created_notify, name),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    setFragmentResult(PLAYLIST_CREATED_KEY, Bundle())
+                    dismiss()
+                }
             } else {
-                // Редактирование
+                // Сохранить изменения
                 lifecycleScope.launch {
                     viewModel.updatePlaylist(
                         playlistId = editingPlaylistId,
                         name = name,
                         description = description,
-                        coverPath = coverPath
+                        newCoverPath = coverPath
                     )
                     Toast.makeText(
                         requireContext(),
@@ -148,82 +150,45 @@ class CreatePlaylistFragment : DialogFragment() {
             }
         }
 
+        // Нажатие на обложку — выбираем изображение
         addPlaylistImage.setOnClickListener {
             galleryLauncher.launch("image/*")
         }
 
-        // Подписываемся на стейт из ViewModel
-        viewModel.state.observe(viewLifecycleOwner) { state ->
-            createPlaylistButton.isEnabled = state.isCreateButtonEnabled
+        if (savedInstanceState == null) {
+            // Если впервые открыли, а не пересоздаём
+            if (editingPlaylistId != 0L) {
+                // Подгрузим старые данные
+                lifecycleScope.launch {
+                    val playlist = viewModel.getPlaylistById(editingPlaylistId)
+                    if (playlist != null) {
+                        fillExistingData(playlist)
+                    }
+                }
+            }
+        } else {
+            // Если восстанавливаем, берем данные из Bundle
+            coverPath = savedInstanceState.getString("COVER_PATH")
+            playlistName = savedInstanceState.getString("PLAYLIST_NAME", "")
+            playlistDescription = savedInstanceState.getString("PLAYLIST_DESC", "")
+            isNameNotBlank = playlistName.isNotBlank()
+            updateButtonState()
 
-            // Избегаем бесконечного цикла: ставим флаг blockTextWatcher
-            blockTextWatcher = true
-
-            // Если есть обложка, отображаем
-            state.coverFilePath?.let { path ->
-                addPlaylistImage.setImageURI(Uri.parse(path))
+            if (!coverPath.isNullOrEmpty()) {
+                addPlaylistImage.setImageURI(Uri.parse(coverPath))
                 addPlaylistImage.scaleType = ImageView.ScaleType.CENTER_CROP
             }
-
-            // Подставим имя, если оно есть и оно отличается от текущего
-            if (state.createdPlaylistName.isNotEmpty()
-                && editTextNamePlaylist.text.toString() != state.createdPlaylistName
-            ) {
-                editTextNamePlaylist.setText(state.createdPlaylistName)
-                playlistName = state.createdPlaylistName
-            }
-
-            // Подставим описание, если оно есть и отличается
-            if (state.createdPlaylistDesc.isNotEmpty()
-                && editTextDescriptionPlaylist.text.toString() != state.createdPlaylistDesc
-            ) {
-                editTextDescriptionPlaylist.setText(state.createdPlaylistDesc)
-                playlistDescription = state.createdPlaylistDesc
-            }
-
-            blockTextWatcher = false
-        }
-
-        if (editingPlaylistId != 0L) {
-            // Загрузим уже имеющийся плейлист
-            viewModel.loadPlaylistForEdit(editingPlaylistId)
+            editTextNamePlaylist.setText(playlistName)
+            editTextDescriptionPlaylist.setText(playlistDescription)
         }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
         outState.putString("COVER_PATH", coverPath)
         outState.putString("PLAYLIST_NAME", playlistName)
         outState.putString("PLAYLIST_DESC", playlistDescription)
         outState.putLong("EDITING_ID", editingPlaylistId)
-    }
-
-    override fun onViewStateRestored(savedInstanceState: Bundle?) {
-        super.onViewStateRestored(savedInstanceState)
-        if (savedInstanceState != null) {
-            coverPath = savedInstanceState.getString("COVER_PATH")
-            playlistName = savedInstanceState.getString("PLAYLIST_NAME", "")
-            playlistDescription = savedInstanceState.getString("PLAYLIST_DESC", "")
-            editingPlaylistId = savedInstanceState.getLong("EDITING_ID", 0L)
-
-            // Снова блокируем TextWatcher при восстановлении
-            blockTextWatcher = true
-
-            if (!coverPath.isNullOrEmpty()) {
-                viewModel.onCoverPicked(coverPath)
-                addPlaylistImage.setImageURI(Uri.parse(coverPath))
-                addPlaylistImage.scaleType = ImageView.ScaleType.CENTER_CROP
-            }
-            if (playlistName.isNotEmpty()) {
-                editTextNamePlaylist.setText(playlistName)
-                viewModel.onNameChanged(playlistName)
-            }
-            if (playlistDescription.isNotEmpty()) {
-                editTextDescriptionPlaylist.setText(playlistDescription)
-            }
-
-            blockTextWatcher = false
-        }
+        super.onSaveInstanceState(outState)
     }
 
     override fun onResume() {
@@ -235,7 +200,35 @@ class CreatePlaylistFragment : DialogFragment() {
     }
 
     override fun onCancel(dialog: DialogInterface) {
-        // ничего не делаем специально
+        // ничего
+    }
+
+    /**
+     * Когда мы загружаем существующий плейлист для редактирования,
+     * заполняем поля и переменные (название, описание, обложка).
+     */
+    private fun fillExistingData(playlist: Playlist) {
+        playlistName = playlist.name
+        playlistDescription = playlist.description
+        coverPath = playlist.coverFilePath
+
+        isNameNotBlank = playlistName.isNotBlank()
+        updateButtonState()
+
+        editTextNamePlaylist.setText(playlistName)
+        editTextDescriptionPlaylist.setText(playlistDescription)
+
+        if (!coverPath.isNullOrEmpty()) {
+            addPlaylistImage.setImageURI(Uri.parse(coverPath))
+            addPlaylistImage.scaleType = ImageView.ScaleType.CENTER_CROP
+        }
+    }
+
+    /**
+     * Активируем кнопку "Создать"/"Сохранить" если имя не пустое.
+     */
+    private fun updateButtonState() {
+        createPlaylistButton.isEnabled = isNameNotBlank
     }
 
     private val galleryLauncher =
@@ -243,18 +236,22 @@ class CreatePlaylistFragment : DialogFragment() {
             if (uri != null) {
                 val filePath = copyUriToInternalStorage(uri)
                 coverPath = filePath
-                viewModel.onCoverPicked(filePath)
-                addPlaylistImage.scaleType = ImageView.ScaleType.CENTER_CROP
-                Glide.with(this)
-                    .load(filePath)
-                    .transform(
-                        CenterCrop(),
-                        RoundedCorners(resources.getDimensionPixelSize(R.dimen.corner_radius))
-                    )
-                    .into(addPlaylistImage)
+                if (!filePath.isNullOrEmpty()) {
+                    addPlaylistImage.scaleType = ImageView.ScaleType.CENTER_CROP
+                    Glide.with(this)
+                        .load(filePath)
+                        .transform(
+                            CenterCrop(),
+                            RoundedCorners(resources.getDimensionPixelSize(R.dimen.corner_radius))
+                        )
+                        .into(addPlaylistImage)
+                }
             }
         }
 
+    /**
+     * Копирование выбранного файла в внутреннее хранилище
+     */
     private fun copyUriToInternalStorage(uri: Uri): String? {
         try {
             val bitmap = decodeSampledBitmapFromUri(uri, 1024, 1024)
@@ -274,22 +271,22 @@ class CreatePlaylistFragment : DialogFragment() {
     }
 
     private fun decodeSampledBitmapFromUri(uri: Uri, reqWidth: Int, reqHeight: Int): Bitmap? {
-        val options = BitmapFactory.Options()
-        options.inJustDecodeBounds = true
+        val opts = BitmapFactory.Options()
+        opts.inJustDecodeBounds = true
         requireContext().contentResolver.openInputStream(uri)?.use { s ->
-            BitmapFactory.decodeStream(s, null, options)
+            BitmapFactory.decodeStream(s, null, opts)
         }
-        val (width, height) = options.outWidth to options.outHeight
+        val (width, height) = opts.outWidth to opts.outHeight
         var inSampleSize = 1
         if (height > reqHeight || width > reqWidth) {
             while ((height / inSampleSize) >= reqHeight && (width / inSampleSize) >= reqWidth) {
                 inSampleSize *= 2
             }
         }
-        options.inSampleSize = inSampleSize
-        options.inJustDecodeBounds = false
+        opts.inSampleSize = inSampleSize
+        opts.inJustDecodeBounds = false
         return requireContext().contentResolver.openInputStream(uri)?.use { s2 ->
-            BitmapFactory.decodeStream(s2, null, options)
+            BitmapFactory.decodeStream(s2, null, opts)
         }
     }
 
@@ -298,20 +295,19 @@ class CreatePlaylistFragment : DialogFragment() {
         val returnCursor = requireContext().contentResolver.query(uri, null, null, null, null)
         returnCursor?.use { cursor ->
             val nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
-            cursor.moveToFirst()
-            fileName = cursor.getString(nameIndex)
+            if (nameIndex >= 0) {
+                cursor.moveToFirst()
+                fileName = cursor.getString(nameIndex)
+            }
         }
         return fileName
     }
 
     /**
-     * Нажатие на «Назад»: если поля пустые, просто уходим.
-     * Если что-то введено — предупреждение о потере данных.
+     * Если пользователь нажал «Назад»
      */
     fun handleClose() {
-        val name = editTextNamePlaylist.text?.toString().orEmpty()
-        val description = editTextDescriptionPlaylist.text?.toString().orEmpty()
-        if (name.isBlank() && description.isBlank() && !viewModel.hasCover()) {
+        if (playlistName.isBlank() && playlistDescription.isBlank() && coverPath.isNullOrEmpty()) {
             dismiss()
         } else {
             showConfirmationDialog()
