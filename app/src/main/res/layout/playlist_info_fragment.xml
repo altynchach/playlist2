@@ -42,6 +42,7 @@
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_marginHorizontal="@dimen/size24"
+            android:layout_marginTop="@dimen/size24"
             android:scaleType="fitXY"
             app:layout_constraintDimensionRatio="w,1:1"
             app:layout_constraintStart_toStartOf="parent"
@@ -88,8 +89,7 @@
             android:orientation="horizontal"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/PlaylistDescription"
-            app:layout_constraintBottom_toTopOf="@id/buttonsLayout">
+            app:layout_constraintTop_toBottomOf="@id/PlaylistDescription">
 
             <TextView
                 android:id="@+id/sumLength"
@@ -107,8 +107,8 @@
                 android:maxLines="1"
                 android:textColor="@color/black_main"
                 android:textSize="@dimen/text_size_18sp"
-                android:drawableStart="@drawable/point"
-                android:drawableTint="@color/black_main"
+                app:drawableStartCompat="@drawable/point"
+                app:drawableTint="@color/black_main"
                 tools:text="5 треков" />
         </LinearLayout>
 
@@ -121,20 +121,24 @@
             android:orientation="horizontal"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/playlistInfoNumbers">
+            app:layout_constraintTop_toBottomOf="@id/playlistInfoNumbers"
+            app:layout_constraintBottom_toTopOf="@+id/bottom_sheet_playlist_info"
+            tools:ignore="NotSibling">
 
             <ImageView
                 android:id="@+id/sharePlaylist"
                 style="@style/IconSettingsStyle"
                 android:background="@drawable/share"
-                android:backgroundTint="@color/black_main" />
+                android:backgroundTint="@color/black_main"
+                android:contentDescription="@string/share_playlist_menu" />
 
             <ImageView
                 android:id="@+id/editPlaylist"
                 style="@style/IconSettingsStyle"
                 android:layout_marginStart="@dimen/button_radius"
                 android:background="@drawable/edit"
-                android:backgroundTint="@color/black_main" />
+                android:backgroundTint="@color/black_main"
+                android:contentDescription="@string/edit_playlist_info" />
         </LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
@@ -168,14 +172,11 @@
     <LinearLayout
         android:id="@+id/bottom_sheet_edit_playlist_info"
         style="@style/BottomSheetStyle"
-
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-
         android:background="@drawable/rounded_bottom_sheet"
         android:orientation="vertical"
         android:visibility="invisible"
-
         app:behavior_hideable="true"
         app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
 

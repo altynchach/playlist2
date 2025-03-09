@@ -8,7 +8,6 @@ import com.example.playlistmaker.domain.interactor.FavoritesInteractor
 import com.example.playlistmaker.domain.interactor.PlaylistInteractor
 import com.example.playlistmaker.domain.models.Playlist
 import com.example.playlistmaker.domain.models.Track
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import java.util.Locale
@@ -30,13 +29,15 @@ class PlaylistInfoViewModel(
 
     private var currentPlaylistId: Long = 0L
 
+    // Флаг, что плейлист удалён
+    private val _deleted = MutableLiveData(false)
+    val deleted: LiveData<Boolean> get() = _deleted
+
     fun loadPlaylist(playlistId: Long) {
         currentPlaylistId = playlistId
-
         viewModelScope.launch {
             val pl = playlistInteractor.getPlaylistById(playlistId)
             if (pl != null) {
-                // Подпишемся на треки плейлиста (Flow)
                 playlistInteractor.getTracksForPlaylist(playlistId).collect { tracks ->
                     val dur = calculateTotalDuration(tracks)
                     _state.value = PlaylistInfoScreenState(
@@ -59,6 +60,7 @@ class PlaylistInfoViewModel(
     fun deletePlaylist() {
         viewModelScope.launch {
             playlistInteractor.deletePlaylist(currentPlaylistId)
+            _deleted.value = true
         }
     }
 

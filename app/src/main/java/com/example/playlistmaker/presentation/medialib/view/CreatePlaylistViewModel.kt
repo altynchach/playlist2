@@ -12,7 +12,8 @@ data class CreatePlaylistState(
     val isCreateButtonEnabled: Boolean = false,
     val coverFilePath: String? = null,
     val isPlaylistCreated: Boolean = false,
-    val createdPlaylistName: String = ""
+    val createdPlaylistName: String = "",
+    val createdPlaylistDesc: String = ""
 )
 
 class CreatePlaylistViewModel(

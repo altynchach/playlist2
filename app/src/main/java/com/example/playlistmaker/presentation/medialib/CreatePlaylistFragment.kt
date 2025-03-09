@@ -85,7 +85,6 @@ class CreatePlaylistFragment : DialogFragment() {
 
         createPlaylistButton.isEnabled = false
 
-        // Если редактирование плейлиста
         if (editingPlaylistId != 0L) {
             titleTextView.text = getString(R.string.edit_playlist)
             createPlaylistButton.text = getString(R.string.save_changes)
@@ -103,7 +102,6 @@ class CreatePlaylistFragment : DialogFragment() {
             playlistName = name
             viewModel.onNameChanged(name)
         }
-
         editTextDescriptionPlaylist.addTextChangedListener {
             playlistDescription = it.toString()
         }
@@ -123,7 +121,7 @@ class CreatePlaylistFragment : DialogFragment() {
                 setFragmentResult(PLAYLIST_CREATED_KEY, Bundle())
                 dismiss()
             } else {
-                // Редактируем существующий
+                // Редактируем
                 lifecycleScope.launch {
                     viewModel.updatePlaylist(
                         playlistId = editingPlaylistId,
@@ -147,8 +145,20 @@ class CreatePlaylistFragment : DialogFragment() {
 
         viewModel.state.observe(viewLifecycleOwner) { state ->
             createPlaylistButton.isEnabled = state.isCreateButtonEnabled
+
+            // Если есть обложка, загружаем и масштабируем
             state.coverFilePath?.let { path ->
                 addPlaylistImage.setImageURI(Uri.parse(path))
+                addPlaylistImage.scaleType = ImageView.ScaleType.CENTER_CROP
+            }
+            // Если у нас есть сохранённое имя/описание — подставим
+            if (state.createdPlaylistName.isNotBlank()) {
+                editTextNamePlaylist.setText(state.createdPlaylistName)
+                playlistName = state.createdPlaylistName
+            }
+            if (state.createdPlaylistDesc.isNotBlank()) {
+                editTextDescriptionPlaylist.setText(state.createdPlaylistDesc)
+                playlistDescription = state.createdPlaylistDesc
             }
         }
 
@@ -176,6 +186,7 @@ class CreatePlaylistFragment : DialogFragment() {
             if (!coverPath.isNullOrEmpty()) {
                 viewModel.onCoverPicked(coverPath)
                 addPlaylistImage.setImageURI(Uri.parse(coverPath))
+                addPlaylistImage.scaleType = ImageView.ScaleType.CENTER_CROP
             }
             if (playlistName.isNotEmpty()) {
                 editTextNamePlaylist.setText(playlistName)
@@ -196,7 +207,7 @@ class CreatePlaylistFragment : DialogFragment() {
     }
 
     override fun onCancel(dialog: DialogInterface) {
-        // можно ничего не делать при обычном cancel
+        // ничего не делаем
     }
 
     private val galleryLauncher =
