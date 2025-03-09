@@ -120,9 +120,7 @@
             android:orientation="horizontal"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/playlistInfoNumbers"
-            app:layout_constraintBottom_toTopOf="@+id/bottom_sheet_playlist_info"
-            tools:ignore="NotSibling">
+            app:layout_constraintTop_toBottomOf="@id/playlistInfoNumbers">
 
             <ImageView
                 android:id="@+id/sharePlaylist"
@@ -144,7 +142,8 @@
 
     <LinearLayout
         android:id="@+id/bottom_sheet_playlist_info"
-        style="@style/BottomSheetStyle"
+        app:layout_constraintTop_toBottomOf="@id/buttonsLayout"
+    style="@style/BottomSheetStyle"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@drawable/rounded_bottom_sheet"
