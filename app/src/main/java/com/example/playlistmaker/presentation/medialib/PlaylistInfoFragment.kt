@@ -19,6 +19,7 @@ import com.example.playlistmaker.presentation.medialib.view.PlaylistInfoScreenSt
 import com.example.playlistmaker.presentation.medialib.view.PlaylistInfoViewModel
 import com.example.playlistmaker.presentation.player.PlayerActivity
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.gson.Gson
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -53,6 +54,8 @@ class PlaylistInfoFragment : Fragment() {
 
     companion object {
         private const val PLAYLIST_ID_ARG = "PLAYLIST_ID_ARG"
+        const val PLAYLIST_CREATED_KEY = "PLAYLIST_CREATED"
+
         fun newInstance(playlistId: Long): PlaylistInfoFragment {
             val fragment = PlaylistInfoFragment()
             val args = Bundle()
@@ -74,8 +77,12 @@ class PlaylistInfoFragment : Fragment() {
         return inflater.inflate(R.layout.playlist_info_fragment, container, false)
     }
 
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        val bottomNav = requireActivity().findViewById<BottomNavigationView>(R.id.bottomNavigationView)
+        bottomNav.visibility = View.GONE
 
         backFromPlaylistInfo = view.findViewById(R.id.backFromPlaylistInfo)
         playlistImage = view.findViewById(R.id.PlaylistImage)
@@ -215,6 +222,13 @@ class PlaylistInfoFragment : Fragment() {
         viewModel.loadPlaylist(playlistIdArg)
     }
 
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        val bottomNav = requireActivity().findViewById<BottomNavigationView>(R.id.bottomNavigationView)
+        bottomNav.visibility = View.VISIBLE
+    }
+
     private fun anchorSheetUnderButtons() {
         val loc = IntArray(2)
         buttonsLayout.getLocationOnScreen(loc)
@@ -227,6 +241,7 @@ class PlaylistInfoFragment : Fragment() {
 
     private fun renderState(s: PlaylistInfoScreenState) {
         val pl = s.playlist ?: return
+
         if (pl.coverFilePath.isNullOrEmpty()) {
             playlistImage.setImageResource(R.drawable.placeholder)
         } else {
@@ -235,9 +250,11 @@ class PlaylistInfoFragment : Fragment() {
                 .placeholder(R.drawable.placeholder)
                 .into(playlistImage)
         }
+
         playlistName.text = pl.name
         playlistDescription.isVisible = pl.description.isNotBlank()
         playlistDescription.text = pl.description
+
         if (pl.trackIds.isEmpty()) {
             tracksCount.text = getString(R.string.no_tracks_in_playlist)
         } else {
@@ -254,6 +271,7 @@ class PlaylistInfoFragment : Fragment() {
 
     private fun updateSecondSheetHeader(s: PlaylistInfoScreenState) {
         val pl = s.playlist ?: return
+
         if (pl.coverFilePath.isNullOrEmpty()) {
             playlistImageSheet.setImageResource(R.drawable.placeholder)
         } else {
@@ -262,6 +280,7 @@ class PlaylistInfoFragment : Fragment() {
                 .placeholder(R.drawable.placeholder)
                 .into(playlistImageSheet)
         }
+
         playlistNameSheet.text = pl.name
         val trackCountText = if (pl.trackIds.isEmpty()) {
             getString(R.string.no_tracks_in_playlist)
