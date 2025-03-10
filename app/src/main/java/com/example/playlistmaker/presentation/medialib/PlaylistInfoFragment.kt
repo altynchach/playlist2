@@ -302,7 +302,7 @@ class PlaylistInfoFragment : Fragment() {
                 dialog.dismiss()
                 viewModel.removeTrackFromPlaylist(track)
             }
-            .setNegativeButton(getString(R.string.cancel)) { d, _ ->
+            .setNegativeButton(getString(R.string.cancel_no)) { d, _ ->
                 d.dismiss()
             }
             .create()
