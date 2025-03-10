@@ -60,6 +60,11 @@ class CreatePlaylistFragment : DialogFragment() {
 
     private var isNameNotBlank = false
 
+    // ДОБАВЛЕНО: Поля для хранения оригинальных данных (при редактировании)
+    private var originalPlaylistName: String? = null
+    private var originalPlaylistDescription: String? = null
+    private var originalCoverPath: String? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setStyle(STYLE_NORMAL, R.style.ThemeOverlay_FullScreenDialog)
@@ -186,14 +191,20 @@ class CreatePlaylistFragment : DialogFragment() {
         )
     }
 
+    // ИЗМЕНЕНО: Теперь при нажатии системной «Назад» вызываем handleClose()
     override fun onCancel(dialog: DialogInterface) {
+        handleClose()
     }
-
 
     private fun fillExistingData(playlist: Playlist) {
         playlistName = playlist.name
         playlistDescription = playlist.description
         coverPath = playlist.coverFilePath
+
+        // ДОБАВЛЕНО: Сохраняем оригинальные значения
+        originalPlaylistName = playlistName
+        originalPlaylistDescription = playlistDescription
+        originalCoverPath = coverPath
 
         isNameNotBlank = playlistName.isNotBlank()
         updateButtonState()
@@ -206,7 +217,6 @@ class CreatePlaylistFragment : DialogFragment() {
             addPlaylistImage.scaleType = ImageView.ScaleType.CENTER_CROP
         }
     }
-
 
     private fun updateButtonState() {
         createPlaylistButton.isEnabled = isNameNotBlank
@@ -229,7 +239,6 @@ class CreatePlaylistFragment : DialogFragment() {
                 }
             }
         }
-
 
     private fun copyUriToInternalStorage(uri: Uri): String? {
         try {
@@ -282,12 +291,23 @@ class CreatePlaylistFragment : DialogFragment() {
         return fileName
     }
 
-
     fun handleClose() {
-        if (playlistName.isBlank() && playlistDescription.isBlank() && coverPath.isNullOrEmpty()) {
-            dismiss()
+        if (editingPlaylistId != 0L) {
+            val hasChanges = (playlistName != originalPlaylistName
+                    || playlistDescription != originalPlaylistDescription
+                    || coverPath != originalCoverPath)
+
+            if (hasChanges) {
+                showConfirmationDialog()
+            } else {
+                dismiss()
+            }
         } else {
-            showConfirmationDialog()
+            if (playlistName.isBlank() && playlistDescription.isBlank() && coverPath.isNullOrEmpty()) {
+                dismiss()
+            } else {
+                showConfirmationDialog()
+            }
         }
     }
 
