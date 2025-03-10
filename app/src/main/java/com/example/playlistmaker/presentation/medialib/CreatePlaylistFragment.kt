@@ -1,30 +1,26 @@
 package com.example.playlistmaker.presentation.medialib
 
 import android.app.AlertDialog
-import android.app.Dialog
-import android.content.DialogInterface
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
 import android.provider.OpenableColumns
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import android.view.WindowManager
-import android.widget.Button
-import android.widget.ImageView
-import android.widget.Toast
+import android.view.*
+import android.widget.*
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.setFragmentResult
+import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.playlistmaker.R
+import com.example.playlistmaker.domain.models.Playlist
 import com.example.playlistmaker.presentation.medialib.view.CreatePlaylistViewModel
 import com.google.android.material.textfield.TextInputEditText
+import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.io.File
 import java.io.FileOutputStream
@@ -33,32 +29,47 @@ class CreatePlaylistFragment : DialogFragment() {
 
     private val viewModel: CreatePlaylistViewModel by viewModel()
 
+    companion object {
+        const val PLAYLIST_CREATED_KEY = "PLAYLIST_CREATED"
+
+        fun newInstance(): CreatePlaylistFragment {
+            return CreatePlaylistFragment()
+        }
+
+        fun newInstance(playlistId: Long): CreatePlaylistFragment {
+            val fragment = CreatePlaylistFragment()
+            val args = Bundle()
+            args.putLong("EXTRA_PLAYLIST_ID", playlistId)
+            fragment.arguments = args
+            return fragment
+        }
+    }
+
     private lateinit var backFromCreatePlaylist: ImageView
     private lateinit var addPlaylistImage: ImageView
     private lateinit var editTextNamePlaylist: TextInputEditText
     private lateinit var editTextDescriptionPlaylist: TextInputEditText
     private lateinit var createPlaylistButton: Button
+    private lateinit var titleTextView: TextView
 
+    private var editingPlaylistId: Long = 0L
     private var coverPath: String? = null
     private var playlistName: String = ""
     private var playlistDescription: String = ""
 
-    companion object {
-        private const val PLAYLIST_CREATED_KEY = "PLAYLIST_CREATED"
-        fun newInstance() = CreatePlaylistFragment()
-    }
+    private var isNameNotBlank = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setStyle(STYLE_NORMAL, R.style.ThemeOverlay_FullScreenDialog)
-        isCancelable = false
+        editingPlaylistId = arguments?.getLong("EXTRA_PLAYLIST_ID", 0L) ?: 0L
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
-    ): View? {
-        return inflater.inflate(R.layout.fragment_create_playlist, container, false)
+    ): View {
+        return inflater.inflate(R.layout.fragment_new_playlist, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -69,76 +80,112 @@ class CreatePlaylistFragment : DialogFragment() {
         editTextNamePlaylist = view.findViewById(R.id.editTextNamePlaylist)
         editTextDescriptionPlaylist = view.findViewById(R.id.editTextDescriptionPlaylist)
         createPlaylistButton = view.findViewById(R.id.createPlaylistButton)
+        titleTextView = view.findViewById(R.id.title)
 
         createPlaylistButton.isEnabled = false
+
+        if (editingPlaylistId == 0L) {
+            titleTextView.text = getString(R.string.newPlaylist)
+            createPlaylistButton.text = getString(R.string.create)
+        } else {
+            titleTextView.text = getString(R.string.edit_playlist)
+            createPlaylistButton.text = getString(R.string.save_changes)
+        }
+
+        dialog?.setOnKeyListener { _, keyCode, event ->
+            if (keyCode == KeyEvent.KEYCODE_BACK && event.action == KeyEvent.ACTION_UP) {
+                if (editingPlaylistId != 0L) {
+                    dismiss()
+                } else {
+                    handleClose()
+                }
+                true
+            } else {
+                false
+            }
+        }
 
         backFromCreatePlaylist.setOnClickListener {
             handleClose()
         }
 
         editTextNamePlaylist.addTextChangedListener {
-            val name = it.toString()
-            playlistName = name
-            viewModel.onNameChanged(name)
+            playlistName = it.toString()
+            isNameNotBlank = playlistName.isNotBlank()
+            updateButtonState()
         }
-
         editTextDescriptionPlaylist.addTextChangedListener {
             playlistDescription = it.toString()
         }
 
         createPlaylistButton.setOnClickListener {
-            val name = editTextNamePlaylist.text.toString().trim()
-            val description = editTextDescriptionPlaylist.text.toString().trim()
+            val name = playlistName.trim()
+            val description = playlistDescription.trim()
 
-            viewModel.savePlaylist(name, description)
-            Toast.makeText(
-                requireContext(),
-                getString(R.string.playlist_created_notify, name),
-                Toast.LENGTH_SHORT
-            ).show()
-
-            setFragmentResult(PLAYLIST_CREATED_KEY, Bundle())
-            dismiss() // вместо dismissAllowingStateLoss()
+            if (editingPlaylistId == 0L) {
+                lifecycleScope.launch {
+                    viewModel.createPlaylist(name, description, coverPath)
+                    Toast.makeText(
+                        requireContext(),
+                        getString(R.string.playlist_created_notify, name),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    setFragmentResult(PLAYLIST_CREATED_KEY, Bundle())
+                    dismiss()
+                }
+            } else {
+                lifecycleScope.launch {
+                    viewModel.updatePlaylist(
+                        playlistId = editingPlaylistId,
+                        name = name,
+                        description = description,
+                        newCoverPath = coverPath
+                    )
+                    Toast.makeText(
+                        requireContext(),
+                        getString(R.string.playlist_updated),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    setFragmentResult(PLAYLIST_CREATED_KEY, Bundle())
+                    dismiss()
+                }
+            }
         }
 
         addPlaylistImage.setOnClickListener {
             galleryLauncher.launch("image/*")
         }
 
-        viewModel.state.observe(viewLifecycleOwner) { state ->
-            createPlaylistButton.isEnabled = state.isCreateButtonEnabled
-            state.coverFilePath?.let {
-                addPlaylistImage.setImageURI(Uri.parse(it))
+        if (savedInstanceState == null) {
+            if (editingPlaylistId != 0L) {
+                lifecycleScope.launch {
+                    val playlist = viewModel.getPlaylistById(editingPlaylistId)
+                    if (playlist != null) {
+                        fillExistingData(playlist)
+                    }
+                }
             }
+        } else {
+            coverPath = savedInstanceState.getString("COVER_PATH")
+            playlistName = savedInstanceState.getString("PLAYLIST_NAME", "")
+            playlistDescription = savedInstanceState.getString("PLAYLIST_DESC", "")
+            isNameNotBlank = playlistName.isNotBlank()
+            updateButtonState()
+
+            if (!coverPath.isNullOrEmpty()) {
+                addPlaylistImage.scaleType = ImageView.ScaleType.CENTER_CROP
+            }
+            editTextNamePlaylist.setText(playlistName)
+            editTextDescriptionPlaylist.setText(playlistDescription)
         }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
         outState.putString("COVER_PATH", coverPath)
         outState.putString("PLAYLIST_NAME", playlistName)
         outState.putString("PLAYLIST_DESC", playlistDescription)
-    }
-
-    override fun onViewStateRestored(savedInstanceState: Bundle?) {
-        super.onViewStateRestored(savedInstanceState)
-        if (savedInstanceState != null) {
-            coverPath = savedInstanceState.getString("COVER_PATH")
-            playlistName = savedInstanceState.getString("PLAYLIST_NAME", "")
-            playlistDescription = savedInstanceState.getString("PLAYLIST_DESC", "")
-
-            if (!coverPath.isNullOrEmpty()) {
-                viewModel.onCoverPicked(coverPath)
-                addPlaylistImage.setImageURI(Uri.parse(coverPath))
-            }
-            if (playlistName.isNotEmpty()) {
-                editTextNamePlaylist.setText(playlistName)
-                viewModel.onNameChanged(playlistName)
-            }
-            if (playlistDescription.isNotEmpty()) {
-                editTextDescriptionPlaylist.setText(playlistDescription)
-            }
-        }
+        outState.putLong("EDITING_ID", editingPlaylistId)
+        super.onSaveInstanceState(outState)
     }
 
     override fun onResume() {
@@ -149,7 +196,25 @@ class CreatePlaylistFragment : DialogFragment() {
         )
     }
 
-    override fun onCancel(dialog: DialogInterface) {
+    private fun fillExistingData(playlist: Playlist) {
+        playlistName = playlist.name
+        playlistDescription = playlist.description
+        coverPath = playlist.coverFilePath
+
+        isNameNotBlank = playlistName.isNotBlank()
+        updateButtonState()
+
+        editTextNamePlaylist.setText(playlistName)
+        editTextDescriptionPlaylist.setText(playlistDescription)
+
+        if (!coverPath.isNullOrEmpty()) {
+            addPlaylistImage.setImageURI(Uri.parse(coverPath))
+            addPlaylistImage.scaleType = ImageView.ScaleType.CENTER_CROP
+        }
+    }
+
+    private fun updateButtonState() {
+        createPlaylistButton.isEnabled = isNameNotBlank
     }
 
     private val galleryLauncher =
@@ -157,15 +222,16 @@ class CreatePlaylistFragment : DialogFragment() {
             if (uri != null) {
                 val filePath = copyUriToInternalStorage(uri)
                 coverPath = filePath
-                viewModel.onCoverPicked(filePath)
-                addPlaylistImage.scaleType = ImageView.ScaleType.CENTER_CROP
-                Glide.with(this)
-                    .load(filePath)
-                    .transform(
-                        CenterCrop(),
-                        RoundedCorners(resources.getDimensionPixelSize(R.dimen.corner_radius))
-                    )
-                    .into(addPlaylistImage)
+                if (!filePath.isNullOrEmpty()) {
+                    addPlaylistImage.scaleType = ImageView.ScaleType.CENTER_CROP
+                    Glide.with(this)
+                        .load(filePath)
+                        .transform(
+                            CenterCrop(),
+                            RoundedCorners(resources.getDimensionPixelSize(R.dimen.corner_radius))
+                        )
+                        .into(addPlaylistImage)
+                }
             }
         }
 
@@ -188,22 +254,22 @@ class CreatePlaylistFragment : DialogFragment() {
     }
 
     private fun decodeSampledBitmapFromUri(uri: Uri, reqWidth: Int, reqHeight: Int): Bitmap? {
-        val options = BitmapFactory.Options()
-        options.inJustDecodeBounds = true
+        val opts = BitmapFactory.Options()
+        opts.inJustDecodeBounds = true
         requireContext().contentResolver.openInputStream(uri)?.use { s ->
-            BitmapFactory.decodeStream(s, null, options)
+            BitmapFactory.decodeStream(s, null, opts)
         }
-        val (width, height) = options.outWidth to options.outHeight
+        val (width, height) = opts.outWidth to opts.outHeight
         var inSampleSize = 1
         if (height > reqHeight || width > reqWidth) {
             while ((height / inSampleSize) >= reqHeight && (width / inSampleSize) >= reqWidth) {
                 inSampleSize *= 2
             }
         }
-        options.inSampleSize = inSampleSize
-        options.inJustDecodeBounds = false
+        opts.inSampleSize = inSampleSize
+        opts.inJustDecodeBounds = false
         return requireContext().contentResolver.openInputStream(uri)?.use { s2 ->
-            BitmapFactory.decodeStream(s2, null, options)
+            BitmapFactory.decodeStream(s2, null, opts)
         }
     }
 
@@ -212,32 +278,36 @@ class CreatePlaylistFragment : DialogFragment() {
         val returnCursor = requireContext().contentResolver.query(uri, null, null, null, null)
         returnCursor?.use { cursor ->
             val nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
-            cursor.moveToFirst()
-            fileName = cursor.getString(nameIndex)
+            if (nameIndex >= 0) {
+                cursor.moveToFirst()
+                fileName = cursor.getString(nameIndex)
+            }
         }
         return fileName
     }
 
     fun handleClose() {
-        val name = editTextNamePlaylist.text?.toString().orEmpty()
-        val description = editTextDescriptionPlaylist.text?.toString().orEmpty()
-        if (name.isBlank() && description.isBlank() && !viewModel.hasCover()) {
+        if (editingPlaylistId != 0L) {
             dismiss()
         } else {
-            showConfirmationDialog()
+            if (playlistName.isBlank() && playlistDescription.isBlank() && coverPath.isNullOrEmpty()) {
+                dismiss()
+            } else {
+                showConfirmationDialog()
+            }
         }
     }
 
     private fun showConfirmationDialog() {
-        AlertDialog.Builder(requireActivity())
+        AlertDialog.Builder(requireContext())
             .setTitle(R.string.finishPlaylistCreating)
             .setMessage(R.string.dataWillLost)
             .setPositiveButton(R.string.complete) { dialog, _ ->
                 dialog.dismiss()
                 dismiss()
             }
-            .setNegativeButton(R.string.cancel) { dialog, _ ->
-                dialog.dismiss()
+            .setNegativeButton(R.string.cancel) { d, _ ->
+                d.dismiss()
             }
             .create()
             .show()

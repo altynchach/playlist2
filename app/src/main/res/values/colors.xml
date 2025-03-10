@@ -48,5 +48,6 @@
     <color name="like_bg_color">#1A1B22</color>
     <color name="text_field_bg_light">#FFFFFFFF</color>
     <color name="black_toast">#1A1B22</color>
+    <color name="light_gray">#AEAFB4</color>
 
 </resources>
