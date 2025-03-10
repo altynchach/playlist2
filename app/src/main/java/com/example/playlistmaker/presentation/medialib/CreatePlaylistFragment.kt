@@ -1,7 +1,6 @@
 package com.example.playlistmaker.presentation.medialib
 
 import android.app.AlertDialog
-import android.content.DialogInterface
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
@@ -60,15 +59,9 @@ class CreatePlaylistFragment : DialogFragment() {
 
     private var isNameNotBlank = false
 
-    // ДОБАВЛЕНО: Поля для хранения оригинальных данных (при редактировании)
-    private var originalPlaylistName: String? = null
-    private var originalPlaylistDescription: String? = null
-    private var originalCoverPath: String? = null
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setStyle(STYLE_NORMAL, R.style.ThemeOverlay_FullScreenDialog)
-        isCancelable = false
         editingPlaylistId = arguments?.getLong("EXTRA_PLAYLIST_ID", 0L) ?: 0L
     }
 
@@ -99,6 +92,19 @@ class CreatePlaylistFragment : DialogFragment() {
             createPlaylistButton.text = getString(R.string.save_changes)
         }
 
+        dialog?.setOnKeyListener { _, keyCode, event ->
+            if (keyCode == KeyEvent.KEYCODE_BACK && event.action == KeyEvent.ACTION_UP) {
+                if (editingPlaylistId != 0L) {
+                    dismiss()
+                } else {
+                    handleClose()
+                }
+                true
+            } else {
+                false
+            }
+        }
+
         backFromCreatePlaylist.setOnClickListener {
             handleClose()
         }
@@ -108,7 +114,6 @@ class CreatePlaylistFragment : DialogFragment() {
             isNameNotBlank = playlistName.isNotBlank()
             updateButtonState()
         }
-
         editTextDescriptionPlaylist.addTextChangedListener {
             playlistDescription = it.toString()
         }
@@ -191,20 +196,10 @@ class CreatePlaylistFragment : DialogFragment() {
         )
     }
 
-    // ИЗМЕНЕНО: Теперь при нажатии системной «Назад» вызываем handleClose()
-    override fun onCancel(dialog: DialogInterface) {
-        handleClose()
-    }
-
     private fun fillExistingData(playlist: Playlist) {
         playlistName = playlist.name
         playlistDescription = playlist.description
         coverPath = playlist.coverFilePath
-
-        // ДОБАВЛЕНО: Сохраняем оригинальные значения
-        originalPlaylistName = playlistName
-        originalPlaylistDescription = playlistDescription
-        originalCoverPath = coverPath
 
         isNameNotBlank = playlistName.isNotBlank()
         updateButtonState()
@@ -293,15 +288,7 @@ class CreatePlaylistFragment : DialogFragment() {
 
     fun handleClose() {
         if (editingPlaylistId != 0L) {
-            val hasChanges = (playlistName != originalPlaylistName
-                    || playlistDescription != originalPlaylistDescription
-                    || coverPath != originalCoverPath)
-
-            if (hasChanges) {
-                showConfirmationDialog()
-            } else {
-                dismiss()
-            }
+            dismiss()
         } else {
             if (playlistName.isBlank() && playlistDescription.isBlank() && coverPath.isNullOrEmpty()) {
                 dismiss()
