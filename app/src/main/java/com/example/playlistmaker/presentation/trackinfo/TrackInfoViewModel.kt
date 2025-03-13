@@ -104,9 +104,10 @@ class TrackInfoViewModel(
 
     suspend fun addTrackToPlaylist(playlistId: Long, track: Track): AddTrackResult {
         val list = playlists.value.orEmpty()
-        val found = list.find { it.playlistId == playlistId } ?: return AddTrackResult(false, "")
+        val found = list.find { it.playlistId == playlistId }
+            ?: return AddTrackResult(false, "")
         val name = found.name
-        val added = playlistInteractor.addTrackToPlaylist(playlistId, track.trackId)
+        val added = playlistInteractor.addTrackToPlaylist(playlistId, track)
         return AddTrackResult(added, name)
     }
 
@@ -142,7 +143,7 @@ class TrackInfoViewModel(
         currentTimeFormatted: String? = null,
         isFavorite: Boolean? = null
     ) {
-        val old = stateLiveData.value ?: return
+        val old = stateLiveData.value ?: TrackInfoScreenState()
         val newSt = old.copy(
             isPlaying = isPlaying ?: old.isPlaying,
             currentTimeFormatted = currentTimeFormatted ?: old.currentTimeFormatted,
